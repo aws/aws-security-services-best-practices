@@ -7,11 +7,14 @@ site_author: 'AWS'
 site_url: 'https://aws.github.io/aws-security-services-best-practices'
 theme:
   name: material
+  custom_dir: overrides
   icon:
     repo: fontawesome/brands/github
   features:
-    - navigation.tabs.sticky
-  language: en
+    - tabs
+    - content.code.copy
+    - announce.dismiss
+    - header.autohide
   palette:
     - scheme: default
       toggle:
