@@ -5,6 +5,7 @@ docs_dir: "docs/en"
 copyright: 'Copyright &copy; Amazon 2023'
 site_author: 'AWS'
 site_url: "https://aws.github.io/aws-security-services-best-practices"
+
 theme:
   name: material
   custom_dir: overrides
@@ -25,6 +26,7 @@ theme:
       toggle:
         icon: material/brightness-4
         name: switch to light mode
+
 nav:
   - Home: index.md
   - Guides:
