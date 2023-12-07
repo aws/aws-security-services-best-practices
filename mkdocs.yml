@@ -12,7 +12,10 @@ theme:
   icon:
     repo: fontawesome/brands/github
   features:
-    - navigation.tabs.sticky
+    - tabs
+    - content.code.copy
+    - announce.dismiss
+    - header.autohide
 
   palette:
     primary: grey
