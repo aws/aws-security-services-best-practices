@@ -16,7 +16,7 @@ on:
 
     # at least one changed file must match this path
     paths:
-      - 'content/**'
+      - '**/*.md'
 
 jobs:
   deploy:
