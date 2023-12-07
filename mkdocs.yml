@@ -25,12 +25,13 @@ theme:
         icon: material/brightness-4
         name: switch to light mode
 nav:
-  - Home: "index.md"
-  - Amazon Detective Best Practices: "./Detective-best-practices/docs/index.md"
-  - Amazon GuardDuty Best Practices: "./GuardDuty-best-practices/docs/index.md"
-  - Amazon Inspector Best Practices: "./Inspector-best-practices/docs/index.md"
-  - Amazon Macie Best Practices: "./Macie-best-practices/docs/index.md"
-  - AWS Security Hub Best Practices: "./Security-Hub-best-practices/docs/index.md"
+  - Home: index.md
+  - Guides:
+    - Amazon Detective Best Practices: /guides/detective/index.md
+    - Amazon GuardDuty Best Practices: /guides/guardduty/index.md
+    - Amazon Inspector Best Practices: /guides/inspector/index.md
+    - Amazon Macie Best Practices: /guides/macie/index.md
+    - AWS Security Hub Best Practices: /guides/security-hub/index.md
   - Contributors: "contributors.md"
 plugins:
     - search
