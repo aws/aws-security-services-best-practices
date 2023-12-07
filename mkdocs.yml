@@ -1,0 +1,35 @@
+site_name: AWS Security Services Best Practices
+repo_name: aws/aws-security-services-best-practices
+repo_url: https://github.com/aws/aws-security-services-best-practices
+docs_dir: 'content'
+copyright: 'Copyright &copy; Amazon 2023'
+site_author: 'AWS'
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - tabs
+    - content.code.copy
+    - announce.dismiss
+    - header.autohide
+  language: en
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: switch to light mode
+nav:
+  - Home: "index.md"
+  - Amazon Detective Best Practices: "./Detective-best-practices/docs/index.md"
+  - Amazon GuardDuty Best Practices: "./GuardDuty-best-practices/docs/index.md"
+  - Amazon Inspector Best Practices: "./Inspector-best-practices/docs/index.md"
+  - Amazon Macie Best Practices: "./Macie-best-practices/docs/index.md"
+  - AWS Security Hub Best Practices: "./Security-Hub-best-practices/docs/index.md"
+  - Contributors: "contributors.md"
+plugins:
+    - search
