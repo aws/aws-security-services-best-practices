@@ -1,7 +1,7 @@
 site_name: AWS Security Services Best Practices
 repo_name: aws/aws-security-services-best-practices
 repo_url: https://github.com/aws/aws-security-services-best-practices
-docs_dir: 'content'
+docs_dir: 'docs'
 copyright: 'Copyright &copy; Amazon 2023'
 site_author: 'AWS'
 site_url: 'https://aws.github.io/aws-security-services-best-practices'
