@@ -7,27 +7,10 @@ repo_name: 'aws/aws-security-services-best-practices'
 repo_url: 'https://github.com/aws/aws-security-services-best-practices'
 
 theme:
-  name: material
-  locale: en
-  features:
-    - header.autohide
-    - navigation.top
-    - search.suggest
-    - search.highlight
-    - search.share
+  name: mkdocs
+  nav_style: dark
   icon:
     repo: fontawesome/brands/github
-  palette:
-    - scheme: default
-      primary: grey
-      # accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: switch to dark mode
-    - scheme: slate
-      toggle:
-        icon: material/brightness-4
-        name: switch to light mode
 
 nav:
   - Home: 'index.md'
