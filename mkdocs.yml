@@ -8,21 +8,25 @@ repo_url: 'https://github.com/aws/aws-security-services-best-practices'
 
 theme:
   name: material
-  custom_dir: overrides
+  features:
+    - header.autohide
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - search.share
   icon:
     repo: fontawesome/brands/github
-  features:
-    - tabs
-    - content.code.copy
-    - announce.dismiss
-    - header.autohide
-
   palette:
-    primary: grey
-    accent: red
-
-extra_css:
-  - stylesheets/extra.css
+    - scheme: default
+      primary: grey
+      # accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: switch to light mode
 
 nav:
   - Home: index.md
@@ -32,6 +36,7 @@ nav:
     - Amazon Inspector Best Practices: guides/inspector/index.md
     - Amazon Macie Best Practices: guides/macie/index.md
     - AWS Security Hub Best Practices: guides/security-hub/index.md
+
   - Contributors: contributors.md
 
 plugins:
