@@ -14,10 +14,6 @@ on:
       - main
       - master
 
-    # at least one changed file must match this path
-    paths:
-      - '**/*.md'
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
