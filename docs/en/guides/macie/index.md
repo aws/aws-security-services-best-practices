@@ -173,23 +173,23 @@ More details and pricing examples can be found on the [Macie pricing page](https
 
 ### Workshops
 
-[Activation Days](https://awsactivationdays.splashthat.com/)
-[Amazon Macie workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/9982e0dc-0ccf-4116-ad12-c053b0ab31c6/en-US)
-[Amazon Detective workshop](https://catalog.workshops.aws/detective)
+* [Activation Days](https://awsactivationdays.splashthat.com/)
+* [Amazon Macie workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/9982e0dc-0ccf-4116-ad12-c053b0ab31c6/en-US)
+* [Amazon Detective workshop](https://catalog.workshops.aws/detective)
 
 ### Videos
 
-[Additional support for discovering more types of sensitive data](https://www.youtube.com/watch?v=Cu0Cy_kk_Zc&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=34&pp=iAQB)
-[Fine-tuning sensitive data findings with allow lists](https://www.youtube.com/watch?v=JmQ_Hybh2KI&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=49&pp=iAQB)
-[Automated Data Discovery Overview](https://www.youtube.com/watch?v=PVnFYotwqyo&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=52&t=3s&pp=iAQB)
-[One-Click temporary retrieval](https://www.youtube.com/watch?v=-rY4G8ER8Gg&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=62&t=3s&pp=iAQB)
-[How Amazon Macie uses keywords to discover sensitive data](https://www.youtube.com/watch?v=GBaIAwLYN-o&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=69&pp=iAQB)
+* [Additional support for discovering more types of sensitive data](https://www.youtube.com/watch?v=Cu0Cy_kk_Zc&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=34&pp=iAQB)
+* [Fine-tuning sensitive data findings with allow lists](https://www.youtube.com/watch?v=JmQ_Hybh2KI&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=49&pp=iAQB)
+* [Automated Data Discovery Overview](https://www.youtube.com/watch?v=PVnFYotwqyo&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=52&t=3s&pp=iAQB)
+* [One-Click temporary retrieval](https://www.youtube.com/watch?v=-rY4G8ER8Gg&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=62&t=3s&pp=iAQB)
+* [How Amazon Macie uses keywords to discover sensitive data](https://www.youtube.com/watch?v=GBaIAwLYN-o&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=69&pp=iAQB)
 
 ### Blogs
 
-[How to use Amazon Macie to reduce cost of discovering sensitive data](https://aws.amazon.com/blogs/security/how-to-use-amazon-macie-to-reduce-the-cost-of-discovering-sensitive-data/)
-[How to query and visualize Macie sensitive data discovery results with Athena and Quicksight](https://aws.amazon.com/blogs/security/how-to-query-and-visualize-macie-sensitive-data-discovery-results-with-athena-and-quicksight/)
-[How to use Amazon Macie to preview sensitive data in S3 buckets](https://aws.amazon.com/blogs/security/how-to-use-amazon-macie-to-preview-sensitive-data-in-s3-buckets/)
-[Correlate IAM Access Analyzer findings with Amazon Macie](https://aws.amazon.com/blogs/security/correlate-iam-access-analyzer-findings-with-amazon-macie/)
-[Creating a notification workflow from sensitive data discovery with Amazon Macie, Amazon EventBridge, and Slack](https://aws.amazon.com/blogs/security/creating-a-notification-workflow-from-sensitive-data-discover-with-amazon-macie-amazon-eventbridge-aws-lambda-and-slack/)
-[Deploy an automated chatops solutions for remediating Amazon Macie findings](https://aws.amazon.com/blogs/security/deploy-an-automated-chatops-solution-for-remediating-amazon-macie-findings/)
+* [How to use Amazon Macie to reduce cost of discovering sensitive data](https://aws.amazon.com/blogs/security/how-to-use-amazon-macie-to-reduce-the-cost-of-discovering-sensitive-data/)
+* [How to query and visualize Macie sensitive data discovery results with Athena and Quicksight](https://aws.amazon.com/blogs/security/how-to-query-and-visualize-macie-sensitive-data-discovery-results-with-athena-and-quicksight/)
+* [How to use Amazon Macie to preview sensitive data in S3 buckets](https://aws.amazon.com/blogs/security/how-to-use-amazon-macie-to-preview-sensitive-data-in-s3-buckets/)
+* [Correlate IAM Access Analyzer findings with Amazon Macie](https://aws.amazon.com/blogs/security/correlate-iam-access-analyzer-findings-with-amazon-macie/)
+* [Creating a notification workflow from sensitive data discovery with Amazon Macie, Amazon EventBridge, and Slack](https://aws.amazon.com/blogs/security/creating-a-notification-workflow-from-sensitive-data-discover-with-amazon-macie-amazon-eventbridge-aws-lambda-and-slack/)
+* [Deploy an automated chatops solutions for remediating Amazon Macie findings](https://aws.amazon.com/blogs/security/deploy-an-automated-chatops-solution-for-remediating-amazon-macie-findings/)

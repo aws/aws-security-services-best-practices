@@ -261,27 +261,27 @@ Amazon Detective pricing is thoroughly covered in the [pricing page](https://aws
 
 ### Workshops
 
-[Activation Days](https://awsactivationdays.splashthat.com/)
-[Amazon GuardDuty workshop](https://catalog.workshops.aws/guardduty)
-[Amazon Detective workshop](https://catalog.workshops.aws/detective)
-[EKS security workshop](https://catalog.workshops.aws/containersecurity)
+* [Activation Days](https://awsactivationdays.splashthat.com/)
+* [Amazon GuardDuty workshop](https://catalog.workshops.aws/guardduty)
+* [Amazon Detective workshop](https://catalog.workshops.aws/detective)
+* [EKS security workshop](https://catalog.workshops.aws/containersecurity)
 
 ### Videos
 
-[AWS re:Inforce 2022 - Using Amazon Detective to improve security investigations(TDR302)](https://www.youtube.com/watch?v=vd_VHg6-xWc&t=1796s&pp=ygUTcmVpbmZvcmNlIGRldGVjdGl2ZQ%3D%3D)
-[AWS re:Inforce 2023 - Streamline security analysis with Amazon Detective (TDR210)](https://www.youtube.com/watch?v=TWJtvq8pgw8&t)
-[How to use Amazon Detective for security investigations](https://www.youtube.com/watch?v=AtUZgdtZCYo)
-[Detective finding groups include Amazon Inspector findings](https://www.youtube.com/watch?v=U5xu6Dy3Pb0&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=9&pp=iAQB)
-[Investigations for Amazon GuardDuty threat detections](https://www.youtube.com/watch?v=dFR4Dk4h1Go&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=15&pp=iAQB)
-[Using Amazon Detective to perform root cause analysis for security findings](https://www.youtube.com/watch?v=nuYHzN02f60&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=31&pp=iAQB)
-[Amazon Detective Visualizations demo](https://www.youtube.com/watch?v=TZZuQrC8ZtA&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=43&pp=iAQB)
-[Reduce time to investigate GuardDuty findings by grouping related findings](https://www.youtube.com/watch?v=rPnpPBIRRv8&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=63&pp=iAQB)
-[Security Scenario investigation walk through](https://www.youtube.com/watch?v=Rz8MvzPfTZA&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=85&pp=iAQB)
-[Deploying Amazon Detective with AWS Organizations](https://www.youtube.com/watch?v=aZRnzBErRsE&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=88&t=1s&pp=iAQB)
+* [AWS re:Inforce 2022 - Using Amazon Detective to improve security investigations(TDR302)](https://www.youtube.com/watch?v=vd_VHg6-xWc&t=1796s&pp=ygUTcmVpbmZvcmNlIGRldGVjdGl2ZQ%3D%3D)
+* [AWS re:Inforce 2023 - Streamline security analysis with Amazon Detective (TDR210)](https://www.youtube.com/watch?v=TWJtvq8pgw8&t)
+* [How to use Amazon Detective for security investigations](https://www.youtube.com/watch?v=AtUZgdtZCYo)
+* [Detective finding groups include Amazon Inspector findings](https://www.youtube.com/watch?v=U5xu6Dy3Pb0&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=9&pp=iAQB)
+[* Investigations for Amazon GuardDuty threat detections](https://www.youtube.com/watch?v=dFR4Dk4h1Go&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=15&pp=iAQB)
+* [Using Amazon Detective to perform root cause analysis for security findings](https://www.youtube.com/watch?v=nuYHzN02f60&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=31&pp=iAQB)
+* [Amazon Detective Visualizations demo](https://www.youtube.com/watch?v=TZZuQrC8ZtA&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=43&pp=iAQB)
+* [Reduce time to investigate GuardDuty findings by grouping related findings](https://www.youtube.com/watch?v=rPnpPBIRRv8&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=63&pp=iAQB)
+* [Security Scenario investigation walk through](https://www.youtube.com/watch?v=Rz8MvzPfTZA&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=85&pp=iAQB)
+* [Deploying Amazon Detective with AWS Organizations](https://www.youtube.com/watch?v=aZRnzBErRsE&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=88&t=1s&pp=iAQB)
 
 ### Blogs
 
-[How to improve security incident investigations using Amazon Detective finding groups](https://aws.amazon.com/blogs/security/how-to-improve-security-incident-investigations-using-amazon-detective-finding-groups/)
-[Improve your security investigations with Detective finding groups visualizations](https://aws.amazon.com/blogs/security/improve-your-security-investigations-with-detective-finding-groups-visualizations/)
-[How to detect security issues in Amazon EKS clusters using Amazon GuardDuty – Part 1](https://aws.amazon.com/blogs/security/how-to-detect-security-issues-in-amazon-eks-clusters-using-amazon-guardduty-part-1/)
-[How to detect security issues in Amazon EKS clusters using Amazon GuardDuty – Part 2](https://aws.amazon.com/blogs/security/how-to-investigate-and-take-action-on-security-issues-in-amazon-eks-clusters-with-amazon-detective-part-2/)
+* [How to improve security incident investigations using Amazon Detective finding groups](https://aws.amazon.com/blogs/security/how-to-improve-security-incident-investigations-using-amazon-detective-finding-groups/)
+* [Improve your security investigations with Detective finding groups visualizations](https://aws.amazon.com/blogs/security/improve-your-security-investigations-with-detective-finding-groups-visualizations/)
+* [How to detect security issues in Amazon EKS clusters using Amazon GuardDuty – Part 1](https://aws.amazon.com/blogs/security/how-to-detect-security-issues-in-amazon-eks-clusters-using-amazon-guardduty-part-1/)
+* [How to detect security issues in Amazon EKS clusters using Amazon GuardDuty – Part 2](https://aws.amazon.com/blogs/security/how-to-investigate-and-take-action-on-security-issues-in-amazon-eks-clusters-with-amazon-detective-part-2/)

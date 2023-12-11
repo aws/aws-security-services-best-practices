@@ -271,8 +271,8 @@ ORDER BY eventVolume DESC limit 10;
 
 4. Upon gaining an understanding of which events and event sources were responsible for a bulk of the activity, it may be suitable to alter the SQL query to view data by hour, user-agent, IP or principal. This will help to identify the exact source of the increased API calls
 
-*[2] Creating a trail - https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-a-trail-using-the-console-first-time.html*
-*[3] Querying AWS CloudTrail Logs - Using the CloudTrail Console to Create an Athena Table for CloudTrail Logs  - https://docs.aws.amazon.com/athena/latest/ug/cloudtrail-logs.html#create-cloudtrail-table-ct*
+*[2] Creating a trail - <https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-a-trail-using-the-console-first-time.html>*
+*[3] Querying AWS CloudTrail Logs - Using the CloudTrail Console to Create an Athena Table for CloudTrail Logs  - <https://docs.aws.amazon.com/athena/latest/ug/cloudtrail-logs.html#create-cloudtrail-table-ct>*
 
 ### VPC Flow Logs
 
@@ -299,7 +299,8 @@ ORDER BY  Flows DESC LIMIT 10;
 *[5] Querying Amazon VPC Flow Logs - <https://docs.aws.amazon.com/athena/latest/ug/vpc-flow-logs.html>*
 *[6] Analyzing Log Data with CloudWatch Logs Insights - <https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html>*
 *[7] Sample Queries - <https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_QuerySyntax-examples.html>*
-[Automating VPC flow logs with Athena] Querying flow logs using Amazon Athena - <https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-athena.html>*
+
+Querying flow logs using Amazon Athena - <https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-athena.html>*
 
 ### DNS Query logs
 
@@ -385,30 +386,30 @@ ORDER BY  numRequests DESC limit 10;
 
 ### Workshops
 
-[Activation Days](https://awsactivationdays.splashthat.com/)
-[Amazon GuardDuty workshop](https://catalog.workshops.aws/guardduty)
-[Amazon Detective workshop](https://catalog.workshops.aws/detective)
-[EKS security workshop](https://catalog.workshops.aws/containersecurity)
+* [Activation Days](https://awsactivationdays.splashthat.com/)
+* [Amazon GuardDuty workshop](https://catalog.workshops.aws/guardduty)
+* [Amazon Detective workshop](https://catalog.workshops.aws/detective)
+* [EKS security workshop](https://catalog.workshops.aws/containersecurity)
 
 ### Videos
 
-[Introducing GuardDuty ECS Runtime Monitoring](https://www.youtube.com/watch?v=nuMOaQctNgE&list=PLB3flZ7qA4xu__uOEfpc-coXm04swNWva&index=4&pp=iAQB)
-[Amazon GuardDuty EKS Protection Overview](https://www.youtube.com/watch?v=mxNyxJ_Mo8k&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=14&pp=iAQB)
-[Amazon GuardDuty S3 Protection Overview](https://www.youtube.com/watch?v=yNUdNH31BUw&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=15&pp=iAQB)
-[Amazon GuardDuty findings summary view](https://www.youtube.com/watch?v=4rR37ZBJWdI&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=30&pp=iAQB)
-[Enable GuardDuty Lambda Protection to monitor your Lambda execution environment](https://www.youtube.com/watch?v=dpc6jvtHB0g&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=38&pp=iAQB)
-[GuardDuty EKS Runtime Monitoring](https://www.youtube.com/watch?v=t3rVVilJWEk&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=40&pp=iAQB)
-[Amazon GuardDuty RDS Protection](https://www.youtube.com/watch?v=f_CFtrAG8Nw&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=41&pp=iAQB)
+* [Introducing GuardDuty ECS Runtime Monitoring](https://www.youtube.com/watch?v=nuMOaQctNgE&list=PLB3flZ7qA4xu__uOEfpc-coXm04swNWva&index=4&pp=iAQB)
+* [Amazon GuardDuty EKS Protection Overview](https://www.youtube.com/watch?v=mxNyxJ_Mo8k&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=14&pp=iAQB)
+* [Amazon GuardDuty S3 Protection Overview](https://www.youtube.com/watch?v=yNUdNH31BUw&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=15&pp=iAQB)
+* [Amazon GuardDuty findings summary view](https://www.youtube.com/watch?v=4rR37ZBJWdI&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=30&pp=iAQB)
+* [Enable GuardDuty Lambda Protection to monitor your Lambda execution environment](https://www.youtube.com/watch?v=dpc6jvtHB0g&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=38&pp=iAQB)
+* [GuardDuty EKS Runtime Monitoring](https://www.youtube.com/watch?v=t3rVVilJWEk&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=40&pp=iAQB)
+* [Amazon GuardDuty RDS Protection](https://www.youtube.com/watch?v=f_CFtrAG8Nw&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=41&pp=iAQB)
 
 ### Blogs
 
-[easure cluster performance impact of Amazon GuardDuty EKS Agent](https://aws.amazon.com/blogs/containers/measure-cluster-performance-impact-of-amazon-guardduty-eks-agent/)
-[How AWS threat intelligence deters threat actors](https://aws.amazon.com/blogs/security/how-aws-threat-intelligence-deters-threat-actors/)
-[Improve your security investigations with Detective finding groups visualizations](https://aws.amazon.com/blogs/security/improve-your-security-investigations-with-detective-finding-groups-visualizations/)
-[Three ways to accelerate incident response in the cloud: insights from re:Inforce 2023](https://aws.amazon.com/blogs/security/three-ways-to-accelerate-incident-response-in-the-cloud-insights-from-reinforce-2023/)
-[Detect threats to your data stored in RDS databases by using GuardDuty](https://aws.amazon.com/blogs/security/detect-threats-to-your-data-stored-in-rds-databases-by-using-guardduty/)
-[Reduce triage time for security investigations with Amazon Detective visualizations and export data](https://aws.amazon.com/blogs/security/reduce-triage-time-for-security-investigations-with-detective-visualizations-and-export-data/)
-[How to use Amazon GuardDuty and AWS WAF v2 to automatically block suspicious hosts](https://aws.amazon.com/blogs/security/how-to-use-amazon-guardduty-and-aws-waf-v2-to-automatically-block-suspicious-hosts/)
-[How to improve security incident investigations using Amazon Detective finding groups](https://aws.amazon.com/blogs/security/how-to-improve-security-incident-investigations-using-amazon-detective-finding-groups/)
-[Automatically block suspicious DNS activity with Amazon GuardDuty and Route 53 Resolver DNS Firewall](https://aws.amazon.com/blogs/security/automatically-block-suspicious-dns-activity-with-amazon-guardduty-and-route-53-resolver-dns-firewall/)
-[How to use new Amazon GuardDuty EKS Protection findings](https://aws.amazon.com/blogs/security/how-to-use-new-amazon-guardduty-eks-protection-findings/)
+* [Measure cluster performance impact of Amazon GuardDuty EKS Agent](https://aws.amazon.com/blogs/containers/measure-cluster-performance-impact-of-amazon-guardduty-eks-agent/)
+* [How AWS threat intelligence deters threat actors](https://aws.amazon.com/blogs/security/how-aws-threat-intelligence-deters-threat-actors/)
+* [Improve your security investigations with Detective finding groups visualizations](https://aws.amazon.com/blogs/security/improve-your-security-investigations-with-detective-finding-groups-visualizations/)
+* [Three ways to accelerate incident response in the cloud: insights from re:Inforce 2023](https://aws.amazon.com/blogs/security/three-ways-to-accelerate-incident-response-in-the-cloud-insights-from-reinforce-2023/)
+* [Detect threats to your data stored in RDS databases by using GuardDuty](https://aws.amazon.com/blogs/security/detect-threats-to-your-data-stored-in-rds-databases-by-using-guardduty/)
+* [Reduce triage time for security investigations with Amazon Detective visualizations and export data](https://aws.amazon.com/blogs/security/reduce-triage-time-for-security-investigations-with-detective-visualizations-and-export-data/)
+* [How to use Amazon GuardDuty and AWS WAF v2 to automatically block suspicious hosts](https://aws.amazon.com/blogs/security/how-to-use-amazon-guardduty-and-aws-waf-v2-to-automatically-block-suspicious-hosts/)
+* [How to improve security incident investigations using Amazon Detective finding groups](https://aws.amazon.com/blogs/security/how-to-improve-security-incident-investigations-using-amazon-detective-finding-groups/)
+* [Automatically block suspicious DNS activity with Amazon GuardDuty and Route 53 Resolver DNS Firewall](https://aws.amazon.com/blogs/security/automatically-block-suspicious-dns-activity-with-amazon-guardduty-and-route-53-resolver-dns-firewall/)
+* [How to use new Amazon GuardDuty EKS Protection findings](https://aws.amazon.com/blogs/security/how-to-use-new-amazon-guardduty-eks-protection-findings/)

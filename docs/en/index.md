@@ -4,7 +4,7 @@
 
 As AWS security professionals we are often asked by customers to validate their use of AWS security services and to give tips and tricks on how to use these services and how others use AWS security services. With this guide we have the goal of more broadly sharing this knowledge with the user community and at the same time give the ability for others outside of AWS to contribute.
 
-## What will and won't you find here
+## What you will and won't find here
 
 Simply, we will be covering best practices for configuring AWS security services. This is NOT overall AWS security best practices. This documentation is not simply a numbered list of best practices. Instead this documentation is meant to walk you through what you need to know before deploying an AWS security service to what you should be doing after enablement and through fully operationalizing the service. Often this is done through discussing different use cases and different factors associated with specific use cases that can help in making design decisions. Following this guide you should feel confident that you have the ability configure and use an AWS security service effectively.
 
