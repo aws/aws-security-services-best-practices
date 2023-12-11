@@ -14,7 +14,7 @@ Often in this documentation we will be referring back to the full service docume
 
 Upon initial release of this documentation we will be covering Amazon Detective, Amazon GuardDuty, Amazon Inspector, Amazon Macie, and AWS Security Hub. We will be expanding to all AWS security services over time with AWS WAF, AWS Network Firewall, and Amazon Security Lake on the short term roadmap.
 
-## Related guides¶
+## Related guides
 
 * [EKS Best Practices Guides](https://aws.github.io/aws-eks-best-practices/)
 * [EMR Containers Best Practices Guides](https://aws.github.io/aws-emr-containers-best-practices/)
