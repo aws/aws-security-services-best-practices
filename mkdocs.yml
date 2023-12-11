@@ -28,10 +28,10 @@ theme:
 nav:
   - Home: index.md
   - Amazon Detective Best Practices: guides/detective/index.md
-  - Amazon GuardDuty Best Practices: guardduty/index.md
-  - Amazon Inspector Best Practices: inspector-best-practices/index.md
-  - Amazon Macie Best Practices: macie/index.md
-  - AWS Security Hub Best Practices: security-hub/index.md
+  - Amazon GuardDuty Best Practices: guides/guardduty/index.md
+  - Amazon Inspector Best Practices: guides/inspector/index.md
+  - Amazon Macie Best Practices: guides/macie/index.md
+  - AWS Security Hub Best Practices: guides/security-hub/index.md
   - Contributors: contributors.md
 plugins:
     - search
