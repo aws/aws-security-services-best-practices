@@ -15,8 +15,8 @@ on:
       - master
 
     # at least one changed file must match this path
-    paths:
-      - '**/*.md'
+    #paths:
+      #- '**/*.md'
 
 jobs:
   deploy:
