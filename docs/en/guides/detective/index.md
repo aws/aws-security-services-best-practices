@@ -149,7 +149,7 @@ There are four primary ways to start an investigation using Detective. We'll cov
 
 #### Start your investigation from GuardDuty
 
-Most customers start investigations after a threat has been detected through Amazon GuardDuty, using the **Investigate with Detection** option on the Finding. If you don't have any GuardDuty findings present, you can still use Detective to investigate activity or threat hunt, as we’ll explain in method #3 below. When you open a GuardDuty finding, a detail pane will appear on the right. Click the **Investigate with Detective** option.
+Most customers start investigations after a threat has been detected through Amazon GuardDuty, using the **Investigate with Detective** option on the Finding. If you don't have any GuardDuty findings present, you can still use Detective to investigate activity or threat hunt, as we’ll explain in method #3 below. When you open a GuardDuty finding, a detail pane will appear on the right. Click the **Investigate with Detective** option.
 
 ![GuardDuty finding](../../images/DT-GD-Finding.png)
 
