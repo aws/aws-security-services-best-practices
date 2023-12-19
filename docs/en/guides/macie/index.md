@@ -38,13 +38,13 @@ Macie also automates discovery and reporting of sensitive data to provide you wi
 
 ## What are the benefits of enabling Macie?
 
-Macie as an AWS managed service that automatically provides statistics such as what buckets are publicly accessible, shared outside of your AWS Organization, or amount of buckets that contain sensitive data. These statistics offer insights into the security posture of your Amazon S3 data and where sensitive data might reside in your data estate.  The statistics and data can guide your decisions to perform deeper investigations of specific S3 buckets and objects. Since Macie is a managed service you can spend your time reviewing and analyzing findings, statistics, and other data by using the Amazon Macie console or the Amazon Macie API instead of setting up and managing the infrastructure needed to provide these insights. You can also leverage Macie integration with Amazon EventBridge and AWS Security Hub to monitor, process, and remediate findings by using other services, applications, and systems.
+Macie is an AWS managed service that automatically provides statistics such as what buckets are publicly accessible, shared outside of your AWS Organization, or amount of buckets that contain sensitive data. These statistics offer insights into the security posture of your Amazon S3 data and where sensitive data might reside in your data estate.  The statistics and data can guide your decisions to perform deeper investigations of specific S3 buckets and objects. Since Macie is a managed service you can spend your time reviewing and analyzing findings, statistics, and other data by using the Amazon Macie console or the Amazon Macie API instead of setting up and managing the infrastructure needed to provide these insights. You can also leverage Macie integration with Amazon EventBridge and AWS Security Hub to monitor, process, and remediate findings by using other services, applications, and systems.
 
 Macie makes it easy to do this across your AWS Organization through automation and AWS Organizations integration Macie provides sensitive data discovery and bucket posture assessments across all of your S3 buckets and objects across all accounts within your organization. Giving you centralized visibility across your entire S3 data estate.
 
 Some of the most common use cases for Macie are listed below:
 
-* Macie intelligent sampling functionality and native integration with AWS services such as AWS Security Hub and Amazon EventBridge make discovering and actioning sensitive data more cost effective and time efficient.
+* Macie automated data discovery and native integration with AWS services such as AWS Security Hub and Amazon EventBridge make discovering and actioning sensitive data more cost effective and time efficient.
 * Company A is being acquired by Company B. As part of the merger, Company A needs to understand the presence of Sensitive data in Company B’s data to ensure they are adhering to compliance mandates.
 * Company A is a data centric company and keeps tons of data for business needs. Company A also wants to ensure that the sensitive data is carefully protected by having an understanding of their sensitive data assets and the access patterns of this data.
 * Your company has had a security issue and you need to understand the type of data that was accessed.
@@ -113,7 +113,7 @@ By default Macie automatically publishes policy and sensitive data findings to A
 
 ### Automated Sensitive Data Discovery vs Sensitive Data Discovery Jobs
 
-Many customers often have vast amounts of data stored in S3 making the ability to search this data very compute intensive and cost inefficient across their entire data estate. To make this more cost effective and efficient Macie performs automated sensitive data discovery for broad visibility into where sensitive data might reside in your S3 data estate. With automated sensitive data discovery, Macie continually evaluates your S3 bucket inventory and uses sampling techniques to identify and select representative S3 objects in your buckets. Macie then retrieves and analyzes the selected objects, inspecting them for sensitive data. It is recommended to use the automated discovery feature of Macie as this will give you the most cost effective sensitive data scanning coverage in your AWS Organization.
+If you have large portions of S3 buckets which are used across your organization (customer service, backend software, 3rd party, host static web contents etc.) then its highly encouraged to enable ADD. ADD intelligently samples and crawl your S3 real estate. It samples very light levels of S3 buckets daily by looking for similar objects and probing a portion of those similar objects. This way even if you have large sets of data in TBs/PBs, you can get a high confidence sensitivity level of your data through ADD.
 
 ![Macie Summary page](../../images/MC-Summary.png)
 *Figure 7: Macie summary page*
