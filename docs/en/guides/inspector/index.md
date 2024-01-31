@@ -23,6 +23,7 @@ This guide is geared towards security practitioners who are responsible for moni
     * [ECR scanning](#ecr-scanning)
     * [Lambda scanning](#lambda-scanning)
     * [CI/CD](#cicd-scanning)
+    * [CIS Scans](#cis-scans)
 * [Operationalizing](#operationalizing)
     * [Actioning Inspector findings](#actioning-inspector-findings)
     * [Software bill of materials (SBOM) configuration](#software-bill-of-materials-sbom-configuration)
@@ -150,9 +151,7 @@ Amazon Inspector automatically discovers all supported Windows instances and inc
 
 ### ECR Scanning
 
-For ECR scanning, images are scanned on push and then you have the option to specify when you would like to stop scanning images. You might choose to stop scanning instances after a defined period of time because they are no longer used for applications in your environment based on other compensating controls you might have in place.
-
-By default, ECR scanning is set to continue to scan for the lifetime of an image existing in ECR and is scanned whenever a new CVE is added to the Inspector database and is relevant to that container image. It is recommended to use the default to verify that you are always looking for new vulnerabilities associated with images in your environment although you do have the option to change this behavior to stop scanning instances after 30 days or 180 days. For detailed instructions on how to set this duration please refer to the [ECR automated re-scan duration documentation](https://docs.aws.amazon.com/inspector/latest/user/scanning-ecr.html#scan-duration-ecr).
+When you first activate ECR scanning, and your repository is configured for continuous scanning, Amazon Inspector detects all eligible images that you have pushed within 30 days, or pulled within the last 90 days. Amazon Inspector continues to monitor images as long as they were pushed or pulled within the last 90 days (by default), or within the ECR rescan duration you configure. You might choose to stop scanning instances after a defined period of time because they are no longer used for applications in your environment or based on other compensating controls you might have in place. You can configure Inspector to re-scan based on either image push date or image pull date. For example, if you select 60 days for push date, and 180 days for pull date configurations, Amazon Inspector will continue to monitor images if they were pushed in the last 60 days or if they have been pulled at least once in the last 180 days. We recommend understanding the application deployment patterns at your organization when deciding the re-scan duration settings. For example if you build images often you might want shorter scan durations. Also, if you utilize [ECR lifecycle policies](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html) this might affect how long images exist in ECR. For detailed instructions on how to set this duration please refer to the [ECR automated re-scan duration documentation](https://docs.aws.amazon.com/inspector/latest/user/scanning-ecr.html#scan-duration-ecr).
 
 ![Inspector ECR scan settings](../../images/I-ECR-Settings.png)
 *Figure 10: Inspector ECR scan settings*
@@ -169,6 +168,19 @@ Lambda scanning has two different functionalities. The first is the ability to s
 You can integrate Amazon Inspector directly in CI/CD tools such as Jenkins. For [Jenkins](https://docs.aws.amazon.com/inspector/latest/user/cicd-jenkins.html) and [TeamCity](https://docs.aws.amazon.com/inspector/latest/user/cicd-teamcity.html) tools Inspector has dedicated plugins that can be installed so you can add vulnerability scanning directly into these pipelines. These plugins can be used as a pass or fail mechanism based on finding severities.
 
 If Amazon Inspector does not provide plugins for your CI/CD solution, you can create your own [custom CI/CD integration](https://docs.aws.amazon.com/inspector/latest/user/scanning-cicd.html) using a combination of the Amazon Inspector SBOM Generator and the Amazon Inspector Scan API.
+
+### CIS Scans
+
+In addition to traditional vulnerability scans many customers also want to run scans to assess adherence to CIS Benchmarks. If you're not familiar, CIS Benchmarks from the Center for Internet Security (CIS) are a set of globally recognized and consensus-driven best practices to help security practitioners implement and manage their cybersecurity defenses. Developed with a global community of security experts, the guidelines help organizations proactively safeguard against emerging risks. Companies implement the CIS Benchmark guidelines to limit configuration-based security vulnerabilities in their digital assets. Just like you can check your AWS environment against CIS Benchmarks using AWS Security Hub Inspector gives you to run CIS Benchmarks against your operating systems in AWS.
+
+Start by familiarizing yourself with the necessary [requirements for running CIS scans](https://docs.aws.amazon.com/inspector/latest/user/scanning-cis.html#cis-requirements) such as the need for deep scanning to be enabled and an SSM agent to be present on an instance.
+
+Next, we recommend you think about your desired outcome for CIS scans before configuration. For example, you should answer questions before configuration such as what we have listed below, which is not an exhaustive list. This will help you get the most out of your CIS scans without creating extra findings that don't help with your overall security goals.
+
+* How often do we build images? Do we need to run frequent scans or run one time scans based on frequent image build?
+* What images / environments need to run level 1 vs level 2 scans?
+* Will you push out CIS scans across your AWS Organization from the delegated administrator account or will individual account owners be responsible for creating them at the account level.
+* Do you have a tag in place that you can use to target instances when configuring your scan configuration settings?
 
 ## Operationalizing
 
