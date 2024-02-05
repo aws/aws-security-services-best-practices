@@ -10,10 +10,6 @@ Simply, we will be covering best practices for configuring AWS security services
 
 Often in this documentation we will be referring back to the full service documentation. Many times in this documentation we will briefly mention some information that provides context into a potential service best practice without explaining a particular feature in complete depth. It is our goal not to replicate the AWS service documentation but instead provide as much detail as possible into different components of a service or feature so that you can effectively use a service. Keep in mind you might need to dive deep into certain pieces of documentation to understand a feature or functionality in it’s entirety.
 
-## Current and future coverage
-
-Upon initial release of this documentation we will be covering Amazon Detective, Amazon GuardDuty, Amazon Inspector, Amazon Macie, and AWS Security Hub. We will be expanding to all AWS security services over time with AWS WAF, AWS Network Firewall, and Amazon Security Lake on the short term roadmap.
-
 ## Related guides
 
 * [EKS Best Practices Guides](https://aws.github.io/aws-eks-best-practices/)
