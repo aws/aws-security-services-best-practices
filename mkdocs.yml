@@ -33,6 +33,7 @@ nav:
   - Amazon Inspector Best Practices: guides/inspector/index.md
   - Amazon Macie Best Practices: guides/macie/index.md
   - AWS Security Hub Best Practices: guides/security-hub/index.md
+  - AWS WAF Best Practices: guides/waf/index.md
   - Contributors: contributors.md
 plugins:
     - search
