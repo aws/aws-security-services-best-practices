@@ -34,6 +34,10 @@ nav:
   - Amazon Macie Best Practices: guides/macie/index.md
   - AWS Security Hub Best Practices: guides/security-hub/index.md
   - AWS WAF Best Practices: guides/waf/index.md
+    - WAF Prerequisites: guides/waf/prerequisites/docs/index.md
+    - Configuring WAF Rules: guides/waf/configuring-waf-rules/index.md
+    - Monitoring WAF Rules: guides/waf/monitoring-waf-rules/index.md
+    - Using WAF with other AWS Services: guides/waf/using-waf-with-other-services/index.md
   - Contributors: contributors.md
 plugins:
     - search
