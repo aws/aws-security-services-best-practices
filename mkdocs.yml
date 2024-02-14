@@ -39,6 +39,7 @@ nav:
       - Configuring WAF Rules: guides/waf/configuring-waf-rules/docs/index.md
       - Monitoring WAF Rules: guides/waf/monitoring-waf-rules/docs/index.md
       - Using WAF with other AWS Services: guides/waf/using-waf-with-other-services/docs/index.md
+  - AWS Network Firewall Best Practices: guides/network-firewall/index.md
   - Contributors: contributors.md
 plugins:
     - search
