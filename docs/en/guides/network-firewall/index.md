@@ -284,6 +284,9 @@ reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egre
 
 ### Workshops
 
+* [AWS Network Firewall Workshop](https://catalog.workshops.aws/networkfirewall/en-US)
+* [Egress Controls Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/503778b9-6dbb-4e0d-9920-e8dbae141f43/en-US)
+
 ### Videos
 
 * [Introduction, Best Practices and Custom Suricata Rules](https://www.youtube.com/watch?v=67pVOv3lPlk)
