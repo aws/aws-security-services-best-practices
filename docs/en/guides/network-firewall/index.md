@@ -20,6 +20,7 @@ This guide is geared towards security practitioners who are responsible for moni
   * [Ensure the $HOME_NET variable is set correctly](#ensure-the-home_net-variable-is-set-correctly)
   * [Use Alert rule before Pass rule to log allowed traffic](#use-alert-rule-before-pass-rule-to-log-allowed-traffic)
   * [Use “flow:to_server” keyword in stateful rules](#use-flowto_server-keyword-in-stateful-rules)
+  * [How to make sure your new Stateful firewall rules apply to existing flows](#how-to-make-sure-your-new-stateful-firewall-rules-apply-to-existing-flows)
   * [Set up logging and monitoring](#set-up-logging-and-monitoring)
 * [Cost Considerations](#cost-considerations)
 * [Resources](#resources)
@@ -234,6 +235,19 @@ Using “flow:to_server” in the rules will make the rules operate at the same 
 *Figure 8: Network Firewall flow:to_server established*
 
 See [Troubleshooting rules in Network Firewall](https://docs.aws.amazon.com/network-firewall/latest/developerguide/troubleshooting-rules.html) for more information on troubleshooting firewall rules
+
+### How to make sure your new Stateful firewall rules apply to existing flows
+
+Network Firewall leverages the Suricata deep packet inspection engine for all Stateful firewall rules. After a flow has been allowed by a Suricata rule, Suricata places that flow in the state table so that it knows it no longer needs to spend resources running deep packet inspection on that flow. For as long as that flow remains active, any new Stateful firewall rules will not apply to that traffic since a decision was already made on that flow. Sometimes you may want your newly added Stateful firewall rules to apply to all traffic, including already active traffic that has been previously allowed through the firewall. For example, perhaps you began setting up the network firewall and started with an, "allow all traffic" type of rule, but then as you get further along in the deployment  and testing of network firewall you may want to narrow down your ruleset, and ensure that even already allowed traffic must be processed by your new rules.
+
+* How to clear the Network Firewall stateful rules state table
+  * Create a placeholder "Action Order" firewall policy (we'll call this firewall policy "Temp-Action-Order") with a default stateless action of pass (which allows all traffic)
+  * Associate the new placeholder "Temp-Action-Order" to the firewall
+    * This will disassociate existing firewall policy (let's call this policy "Existing-Strict-Policy")
+  * Wait for the firewall status to show "In sync"
+  * Re-Associate the existing firewall policy "Existing-Strict-Policy"
+
+Now any and all traffic, even if it is traffic that was previously allowed, will be re-evaluated against the latest stateful firewall rules.
 
 ### Set up logging and monitoring
 
