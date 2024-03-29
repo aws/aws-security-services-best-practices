@@ -262,7 +262,7 @@ Network Firewall supports two log types, Alert logs and Flow logs
   * 5=tuple information that flows across the firewall
   * Include the volume of traffic
     * Helps identify the top producers and consumers of data
-* It is very helpful to have a CloudWatch Dashboard created with CloudWatch Contributor insights that pulls from both types of logs. For example, you may want to see top domains allowed (alert logs) alongside top IPs sending data (Flow logs) so that you can hover over any data point in the dashboard and see what the corresponding information is across both data sources:
+* It is very helpful to have a CloudWatch Dashboard created with CloudWatch Contributor insights that pulls from both types of logs, AWS support (Todd Pula) provides a [sample dashboard](https://github.com/aws-samples/aws-networkfirewall-cfn-templates/tree/main/cloudwatch_dashboard) with a cloudformation template. For example, you may want to see top domains allowed (alert logs) alongside top IPs sending data (Flow logs) so that you can hover over any data point in the dashboard and see what the corresponding information is across both data sources:
 
 * Alert logs
   * Top protocols used
