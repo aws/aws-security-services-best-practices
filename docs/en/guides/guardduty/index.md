@@ -34,13 +34,14 @@ GuardDuty is an intelligent threat detection service that continuously monitors 
 
 GuardDuty monitors [Foundational data sources](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html) such as AWS CloudTrail event logs, AWS CloudTrail management events, Amazon VPC Flow Logs, and DNS logs. Enablement of the Foundational data sources is not required. Amazon GuardDuty pulls independent streams of data directly from those services.
 
-In addition to log data sources, GuardDuty can use additional data from other AWS services in your AWS environment to monitor and provide analysis for potential security threats. Those services include:
+In addition to the foundational data sources, GuardDuty can use additional data from other AWS services in your AWS environment to monitor and provide analysis for potential security threats. Those services include:
 
 * [Amazon EKS](https://docs.aws.amazon.com/guardduty/latest/ug/kubernetes-protection.html) – GuardDuty monitors EKS Audit Logs and operating system-level events via the GuardDuty security agent.
 * [AWS Lambda](https://docs.aws.amazon.com/guardduty/latest/ug/lambda-protection.html) – GuardDuty monitors network activity logs, including VPC Flow Logs for suspicious network traffic.
 * [Amazon EC2 and Containers](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection.html) – GuardDuty monitors its findings for indicators of malware presence on attached Amazon Elastic Block Store (Amazon EBS) volumes, e.g. bitcoin mining activity.
 * [Amazon Aurora](https://docs.aws.amazon.com/guardduty/latest/ug/rds-protection.html) – GuardDuty monitors and profiles relational database service login activity for potential threats.
 * [Amazon S3](https://docs.aws.amazon.com/guardduty/latest/ug/s3-protection.html) – GuardDuty monitors AWS CloudTrail S3 data events to identify potential threats in your Amazon S3 resources. AWS CloudTrail S3 management events are monitored by default after GuardDuty is enabled.
+* [Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring.html) - Runtime Monitoring observes and analyzes operating system-level, networking, and file events to help you detect potential threats in specific AWS workloads in your environment.
 
 ## What are the benefits of enabling GuardDuty?
 
@@ -126,9 +127,11 @@ Tip: Selecting Configure account manually allows the delegated administrator to 
 
 #### GuardDuty runtime monitoring
 
-For GuardDuty runtime monitoring protections including GuardDuty runtime monitoring for EKS, EC2, and ECS you have the ability to further scope what resources you want coverage for and how you would like to deploy the runtime agent. We recommend allowing GuardDuty to deploy runtime monitoring which will deploy a VPC endpoint and agent for ECS and EKS using a sidecar or EKS managed add-on, respectively. This will ensure coverage across your current resources but also apply to new resources that are created in the future. Using the GuardDuty automation saves manual effort needed to address new resource coverage across your organization. However if you can choose to you can manage this configuration yourself. GuardDuty EC2 monitoring is currently in preview and only has the option to use [systems manager or the RPM package manager to install the runtime agent](https://docs.aws.amazon.com/guardduty/latest/ug/managing-gdu-agent-ec2-manually.html).
+For GuardDuty runtime monitoring protections including GuardDuty runtime monitoring for EKS, EC2, and ECS you have the ability to further scope what resources you want coverage for and how you would like to deploy the runtime agent. We recommend allowing GuardDuty to deploy runtime monitoring which will deploy a VPC endpoint and agent for EC2, ECS, and EKS using a an agent, sidecar, or EKS managed add-on, respectively. This will ensure coverage across your current resources but also apply to new resources that are created in the future. This agent if built on [EBPF technology](https://ebpf.io/what-is-ebpf/). Using the GuardDuty automation saves manual effort needed to address new resource coverage across your organization. However if you can choose to you can manage this configuration yourself.
 
 If choose to allow GuardDuty to deploy the needed resources to cover both current and future VPC endpoints and agents needed to provide runtime monitoring in your environment you can further scope which resources the runtime monitoring applies to by using inclusion or exclusion tags. For example, if you have a handful of EKS clusters that you don't want to monitor, than it would be more efficient to use an exclusion tag rather than the opposite scenario where you only want to apply monitoring to a few resources where you would want to use inclusion tags. The GuardDuty documentation provides [use case examples and specific tags](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-configuration.html) needed to implement this functionality.
+
+When configuring GuardDuty runtime monitoring it is important to understand the [prequisites](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-prerequisites.html) for runtime monitoring. This will give you information on supported OS's, Kernel version, CPU and Memory limits for the GuardDuty agent and more. After deployment ensure you [assess your coverage](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-assessing-coverage.html) of the runtime monitoring deployment to address any issues.
 
 ## Operationalize GuardDuty findings
 
@@ -380,7 +383,7 @@ ORDER BY  numRequests DESC limit 10;
 * If a new member account is added or if a GuardDuty service is resumed after being disabled for an extended time those costs may also be perceived as surges.
 * S3 protection can be disabled but GuardDuty does not allow you to remove any additional data sources. However, if DNS is disabled at the VPC level, those logs are not processed by GuardDuty. Accounts will not be charged or have DNS-based results.
 * GuardDuty is optimized for security value and will not charge customers for processing some low-risk events that would otherwise be delivered to a customer's CloudTrail. Therefore, the event counts may not exactly match.
-* If EKS Runtime Monitoring is enabled for your account, you will not be charged for analysis of VPC Flow Logs from instances where the GuardDuty agent is deployed and active.
+* If Runtime Monitoring is enabled for your account, you will not be charged for analysis of VPC Flow Logs from instances where the GuardDuty agent is deployed and active.
 
 ## Resources
 
