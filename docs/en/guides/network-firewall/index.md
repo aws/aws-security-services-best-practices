@@ -131,24 +131,25 @@ The pros of using customer Suricata rules:
 Below we have also included a custom template for an egress security use case to show examples of custom suricata rules.
 
 ```
-# This is a "Stict rule ordering" egress security template meant for only the egress use case. These rules would need to be adjusted to accomodate any other use cases. Use this ruleset with "Strict" rule ordering firewall policy.
+# This is a "Strict rule ordering" egress security template meant only for the egress use case. These rules would need to be adjusted to accommodate any other use cases. Use this ruleset with "Strict" rule ordering firewall policy and no default block action, as this template includes default block rules. This template will work with the "Drop Established firewall policy setting" but it does not require it. If you use "Drop Established" with this template it will generate duplicate log entries for some blocked traffic.
+# This template will not work well with the "Drop All" firewall policy setting.
 
-# Silently allow low risk protocols out to anywhere
+# Silently (do not log) allow low risk protocols out to anywhere
 pass ntp $HOME_NET any -> $EXTERNAL_NET 123 (flow:to_server; msg:"pass rules do not alert/log"; sid:9829158;)
-pass icmp $HOME_NET any -> $EXTERNAL_NET any (msg:"pass rules do not alert/log"; sid:20231171;)
+pass icmp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"pass rules do not alert/log"; sid:20231171;)
 
 # Only allow short list of egress ports, and block all the rest
 drop ip $HOME_NET any -> $EXTERNAL_NET ![123,80,443] (msg:"Disallowed Egress Port"; sid:20231671;)
 
 # Block high risk TLDs
-reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".ru"; nocase; flow:to_server; sid:20233181;)
-reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".ru"; flow:to_server; sid:20235181;)
-reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".xyz"; nocase; flow:to_server; sid:20232181;)
-reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".xyz"; flow:to_server; sid:20235281;)
-reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".info"; nocase; flow:to_server; sid:10233181;)
-reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".info"; flow:to_server; sid:10235181;)
-reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".onion"; nocase; flow:to_server; sid:23233181;)
-reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".onion"; flow:to_server; sid:20335181;)
+reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".ru"; nocase; msg:"High risk TLD blocked"; flow:to_server; sid:20233181;)
+reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".ru"; msg:"High risk TLD blocked"; flow:to_server; sid:20235181;)
+reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".xyz"; nocase; msg:"High risk TLD blocked"; flow:to_server; sid:20232181;)
+reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".xyz"; msg:"High risk TLD blocked"; flow:to_server; sid:20235281;)
+reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".info"; nocase; msg:"High risk TLD blocked"; flow:to_server; sid:10233181;)
+reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".info"; msg:"High risk TLD blocked"; flow:to_server; sid:10235181;)
+reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".onion"; nocase; msg:"High risk TLD blocked"; flow:to_server; sid:23233181;)
+reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".onion"; msg:"High risk TLD blocked"; flow:to_server; sid:20335181;)
 
 # Silently (do not log) allow AWS public service endpoints that we have not setup VPC endpoints for yet
 # VPC endpoints are highly encouraged. They reduce NFW data processing costs and allow for additional security features like VPC endpoint policies.
@@ -156,27 +157,25 @@ pass tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"ec2messages."; st
 pass tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"ssm."; startswith; nocase; content:".amazonaws.com"; endswith; nocase; flow:to_server; sid:2023116132;)
 pass tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"ssmmessages."; startswith; nocase; content:".amazonaws.com"; endswith; nocase; flow:to_server; sid:2021110133;)
 
-# Allow-list of FQDNs to silently allow
+# Allow-list of strict FQDNs to silently allow
 pass tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"checkip.amazonaws.com"; startswith; nocase; endswith; flow:to_server; sid:202311893;)
 pass http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:"checkip.amazonaws.com"; startswith; endswith; flow:to_server; sid:20236893;)
 
-# Allow-List FQDNs, but still alert on them
+# Allow-List of strict FQDNs, but still alert on them
 alert tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"www.example.com"; startswith; nocase; endswith; flow:to_server; msg:"TLS SNI Allowed"; sid:202315893;)
 pass tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"www.example.com"; startswith; nocase; endswith; flow:to_server; msg:"pass rules do not alert/log"; sid:202315873;)
 
-
 # Silently allow TCP 3-way handshake to be setup by $HOME_NET clients
 pass tcp $HOME_NET any -> $EXTERNAL_NET any (flow:not_established, to_server; msg:"pass rules do not alert/log"; sid:9918156;)
-pass tcp $EXTERNAL_NET any -> $HOME_NET any (flow:not_established, to_client; msg:"pass rules do not alert/log"; sid:9918157;)
 
-# Block any egress traffic not already allowed.
-reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress TCP to_server reject (only logs once every 5 minutes)"; threshold: type limit, track by_src, seconds 600, count 1; sid:9822311;)
-drop udp $HOME_NET any -> $EXTERNAL_NET any (msg:"Default egress UDP drop (only logs once every 5 minutes)"; threshold: type limit, track by_src, seconds 600, count 1; sid:82319824;)
-drop icmp $HOME_NET any -> $EXTERNAL_NET any (msg:"Default egress ICMP drop (only logs once every 5 minutes)"; threshold: type limit, track by_src, seconds 600, count 1; sid:82319825;)
+# Block and log any egress traffic not already allowed above
+# reject TCP traffic for a more graceful block
+reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress TCP to_server reject"; sid:9822311;)
+drop udp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress UDP to_server drop"; sid:82319824;)
+drop icmp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress ICMP to_server drop"; sid:82319825;)
 
-# Blanket block everything else clean up rule
-# This rule will work fine with "Drop Established" or "Drop All" but those settings will fill the logs unnecessarily, so you may want to keep those options unchecked 
-drop ip any any -> any any (msg:"Default block all IP (only logs once every 5 minutes)"; threshold: type limit, track by_src, seconds 600, count 1; sid:98228398;)
+# Block, but do not log any ingress traffic
+drop ip $EXTERNAL_NET any -> $HOME_NET any (flow:to_server; noalert; sid:98228398;)
 ```
 
 ### Use as few Custom Rule Groups as possible
