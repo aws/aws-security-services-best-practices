@@ -42,6 +42,7 @@ In addition to the foundational data sources, GuardDuty can use additional data 
 * [Amazon Aurora](https://docs.aws.amazon.com/guardduty/latest/ug/rds-protection.html) – GuardDuty monitors and profiles relational database service login activity for potential threats.
 * [Amazon S3](https://docs.aws.amazon.com/guardduty/latest/ug/s3-protection.html) – GuardDuty monitors AWS CloudTrail S3 data events to identify potential threats in your Amazon S3 resources. AWS CloudTrail S3 management events are monitored by default after GuardDuty is enabled.
 * [Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring.html) - Runtime Monitoring observes and analyzes operating system-level, networking, and file events to help you detect potential threats in specific AWS workloads in your environment.
+* [S3 Malware Protection](https://docs.aws.amazon.com/guardduty/latest/ug/gdu-malware-protection-s3.html) - Malware Protection for S3 helps you detect potential presence of malware by scanning newly uploaded objects to your selected Amazon Simple Storage Service (Amazon S3) bucket. When an S3 object or a new version of an existing S3 object gets uploaded to your selected bucket, GuardDuty automatically starts a malware scan. It is important to note that S3 malware protection is not intended to be deployed across your entire S3 estate. S3 Malware protection is purpose built to provide a cost effective solution that will scan objects that are uploaded to untrusted buckets. For example, in a scenario where you have third parties sending you documents or files and you need to ensure there is no malware before processing them in an application.
 
 ## What are the benefits of enabling GuardDuty?
 
@@ -61,9 +62,16 @@ The first step to using GuardDuty is to enable it in your account. Once enabled,
 *Figure 1: GuardDuty landing page*
 3. Choose Enable GuardDuty.
 ![Enable GuardDuty](../../images/Enable-GD.png)
-*Figure2: GuardDuty enablement*
+*Figure 2: GuardDuty enablement*
 
 Once these steps are complete GuardDuty will begin collecting log data and monitoring the environment for malicious or suspicious activity.
+
+#### S3 Malware Protection single account deployment
+
+Although we recommend using GuardDuty across all of your AWS environment S3 Malware protection can be enabled independently from the rest of GuardDuty on a single account. Refer to the documentation on [Get started with Malware Protection for S3 only](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-get-started-independent.html) to learn more.
+
+![S3 Malware Protection Only](../../images/GD-S3-Malware-Only.png)
+*Figure 3: S3 Malware Protection only*
 
 ### Multi-account deployment
 
@@ -80,8 +88,9 @@ Is GuardDuty already enabled in your account?
 * If GuardDuty is enabled, you can designate a GuardDuty delegated administrator on the Settings page.
 
 3. Enter the twelve-digit AWS account ID of the account that you want to designate as the GuardDuty delegated administrator for the organization and choose Delegate.
+
 ![GuardDuty Auto Enable off](../../images/GD-Auto-Enable-Off.png)
-*Figure 3: GuardDuty auto-enable off*
+*Figure 4: GuardDuty auto-enable off*
 
 #### Configuring auto-enable preferences for organization
 
@@ -94,9 +103,9 @@ This support is available to configure GuardDuty and all the supported optional 
 * Enable for all accounts – Select to enable the corresponding option for all the member accounts in an organization automatically. This includes new accounts that join the organization and those accounts that may have been suspended or removed from the organization.
 * Auto-enable for new accounts – Select to enable GuardDuty for new member accounts automatically when they join your organization.
 * Do not enable – Select to prevent enabling the corresponding option for any account in your organization. In this case, the GuardDuty administrator will manage each account individually.
-![Manage Auto-enable preferences](../../images/GD-Auto-Enable-Preferences.png)
 
-*Figure 4: GuardDuty auto-enable preferences*
+![Manage Auto-enable preferences](../../images/GD-Auto-Enable-Preferences.png)
+*Figure 5: GuardDuty auto-enable preferences*
 
 4. Choose Save Changes
 
@@ -120,8 +129,9 @@ After enabling GuardDuty in your account(s), choosing additional protection type
 #### Enable protections
 
 Similar to the Auto-enable feature to turn on GuardDuty in organization member accounts, protection plans can be Auto-enabled as well. To set Auto-enable, click the desired protection plan. Within the protection plan you can opt to 1. Enable for all accounts or 2. Configure accounts manually. To avoid gaps in protection coverage within your AWS organization, it is highly recommended to enable your desired protection across all accounts (active and new).
+
 ![Edit S3 Protection configuration](../../images/GD-Edit-S3-Protections.png)
-*Figure 5: GuardDuty S3 Protection configuration*
+*Figure 6: GuardDuty S3 Protection configuration*
 
 Tip: Selecting Configure account manually allows the delegated administrator to manage protection enablement at the account level, per Region, with the option to Auto-enable for new member accounts to the organization
 
@@ -133,13 +143,27 @@ If choose to allow GuardDuty to deploy the needed resources to cover both curren
 
 When configuring GuardDuty runtime monitoring it is important to understand the [prequisites](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-prerequisites.html) for runtime monitoring. This will give you information on supported OS's, Kernel version, CPU and Memory limits for the GuardDuty agent and more. After deployment ensure you [assess your coverage](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-assessing-coverage.html) of the runtime monitoring deployment to address any issues.
 
+#### S3 Malware Protection
+
+You can enable S3 Malware protection through the console, CLI, API, or through infrastructure as code such as [CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-malwareprotectionplan.html) or [Terraform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/guardduty_malware_protection_plan). Keep in mind that you enable this specifically for a bucket at a time and not across a entire account or accounts. Refer to the [deployment documentation](https://docs.aws.amazon.com/guardduty/latest/ug/enable-malware-protection-s3-bucket.html) for the exact steps but we have placed images below for you to get an idea of what the deployment looks like.
+
+Before deployment you need to ensure that a role exists that gives GuardDuty access to scan S3 objects in the bucket, including the ability to allow KMS key action, and that the bucket is not explicitly denying access to this role. For more information on creating this role and support encryption mechanisms look at the [prerequisite documentation](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-iam-policy-prerequisite.html) and the [quota documentation](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-quotas-guardduty.html).
+
+When deploying you will need to determine if you want GuardDuty to tag objects based on if there was malware found (NO_THREATS_FOUND, THREATS_FOUND, UNSUPPORTED, ACCESS_DENIED, or FAILED). This tagging always you to create automated workflows depending on the tag. We give an example of this in the [S3 Malware automation workflow](#s3-malware-protection-automation-workflow) section.
+
+![S3 Malware Protection console](../../images/GD-S3-Malware-Console.png)
+*Figure 7: S3 Malware Protection console*
+
+![S3 Malware Protection configuration](../../images/GD-S3-Malware-Configuration.png)
+*Figure 8: S3 Malware Protection configuration*
+
 ## Operationalize GuardDuty findings
 
 After GuardDuty has been enabled in your account(s), GuardDuty will begin monitoring the [foundational data sources](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html) and analyzing features associated with optionally enabled resource protection types. A best practice recommendation after enabling GuardDuty is to leverage the 30-day trial (enabled per account) to understand the baseline of normal activity, derived by machine learning, for your accounts and resources. During the trial period GuardDuty will also use threat-based and rules-based intelligence to generate [findings](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings.html) in near-real time.
 
 Potential security issues are presented as findings in the GuardDuty console. All GuardDuty findings are assigned a [severity level](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings.html#guardduty_findings-severity) (low, medium, high) and corresponding value (1.0 – 8.9) based on potential risks. Higher value findings indicate a greater security risk. The severity level assigned to a finding is provided to help you determine a response to a potential security issue that is highlighted by a finding.
 ![GuardDuty Severity levels](../../images/GD-Severity-Levels.png)
-*Figure 6: GuardDuty severity levels*
+*Figure 9: GuardDuty severity levels*
 
 It is recommended to familiarize your team with the [GuardDuty Finding Types](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-active.html). This will give you insights into what findings you might see in your account, the details associated with these findings, and potential [remediation actions](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_remediate.html). After you understand different GuardDuty findings we encourage customers to think through filtering, notifications, and potential automatic remediation which will cover in the next sections. It is also encouraged to begin writing [incident response playbooks](https://github.com/aws-samples/aws-incident-response-playbooks) for responding to GuardDuty findings in your environment. This will likely combine multiple steps below and also details not covered that might be specific to your environment and your teams.
 
@@ -147,13 +171,13 @@ It is recommended to familiarize your team with the [GuardDuty Finding Types](ht
 
 If you are new to GuardDuty the easiest way to view/filter your findings is via the Summary tab. The Summary dashboard displays an aggregated view of the last 10,000 GuardDuty findings generated in the current AWS Region. You can choose to view the Last 2 days (default), Last 7 days or Last 30 days. This dashboard provides 6 widgets, 3 of which include filter capabilities to customize your view.
 ![GuardDuty Summary page](../../images/GD-Summary-page.png)
-*Figure 7: GuardDuty summary page*
+*Figure 10: GuardDuty summary page*
 
 As the delegated administrator becomes more familiar with their organizations’ GuardDuty findings, an advanced filtering technique may be employed using the Findings tab.  The Findings tab exposes [80+ finding attributes](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_filter-findings.html#filter_criteria) that can match the criteria you specify or filter out any unmatched findings. A common filter technique is one that focuses on threats that have a high indication that 1. A resource has been compromised, for example looking at high severity findings 2. The type of finding indicates potential risks for unwanted billing charges, for example CryptoMining.
 
 Surfacing Bitcoin mining is an example of one such finding filter that could be created. Bitcoin is a worldwide cryptocurrency and digital payment system that can be exchanged for other currencies, products, and services. Bitcoin is a reward for bitcoin-mining and is highly sought after by threat actors. To find out if any of your EC2 instances have been compromised for purposes of Bitcoin mining you can use this attribute and value pairing: Severity:High, Finding type:CryptoCurrency:EC2/BitcoinTool.B!DNS. Applying this filter will provide a view of any EC2 instances that are querying a domain name that is associated with Bitcoin or other cryptocurrency-related activity.
 ![GuardDuty Finding page](../../images/GD-Findings-Page.png)
-*Figure 8: GuardDuty finding page*
+*Figure 11: GuardDuty finding page*
 
 Note: Frequently used filters can be saved to reduce future efforts. To save the specified attributes and their values (filter criteria) as a filter, select Save. Enter the filter name and description, and then choose Done.
 
@@ -179,7 +203,7 @@ Another common scenario is to send GuardDuty findings to a ticketing system or S
 
 When leveraging email as a preferred notification channel, GuardDuty is integrated with Amazon Simple Notification Services (Amazon SNS) via EventBridge. Amazon Simple Notification Service (Amazon SNS) is a fully managed messaging service for both application-to-application (A2A) and application-to-person (A2P) communication. The notification workflow is as depicted in the image below.
 ![GuardDuty Notification workflow](../../images/GD-Notification-Workflow.png)
-*Figure 9: GuardDuty notification workflow*
+*Figure 12: GuardDuty notification workflow*
 
 All GuardDuty findings not matching a suppression rule are automatically delivered to the account event bus. There are only two configurations required to deploy email notification via Amazon SNS for unsuppressed findings:
 
@@ -188,16 +212,16 @@ All GuardDuty findings not matching a suppression rule are automatically deliver
 
 SNS is the target service for EventBridge actions in this workflow. SNS only requires two steps: 1. Create a new Topic (choose type as Standard) and provide a topic Name, 2. Create a Subscription with Email as the protocol. Entering an email address under Endpoint and clicking Create subscription finalizes the steps required in the console. The last step is to click Confirm subscription within the email sent to the email address used for the endpoint.
 ![GuardDuty SNS email](../../images/GD-SNS-Email.png)
-*Figure 10: GuardDuty SNS email*
-![SNS Subscription Confirmed](../../images/GD-Subscription-Confirmed.png)
+*Figure 13: GuardDuty SNS email*
 
-*Figure 11: SNS subscription confirmation*
+![SNS Subscription Confirmed](../../images/GD-Subscription-Confirmed.png)
+*Figure 14: SNS subscription confirmation*
 
 The basis of EventBridge is to create [rules](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rules.html) that route [events](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html) to a [target](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html). In this example below, a rule with an event pattern is constructed. This results in the rule being ran when an event matches the defined pattern. This rule will look for EC2 instances that exhibit SSH brute force attack behavior with the added detail of the resource being leveraged as the threat actor.
 
 With both the SNS topic/subscription in place, deploying this EventBridge rule will automatically send an email notification to the registered email address. It is recommended to use an email alias associated with a team when sending notifications of high severity findings.
 ![GuardDuty EventBridge rule](../../images/GD-EventBridge-Rule.png)
-*Figure 12: GuardDuty EventBridge rule*
+*Figure 15: GuardDuty EventBridge rule*
 
 Tip: For more detailed instructions on how to build an EventBridge rule for GuardDuty findings that target SNS for email notification with customization, refer to this [AWS Knowledge Center video](https://www.youtube.com/watch?v=HSon9kZ0mCw).
 
@@ -212,7 +236,7 @@ A common remediation approach decouples the GuardDuty detection from the automat
 
 ![GuardDuty Finding automation workflow](../../images/GD-Finding-Automation.png)
 
-*Figure 13: GuardDuty finding automation*
+*Figure 16: GuardDuty finding automation*
 
 *Backdoor:EC2/C&CActivity.B*
 EC2 instances querying an IP address that is associated with a known command and control server is another common use case for automated remediation. This finding informs you that the listed instance within your AWS environment is querying an IP associated with a known command and control (C&C) server. The listed instance might be compromised. This type of finding has multiple steps towards remediations, that may include actions like performing a snapshot of the volume(s) before terminating the instance. This snapshot can provide information to a forensics team. However, the first step in remediating this finding is too isolate the instance.
@@ -248,6 +272,105 @@ def lambda_handler(event, context):
     except Exception as e:
         print('Error:', str(e))
         raise e
+```
+
+### S3 Malware Protection automation workflow
+
+Giving GuardDuty the ability to add tags such as NO_THREATS_FOUND, THREATS_FOUND, UNSUPPORTED, ACCESS_DENIED, or FAILED based on the result of the malware scan gives you the ability to create automated workflows. For example, if you are allowing untrusted third parties to upload documents into S3 before you bring them into an application you can use GuardDuty S3 malware protection to scan these documents and then either move them into the application bucket or a quarantine bucket based on the tag given. As a primer we have included a picture below illustrating how GuardDuty S3 Malware Protection processes files and integrates with other AWS services.
+
+![S3 Malware Protection automation workflow](../../images/GD-S3-Automation-Workflow.png)
+*Figure 17: S3 Malware Protection automation workflow*
+
+To achieve the example we described in the first paragraph we can use [Amazon EventBridge](https://aws.amazon.com/eventbridge/) and AWS Lambda to build out our automated solution based on the S3 object scan result getting published to your default event bus which is [configured by default](https://docs.aws.amazon.com/guardduty/latest/ug/monitor-with-eventbridge-s3-malware-protection.html) when S3 Malware Protection is configured in your aWS account. Then you can configure a Lambda function to process the file based on the object tag that was given by GuardDuty.
+
+You can see an example EventBridge rule in the [GuardDuty documentation](https://docs.aws.amazon.com/guardduty/latest/ug/monitor-with-eventbridge-s3-malware-protection.html). From here you will need to configure a Lambda function to uses that EventBridge rule as a trigger and then moves the file based on your needs. Example Pyton code to do this is shown below. Keep in mind this is example code and should be altered to fit your use case.
+
+```Python
+#Script that evaluates messages about the scan status of S3 malware scanning and then moves the files to
+#the appropriate bucket based on the status.
+
+
+import boto3
+import json
+import os
+import logging
+from botocore.exceptions import ClientError
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+gdclient = boto3.client('guardduty')
+s3client = boto3.client('s3')
+
+infected_bucket = os.environ['INFECTED_BUCKET']
+clean_bucket = os.environ['CLEAN_BUCKET']
+
+def lambda_handler(event, context):
+    logger.info('Event Data')
+    logger.info(event)
+
+    scan_status = event["detail"]["scanStatus"]
+    bucket_name = event["detail"]["s3ObjectDetails"]["bucketName"]
+    object_key = event["detail"]["s3ObjectDetails"]["objectKey"]
+    scan_result = event["detail"]["scanResultDetails"]["scanResultStatus"]
+    
+    if scan_status == 'COMPLETED':
+        logger.info("Scan status is COMPLETED")
+
+        if scan_result == 'THREATS_FOUND':
+            logger.info("Threats found in the object")
+            logger.info("Moving file to infected bucket: %s",infected_bucket)
+            
+            copy_source = {'Bucket': bucket_name, 'Key': object_key}
+            
+            try:
+                response = s3client.copy_object(
+                    Bucket=infected_bucket,
+                    CopySource=copy_source,
+                    Key=object_key
+                )
+                
+                print(response)
+                
+                logger.info("File copy successful")
+                logger.info("Deleting object from source bucket")
+                response = s3client.delete_object(
+                    Bucket=bucket_name,
+                    Key=object_key)
+                    
+                print (response)
+                    
+            except ClientError:
+                raise
+
+        elif scan_result == 'NO_THREATS_FOUND':
+            logger.info("No threats found in the object")
+            logger.info("Moving file to clean bucket: %s",clean_bucket)
+            
+            copy_source = {'Bucket': bucket_name, 'Key': object_key}
+            
+            try:
+                response = s3client.copy_object(
+                    Bucket=clean_bucket,
+                    CopySource=copy_source,
+                    Key=object_key
+                )
+                
+                print(response)
+                
+                logger.info("File copy successful")
+                logger.info("Deleting object from source bucket")
+                response = s3client.delete_object(
+                    Bucket=bucket_name,
+                    Key=object_key)
+                    
+                print (response)
+                
+            except ClientError:
+                raise
+            
+
+        else:
+            logger.info("scan_result is: %s not moving", scan_result)
 ```
 
 ## Cost Optimization
@@ -403,6 +526,7 @@ ORDER BY  numRequests DESC limit 10;
 * [Enable GuardDuty Lambda Protection to monitor your Lambda execution environment](https://www.youtube.com/watch?v=dpc6jvtHB0g&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=38&pp=iAQB)
 * [GuardDuty EKS Runtime Monitoring](https://www.youtube.com/watch?v=t3rVVilJWEk&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=40&pp=iAQB)
 * [Amazon GuardDuty RDS Protection](https://www.youtube.com/watch?v=f_CFtrAG8Nw&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=41&pp=iAQB)
+* [S3 Malware Protection overview](https://youtu.be/uweeumMAif4)
 
 ### Blogs
 
