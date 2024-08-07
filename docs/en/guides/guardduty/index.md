@@ -105,6 +105,7 @@ This support is available to configure GuardDuty and all the supported optional 
 * Do not enable – Select to prevent enabling the corresponding option for any account in your organization. In this case, the GuardDuty administrator will manage each account individually.
 
 ![Manage Auto-enable preferences](../../images/GD-Auto-Enable-Preferences.png)
+
 *Figure 5: GuardDuty auto-enable preferences*
 
 4. Choose Save Changes
@@ -215,6 +216,7 @@ SNS is the target service for EventBridge actions in this workflow. SNS only req
 *Figure 13: GuardDuty SNS email*
 
 ![SNS Subscription Confirmed](../../images/GD-Subscription-Confirmed.png)
+
 *Figure 14: SNS subscription confirmation*
 
 The basis of EventBridge is to create [rules](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rules.html) that route [events](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html) to a [target](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html). In this example below, a rule with an event pattern is constructed. This results in the rule being ran when an event matches the defined pattern. This rule will look for EC2 instances that exhibit SSH brute force attack behavior with the added detail of the resource being leveraged as the threat actor.
