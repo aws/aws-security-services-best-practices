@@ -27,7 +27,7 @@ This guide is geared towards security practitioners who are responsible for moni
 
 ## What is AWS Network Firewall?
 
-AWS Network Firewall is a managed service that makes it easy to deploy essential network protections for all of your [Amazon Virtual Private Clouds (VPCs)](https://aws.amazon.com/vpc/). It can filter traffic at the perimeter of your VPC, including filtering traffic going to and coming from an internet gateway, NAT gateway, over VPN, or AWS Direct Connect.
+AWS Network Firewall is a managed service that makes it easy to deploy essential L3-L7 deep packet inspection protections for all of your [Amazon Virtual Private Clouds (VPCs)](https://aws.amazon.com/vpc/). It can filter traffic at the subnet level of your VPC, including filtering traffic going to and coming from an internet gateway, NAT gateway, over VPN, or AWS Direct Connect.
 
 ## What are the benefits of enabling AWS Network Firewall?
 
@@ -239,12 +239,11 @@ See [Troubleshooting rules in Network Firewall](https://docs.aws.amazon.com/netw
 
 Network Firewall leverages the Suricata deep packet inspection engine for all Stateful firewall rules. After a flow has been allowed by a Suricata rule, Suricata places that flow in the state table so that it knows it no longer needs to spend resources running deep packet inspection on that flow. For as long as that flow remains active, any new Stateful firewall rules will not apply to that traffic since a decision was already made on that flow. Sometimes you may want your newly added Stateful firewall rules to apply to all traffic, including already active traffic that has been previously allowed through the firewall. For example, perhaps you began setting up the network firewall and started with an, "allow all traffic" type of rule, but then as you get further along in the deployment  and testing of network firewall you may want to narrow down your ruleset, and ensure that even already allowed traffic must be processed by your new rules.
 
-* How to clear the Network Firewall stateful rules state table
-  * Create a placeholder "Action Order" firewall policy (we'll call this firewall policy "Temp-Action-Order") with a default stateless action of pass (which allows all traffic)
-  * Associate the new placeholder "Temp-Action-Order" to the firewall
-    * This will disassociate existing firewall policy (let's call this policy "Existing-Strict-Policy")
-  * Wait for the firewall status to show "In sync"
-  * Re-Associate the existing firewall policy "Existing-Strict-Policy"
+How to clear the Network Firewall stateful rules state table
+
+* Go into the "Details" page of your firewall policy
+* Edit the "Stream exception policy" to something other than what it is currently set to, and click Save
+* Then edit the "Stream exception policy" and set it back to what you had it set to before. In the majority of cases we recommend: "Stream exception policy: Reject"
 
 Now any and all traffic, even if it is traffic that was previously allowed, will be re-evaluated against the latest stateful firewall rules.
 
