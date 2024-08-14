@@ -170,7 +170,7 @@ pass tcp $HOME_NET any -> $EXTERNAL_NET any (flow:not_established, to_server; ms
 
 # Block and log any egress traffic not already allowed above
 # reject TCP traffic for a more graceful block
-reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress TCP to_server reject"; sid:9822311;)
+reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server,established; msg:"Default egress TCP established to_server reject"; sid:9822311;)
 drop udp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress UDP to_server drop"; sid:82319824;)
 drop icmp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress ICMP to_server drop"; sid:82319825;)
 
