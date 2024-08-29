@@ -23,6 +23,7 @@ This guide is geared towards security practitioners who are responsible for moni
   * [How to make sure your new Stateful firewall rules apply to existing flows](#how-to-make-sure-your-new-stateful-firewall-rules-apply-to-existing-flows)
   * [Set up logging and monitoring](#set-up-logging-and-monitoring)
 * [Cost Considerations](#cost-considerations)
+* [Troubleshooting stateless rules for asymmetric forwarding](#Troubleshooting-stateless-rules-for-asymmetric-forwarding)
 * [Resources](#resources)
 
 ## What is AWS Network Firewall?
@@ -92,8 +93,9 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 
 ### Use Stateful rules over Stateless rules
 
+* Stateless rules should be used very sparingly because they can easily cause asymmetric flow forwarding issues (where only one side of the flow is seen by the stateful inspection engine of the firewall) and they tend to make the overall firewall ruleset more complex to understand and troubleshoot. For the large majority of use cases we recommend the stateless engine’s default action be set to “Forward to stateful rule groups” and we recommend not having any stateless rules configured since they take precedence over stateful rules.
+* If you are going to use stateless rules, it’s important to understand how to use the Network Firewall’s Stateless Rule Group Analyzer to troubleshoot and resolve asymmetric flow issues. See the “Troubleshooting stateless rules for asymmetric forwarding”
 * Customers should leverage Stateful rules if they want to get the deep packet inspection IPS capabilities of the Network Firewall. Some customers accidentally start with stateless rules only to find out later that they really needed to use stateful rules instead.
-* Stateless rules should be used very sparingly
   * Stateless rules could be used in the case where you don't want some traffic to be logged or alerted on and simply denied, but for the most part your rule groups should look like this (below) in the AWS Console:
 
 ![ANF Stateless Rule Groups](../../images/ANF-stateless-rule-evaluation.png)
@@ -170,7 +172,7 @@ pass tcp $HOME_NET any -> $EXTERNAL_NET any (flow:not_established, to_server; ms
 
 # Block and log any egress traffic not already allowed above
 # reject TCP traffic for a more graceful block
-reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server,established; msg:"Default egress TCP established to_server reject"; sid:9822311;)
+reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress TCP to_server reject"; sid:9822311;)
 drop udp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress UDP to_server drop"; sid:82319824;)
 drop icmp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress ICMP to_server drop"; sid:82319825;)
 
@@ -295,6 +297,32 @@ Use Suricata thresholding to limit log entries and logging costs. For example, t
 ```
 reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress TCP to_server reject"; threshold: type limit, track by_src, seconds 600, count 1; sid:9822311;)
 ```
+
+## Troubleshooting stateless rules for asymmetric forwarding
+
+Certain stateless rule configurations can cause traffic to be inspected by the stateful engine in one direction only, most commonly when a stateless “Pass” or “Forward to stateful rules” is used without a counterpart rule matching the return direction.
+
+To identify stateless rules causing this asymmetric forwarding, use the service’s built-in rule analyzer, and then update your rule group to either remove the asymmetric rule or add a rule that matches the return traffic. You can use AWS Management Console to analyze your stateless rule group, or use the API or CLI by calling DescribeRuleGroup and setting the “AnalyzeRuleGroup” option.
+
+Here’s an example of how you can analyze your rule group using AWS Management Console. Go to your stateless rule group and click “Analyze”
+
+[ANF Rule group analyzer](../../images/ANF-troubleshooting-1.png)
+
+The rule group analyzer identified that stateless rule with priority 2 will lead to asymmetric routing through Network Firewall.
+
+[ANF Analysis results](../../images/ANF-troubleshotting-2.png)
+
+To fix this issue you can click on “Edit” and add another rule to allow return traffic i.e. from 0.0.0.0/0 to 10.2.0.0/24.
+
+[ANF Analysis results edit](../../images/ANF-troubleshotting-3.png)
+
+[ANF Fixed rule group](../../images/ANF-troubleshotting-4.png)
+
+After updating the rules, run the analyzer again to confirm the issue has been resolved.
+
+[ANF Anaylzer rerun](../../images/ANF-troubleshooting-5.png)
+
+Please reach out to AWS Support team if you have any questions.
 
 ## Resources
 
