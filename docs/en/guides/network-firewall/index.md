@@ -23,7 +23,7 @@ This guide is geared towards security practitioners who are responsible for moni
   * [How to make sure your new Stateful firewall rules apply to existing flows](#how-to-make-sure-your-new-stateful-firewall-rules-apply-to-existing-flows)
   * [Set up logging and monitoring](#set-up-logging-and-monitoring)
 * [Cost Considerations](#cost-considerations)
-* [Troubleshooting stateless rules for asymmetric forwarding](#Troubleshooting-stateless-rules-for-asymmetric-forwarding)
+* [Troubleshooting stateless rules for asymmetric forwarding](#troubleshooting-stateless-rules-for-asymmetric-forwarding)
 * [Resources](#resources)
 
 ## What is AWS Network Firewall?
