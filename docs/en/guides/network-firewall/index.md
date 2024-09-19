@@ -169,6 +169,7 @@ pass tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"www.example.com";
 
 # Silently allow TCP 3-way handshake to be setup by $HOME_NET clients
 pass tcp $HOME_NET any -> $EXTERNAL_NET any (flow:not_established, to_server; msg:"pass rules do not alert/log"; sid:9918156;)
+pass tcp $EXTERNAL_NET any -> $HOME_NET any (flow:not_established, to_client; msg:"pass rules do not alert/log"; sid:9918199;)
 
 # Block and log any egress traffic not already allowed above
 # reject TCP traffic for a more graceful block
@@ -291,12 +292,6 @@ Leverage PrivateLink endpoints provided by 3rd party services that do not need t
 Ensure route tables are sending traffic to the local Network Firewall endpoint and not to another AZ’s endpoint. This design will avoid incurring cross-AZ data transfer charges.
 
 Use DNS Firewall to keep traffic off of Network Firewall. Basic blocks can be configured at the DNS layer for traffic that would otherwise reach Network Firewall, effectively blocking traffic “closest to the packet source”.
-
-Use Suricata thresholding to limit log entries and logging costs. For example, the below rule will only log once every 5 minutes.
-
-```
-reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress TCP to_server reject"; threshold: type limit, track by_src, seconds 600, count 1; sid:9822311;)
-```
 
 ## Troubleshooting stateless rules for asymmetric forwarding
 
