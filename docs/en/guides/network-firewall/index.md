@@ -319,6 +319,41 @@ After updating the rules, run the analyzer again to confirm the issue has been r
 
 Please reach out to AWS Support team if you have any questions.
 
+## Options for Mitigating client side TLS SNI manipulation with AWS Network Firewall
+
+TLS SNI filtering is the industry standard mechanism for network appliances to perform domain filtering to control egress traffic. It’s a straightforward and simple way to monitor and control TLS traffic without the need for resolving domains to IP addresses, which can be unreliable and also opens up a potential vulnerability since CDNs are so commonly used for website hosting, and allowing access to a CDN’s IP allows access to all domains hosted on the CDN, if the client is able to craft forged requests. SNI filtering also has a similar limitation, in that if a client is able to craft forged requests, the request could claim to be going to a legitimate domain, but actually connect to an illegitimate IP address instead. In both of these client side SNI manipulation cases a prerequisite is that the system is already to some extent compromised.
+
+* So how do we address this?
+
+First and foremost, we concentrate on reducing the likelihood that the workload could be compromised to the extent that SNI manipulation could occur. Leveraging AWS Network Firewall’s Managed Rules, is a good place to start since they block well-known high risk threats. Many AWS customers start here, and then also move towards a least privilege security model where only a short list of legitimate domains is allowed, and all others are blocked by default. A domain allow-list reduces the risk surface substantially, again, further reducing the opportunity for a workload to be compromised and able to be used to send forged requests.
+
+* But what if I want to directly block client side SNI manipulation with AWS Network Firewall?
+
+That can be accomplished by enabling [AWS Network Firewall’s TLS decryption feature](https://docs.aws.amazon.com/network-firewall/latest/developerguide/tls-inspection-configurations.html). When TLS decrypt is enabled, client side SNI manipulation is blocked by default and this error message is displayed in the firewall’s TLS log:
+
+```
+{
+    "firewall_name": "NetworkFirewall",
+    "availability_zone": "us-east-1a",
+    "event_timestamp": 1727451885,
+    "event": {
+        "timestamp": "2024-09-27T15:44:45.321222Z",
+        "src_ip": "10.2.1.145",
+        "src_port": "39038",
+        "dest_ip": "44.193.128.70",
+        "dest_port": "443",
+        "sni": "spoofedsni.com",
+        "tls_error": {
+            "error_message": "SNI: spoofedsni.com Match Failed to server certificate names: checkip.us-east-1.prod.check-ip.aws.a2z.com/checkip.us-east-1.prod.check-ip.aws.a2z.com/checkip.amazonaws.com/checkip.check-ip.aws.a2z.com "
+        }
+    }
+}
+```
+
+* But what other options do I have to block client side SNI manipulation?
+
+It’s possible to add both SNI Domain checks and DNS Domain-to-IP checks so that SNI requests are only allowed out to IP addresses that are associated with the domain in DNS. [This is an example solution](https://aws.amazon.com/blogs/security/how-to-control-non-http-and-non-https-traffic-to-a-dns-domain-with-aws-network-firewall-and-aws-lambda/) that accomplishes this with Network Firewall. Both of these solutions above have downsides in added cost and/or complexity, so we recommend customers first start by moving towards a Domain Allow-List, and then determine if the workload’s security requirements dictate that more controls should be added.
+
 ## Resources
 
 ### Workshops
