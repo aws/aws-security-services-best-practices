@@ -22,6 +22,7 @@ This guide is geared towards security practitioners who are responsible for moni
   * [Use “flow:to_server” keyword in stateful rules](#use-flowto_server-keyword-in-stateful-rules)
   * [How to make sure your new Stateful firewall rules apply to existing flows](#how-to-make-sure-your-new-stateful-firewall-rules-apply-to-existing-flows)
   * [Set up logging and monitoring](#set-up-logging-and-monitoring)
+  * [Options for Mitigating client side TLS SNI manipulation with AWS Network Firewall](#options-for-mitigating-client-side-tls-sni-manipulation-with-aws-network-firewall)
 * [Cost Considerations](#cost-considerations)
 * [Troubleshooting stateless rules for asymmetric forwarding](#troubleshooting-stateless-rules-for-asymmetric-forwarding)
 * [Resources](#resources)
