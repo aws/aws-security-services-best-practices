@@ -355,6 +355,59 @@ That can be accomplished by enabling [AWS Network Firewall’s TLS decryption fe
 
 It’s possible to add both SNI Domain checks and DNS Domain-to-IP checks so that SNI requests are only allowed out to IP addresses that are associated with the domain in DNS. [This is an example solution](https://aws.amazon.com/blogs/security/how-to-control-non-http-and-non-https-traffic-to-a-dns-domain-with-aws-network-firewall-and-aws-lambda/) that accomplishes this with Network Firewall. Both of these solutions above have downsides in added cost and/or complexity, so we recommend customers first start by moving towards a Domain Allow-List, and then determine if the workload’s security requirements dictate that more controls should be added.
 
+Another capability Network Firewall has in combating TLS SNI spoofing is JA3 filtering. You can think of JA3 as similar to an HTTP User-Agent, but for TLS, and not easily configurable. You can learn more about JA3 [here](https://engineering.salesforce.com/tls-fingerprinting-with-ja3-and-ja3s-247362855967/). Let's look at a couple examples of how we can use tls.sni filtering AND ja3.hash filtering together.
+
+First let's assume my TLS domain allow-list looks like this:
+
+```
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssm.us-east-1.amazonaws.com"; nocase; flow:to_server; sid:11111;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssmmessages.us-east-1.amazonaws.com"; nocase; flow:to_server; sid:22222;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ec2.us-east-1.amazonaws.com"; nocase; flow:to_server; sid:33333;)
+reject tls $HOME_NET any -> any any (msg:"TLS not on domain allow-list blocked"; flow:to_server; sid:44444;)
+```
+
+If I wanted to lock it down further so that these specific domains can only be accessed by the JA3 hash of their client agents, I could convert my domain allow-list to look like this:
+
+```
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssm.us-east-1.amazonaws.com"; nocase; ja3.hash; content:"7a15285d4efc355608b304698cd7f9ab"; sid:11111;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssmmessages.us-east-1.amazonaws.com"; nocase; ja3.hash; content:"1be8360b66649edee1de25f81d98ec27"; sid:22222;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ec2.us-east-1.amazonaws.com"; nocase; ja3.hash; content:"fd75aaca18604d62f2bc8b02b345140f"; sid:33333;)
+reject tls $HOME_NET any -> any any (msg:"TLS not on domain/JA3 allow-list blocked"; flow:to_server; sid:44444;)
+```
+
+With the above ruleset in place, I can no longer curl to a domain on my domain allow-list, because each domain is locked down to only be accessible via the correct JA3. Now in order for SNI spoofing to be successful, not only would the client system need to be compromised to the extent that special commands could be crafted and launched from it, but now the attacker would have to have such deep control of the system that they could even manipulate the specific client agents/processes to make connections out to a domain on the allow-list.
+
+Another option is to not be so strict, but instead allow only the 3 JA3s to access any of the SNIs like this:
+
+```
+alert tls $HOME_NET any -> any any (ja3.hash; content:"7a15285d4efc355608b304698cd7f9ab"; flowbits:set,ja3_allowed; noalert; sid:11111;)
+alert tls $HOME_NET any -> any any (ja3.hash; content:"1be8360b66649edee1de25f81d98ec27"; flowbits:set,ja3_allowed; noalert; sid:22222;)
+alert tls $HOME_NET any -> any any (ja3.hash; content:"fd75aaca18604d62f2bc8b02b345140f"; flowbits:set,ja3_allowed; noalert; sid:33333;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssm.us-east-1.amazonaws.com"; nocase; flowbits:isset,ja3_allowed; sid:44444;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssmmessages.us-east-1.amazonaws.com"; flowbits:isset,ja3_allowed; nocase; sid:55555;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ec2.us-east-1.amazonaws.com"; nocase; flowbits:isset,ja3_allowed; sid:66666;)
+reject tls $HOME_NET any -> any any (msg:"TLS not on domain/JA3 allow-list blocked"; flow:to_server; sid:77777;)
+```
+
+The above two options have drawbacks in that they require that any time there is a client agent upgrade the new JA3 hash be added to the allow-list before it'll work. This is added complexity for added security value.
+
+But how can we allow for a little bit of flexibility to ease the management of the allow-lists while still continuing to reduce the risk surface?
+
+Another option is to track which destination IPs have been contacted by approved JA3 hashes, remember them for a period of time, and then only let our TLS domain allow list work out to those higher trust destination IPs. Here is what that ruleset might look like:
+
+```
+alert tls $HOME_NET any -> any any (ja3.hash; content:"7a15285d4efc355608b304698cd7f9ab"; xbits:set, allowed_ja3_destination_ips, track ip_dst, expire 21600; sid:11111;)
+alert tls $HOME_NET any -> any any (ja3.hash; content:"1be8360b66649edee1de25f81d98ec27"; xbits:set, allowed_ja3_destination_ips, track ip_dst, expire 21600; sid:22222;)
+alert tls $HOME_NET any -> any any (ja3.hash; content:"fd75aaca18604d62f2bc8b02b345140f"; xbits:set, allowed_ja3_destination_ips, track ip_dst, expire 21600; sid:33333;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssm.us-east-1.amazonaws.com"; nocase; xbits:isset, allowed_ja3_destination_ips, track ip_dst; sid:44444;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssmmessages.us-east-1.amazonaws.com"; xbits:isset, allowed_ja3_destination_ips, track ip_dst; nocase; sid:55555;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ec2.us-east-1.amazonaws.com"; nocase; xbits:isset, allowed_ja3_destination_ips, track ip_dst; sid:66666;)
+reject tls $HOME_NET any -> any any (msg:"TLS not on domain/A3 allow-list blocked"; flow:to_server; sid:77777;)
+```
+
+The above option will let a new JA3 seen access the TLS domain allow list, but only if the request is going to an IP that an approved JA3 has already been talking to. This can provide some flexibility without providing too much flexibility.
+Each customer will have to determine if their specific application's threat model justifies the added overhead of maintaining a JA3 allow-list. Most AWS Network Firewall customers are satisfied with the significant risk reduction of a domain allow-list, and don't find it necessary to also lock down the domains to an allow-list of JA3 hashes too.
+
 ## Resources
 
 ### Workshops
