@@ -16,6 +16,11 @@ This guide is geared towards security practitioners who are responsible for moni
       * [Add accounts as members to your organization](#add-accounts-as-members-to-your-organization)
       * [GuardDuty protection plans](#guardduty-protection-plans)
       * [Enable protections](#enable-protections)
+        * [Enabling runtime monitoring for EC2](#runtime-monitoring-deployment-for-ec2)
+        * [Enabling runtime monitoring for ECS](#runtime-monitoring-deployment-for-ecs)
+        * [Enabling runtime monitoring for EKS](#runtime-monitoring-deployment-for-eks)
+        * [Enabling S3 malware protection](#S3-Malware-Protection)
+        
 * [Operationalizing GuardDuty findings](#operationalize-guardduty-findings)
     * [Filtering findings](#filtering-findings)
     * [Reducing potential noise](#reducing-potential-noise)
@@ -136,13 +141,100 @@ Similar to the Auto-enable feature to turn on GuardDuty in organization member a
 
 Tip: Selecting Configure account manually allows the delegated administrator to manage protection enablement at the account level, per Region, with the option to Auto-enable for new member accounts to the organization
 
-#### GuardDuty runtime monitoring
+#### Runtime Monitoring
 
 For GuardDuty runtime monitoring protections including GuardDuty runtime monitoring for EKS, EC2, and ECS you have the ability to further scope what resources you want coverage for and how you would like to deploy the runtime agent. We recommend allowing GuardDuty to deploy runtime monitoring which will deploy a VPC endpoint and agent for EC2, ECS, and EKS using a an agent, sidecar, or EKS managed add-on, respectively. This will ensure coverage across your current resources but also apply to new resources that are created in the future. This agent if built on [EBPF technology](https://ebpf.io/what-is-ebpf/). Using the GuardDuty automation saves manual effort needed to address new resource coverage across your organization. However if you can choose to you can manage this configuration yourself.
 
 If choose to allow GuardDuty to deploy the needed resources to cover both current and future VPC endpoints and agents needed to provide runtime monitoring in your environment you can further scope which resources the runtime monitoring applies to by using inclusion or exclusion tags. For example, if you have a handful of EKS clusters that you don't want to monitor, than it would be more efficient to use an exclusion tag rather than the opposite scenario where you only want to apply monitoring to a few resources where you would want to use inclusion tags. The GuardDuty documentation provides [use case examples and specific tags](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-configuration.html) needed to implement this functionality.
 
 When configuring GuardDuty runtime monitoring it is important to understand the [prequisites](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-prerequisites.html) for runtime monitoring. This will give you information on supported OS's, Kernel version, CPU and Memory limits for the GuardDuty agent and more. After deployment ensure you [assess your coverage](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-assessing-coverage.html) of the runtime monitoring deployment to address any issues.
+
+##### Runtime Monitoring Deployment for EC2
+This deployment guide assumes the following:
+
+* EC2 instances are running on supported Amazon Machine Images (AMIs), instance types, and operating systems.
+* Foundational GuardDuty coverage is already enabled for your AWS Organization.
+
+For more detailed information on the prerequisites, refer [here](https://docs.aws.amazon.com/guardduty/latest/ug/prereq-runtime-monitoring-ec2-support.html).
+
+By following the steps outlined in this guide, you will learn how to leverage GuardDuty Runtime Monitoring to enhance the security posture of your EC2 instances, enabling real-time threat detection and response capabilities within your AWS environment.
+
+**Configure AWS Systems Manager (SSM) Default Host Management**
+
+The Amazon EC2 instances for which you want GuardDuty to monitor runtime events must be AWS Systems Manager (SSM) managed. With Quick Setup, a capability of AWS Systems Manager, you can activate Default Host Management Configuration for all accounts and Regions that have been added to your organization in AWS Organizations. This ensures that SSM Agent is kept up to date on all Amazon Elastic Compute Cloud (EC2) instances in the organization, and that they can connect to Systems Manager.
+
+1. Visit the [AWS Systems Manager console](https://console.aws.amazon.com/systems-manager/) in the Organization management account.
+2. In the left-hand navigation pane, choose **Quick Setup**.
+3. Under “Default Host Management Configuration”, select “Create”.
+4. Leave the options as default, and select “Create”.
+
+::alert[Assuming the AWS Systems Manager (SSM) Agent is already running on the EC2 instance when you configured Default Host Management, you may need to wait up to 30 minutes for the agent to connect with Systems Manager and the EC2 instance to appear in Fleet Manager as a managed instance. At that point, Systems Manager will install the Amazon GuardDuty Runtime Monitoring SSM Plugin on the instance.]{header="Note"}
+
+
+**Validate SSM Host Management**
+Remember, it normally takes 30 minutes for hosts to show in SSM after enabling Default Host Management. 
+
+5. Visit the [AWS Systems Manager console](https://console.aws.amazon.com/systems-manager/), in the left-hand navigation pane, under the **Node Management** section, choose **Fleet Manager**.
+6. Confirm that you can see your EC2 instances in Fleet Manager. Alternatively, you can use [AWS Resource Explorer](https://docs.aws.amazon.com/systems-manager/latest/userguide/Resource-explorer-quick-setup.html) to search and discover resources in your AWS account or across an entire AWS organization. 
+
+::alert[If you do not see your EC2 instances in Fleet Manager after 30 minutes of enabling Default Host Management, refer to the SSM Agent Troubleshooting section at the bottom of this page.]{header="Note"}
+
+
+**Enabling GuardDuty Runtime Monitoring for EC2**
+
+7. Visit the [Amazon GuardDuty console](https://console.aws.amazon.com/guardduty/) in your GuardDuty delegated administrator account.
+8. In the left hand navigation pane, under the **Protection plans** section, choose **Runtime Monitoring**.
+9. Under **Runtime Monitoring configuration**, click **Enable**. Click **Confirm** when prompted.
+10. Under **Automated agent configuration**, click **Enable** for all accounts (recommended).
+11. Toggle to the tab **Runtime coverage** and then open the tab, **EC2 instance runtime coverage**. Within 5 minutes, EC2 instances will start to show a "Healthy" status. It may take up to 10 minutes for runtime monitoring to be "Healthy" on EC2 instances already meeting the prerequisite configuration.
+12. Repeat steps 9-11 for all Regions enabled for your AWS Organization.
+
+
+
+##### Runtime Monitoring Deployment for ECS
+This deployment guide assumes the following:
+
+* Foundational GuardDuty coverage is already enabled for your AWS Organization.
+* You have access to the delegated GuardDuty administrator account.
+* Fargate platform running on supported version (at least 1.4.0 or LATEST).
+* EC2 container instances are running on supported ECS-AMIs, instance types, and operating systems.
+
+For more information on the prerequisites for Fargate (ECS only) cluster, refer [here](https://docs.aws.amazon.com/guardduty/latest/ug/prereq-runtime-monitoring-ecs-support.html). 
+
+For more information on the prerequisites for Amazon ECS running on Amazon EC2, refer [here](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-guard-duty-configure-manual-guard-duty.html).
+
+By following the steps outlined in this guide, you will learn how to leverage GuardDuty Runtime Monitoring to enhance the security posture of your ECS clusters, enabling real-time threat detection and response capabilities within your AWS environment. For more information on how Runtime Monitoring works with Fargate (Amazon ECS only), refer [here](https://docs.aws.amazon.com/guardduty/latest/ug/how-runtime-monitoring-works-ecs-fargate.html). 
+
+1. Open the [**Runtime Monitoring**](https://us-east-1.console.aws.amazon.com/guardduty/home?region=us-east-1#/runtime-monitoring) page in Amazon GuardDuty in the delegated GuardDuty administrator account.
+2. Under **Runtime Monitoring configuration**, click **Enable for all accounts**. Click **Save** when prompted. This will turn on GuardDuty ECS monitoring in all accounts.
+3. Under **Automated agent configuration**, click **Enable for all accounts** for **AWS Fargate (ECS only**). GuardDuty deploys and manages the agent in your ECS clusters on AWS Fargate, on your behalf. 
+4. Toggle to the tab **Runtime coverage** and then open the tab, **ECS clusters runtime coverage**. 
+
+When you want GuardDuty to monitor tasks that are part of a service, it requires a new service deployment after you enable Runtime Monitoring. If the last deployment for a specific ECS service was started before you enabled Runtime Monitoring, you can either restart the service, or update the service by using `forceNewDeployment`.
+
+For steps to update the service, see the following resources:
+* [Updating an Amazon ECS service using the console](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service-console-v2.html) in the *Amazon Elastic Container Service Developer Guide*.
+* [UpdateService](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_UpdateService.html) in the *Amazon Elastic Container Service API Reference*.
+* [update-service](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ecs/update-service.html) in the *AWS CLI Command Reference*.
+
+##### Runtime Monitoring Deployment for EKS
+This deployment guide assumes the following:
+
+* Amazon EKS clusters are running on Amazon EC2 instances. GuardDuty does't support Amazon EKS clusters running on AWS Fargate.
+* The Amazon EKS cluster must be running on a supported operating system and Kubernetes version.
+* Foundational GuardDuty coverage is already enabled for your AWS Organization.
+* You have access to the delegated GuardDuty administrator account.
+
+For more detailed information on the prerequisites, refer [here](https://docs.aws.amazon.com/guardduty/latest/ug/prereq-runtime-monitoring-ec2-support.html).
+
+By following the steps outlined in this guide, you will learn how to leverage GuardDuty Runtime Monitoring to enhance the security posture of your EKS clusters, enabling real-time threat detection and response capabilities within your AWS environment. For more information on how Runtime Monitoring works with Amazon EKS clusters, refer [here](https://docs.aws.amazon.com/guardduty/latest/ug/how-runtime-monitoring-works-eks.html#eksrunmon-approach-to-monitor-eks-clusters). 
+
+In a multiple-account environments, only the delegated GuardDuty administrator account can enable or disable Automated agent configuration for the member accounts, and manage Automated agent for the EKS clusters belonging to the member accounts in their organization. The GuardDuty member accounts can't modify this configuration from their accounts. The delegated GuardDuty administrator account account manages their member accounts using AWS Organizations. For more information about multi-account environments, see [Managing multiple accounts](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_accounts.html).
+
+1. Open the [**Runtime Monitoring**](https://us-east-1.console.aws.amazon.com/guardduty/home?region=us-east-1#/runtime-monitoring) page in Amazon GuardDuty.
+2. Under **Runtime Monitoring configuration**, click **Enable for all accounts**. Click **Save** when prompted.
+3. Under **Automated agent configuration**, click **Enable for all accounts** for **Amazon EKS**. GuardDuty deploys and manages the agent in your EKS clusters on AWS Fargate, on your behalf. 
+4. Toggle to the tab **Runtime coverage** and then open the tab, **EKS clusters runtime coverage**. 
 
 #### S3 Malware Protection
 
@@ -510,6 +602,65 @@ ORDER BY  numRequests DESC limit 10;
 * GuardDuty is optimized for security value and will not charge customers for processing some low-risk events that would otherwise be delivered to a customer's CloudTrail. Therefore, the event counts may not exactly match.
 * If Runtime Monitoring is enabled for your account, you will not be charged for analysis of VPC Flow Logs from instances where the GuardDuty agent is deployed and active.
 
+## Troubleshooting
+### Troubleshooting AWS Systems Manager (SSM) Agent Issues
+There are several issues that might cause the SSM agent to work improperly. You can use the Systems Manager Automation runbook to automatically troubleshoot an EC2 instance that SSM is unable to manage
+
+* Open [this link](https://us-east-1.console.aws.amazon.com/systems-manager/automation/execute/AWSSupport-TroubleshootManagedInstance?region=us-east-1) to configure the[](https://us-east-1.console.aws.amazon.com/systems-manager/automation/execute/AWSSupport-TroubleshootManagedInstance?region=us-east-1)Systems Manager Automation runbook.
+* Navigate to the AWS Region for the EC2 instance you want to troubleshoot.
+* Under the **Input parameters**, change the dropdown from "Show managed instances only" to "Show all instances".
+* Select the EC2 instance you want to troubleshoot.
+* Leave all the other settings, and at the bottom of the page, click **Execute**. This process normally takes up to 5 minutes to complete.
+* Once the automation document has as an Overall status of Success, expand the Outputs section.
+* Review the outputs to see the specific problem with your SSM configuration.
+
+### Troubleshooting Shared VPCs Issues
+EC2 instances in your AWS account might run in subnets from a [shared VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html) owned by another AWS account. In this scenario the GuardDuty console might show an error message “VPC Endpoint Creation Failed” for EC2 instances listed in the Runtime Monitoring section.
+* Enable GuardDuty EC2 Runtime Monitoring in the AWS account that owns the shared VPC.
+* Ensure there is at least one EC2 instance running in the shared VPC and in the AWS account that owns the VPC.
+
+### Troubleshooting Custom Recursive DNS Architecture Issues
+
+Another reason that you might see the error message “VPC Endpoint Creation Failed” can be caused by using a custom DNS server instead of the default [Amazon Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html), often referred to as the “.2 resolver”. Since GuardDuty relies on the Route 53 resolver to know where how to find the GuardDuty VPC endpoint this can cause an issue with the VPC endpoint configuration. Although we recommend using the AWS managed DNS resolver for recursive DNS, some customers decide to use a custom DNS resolver. To fix this issue while still using your custom DNS server you have two options:
+
+1. The best option is to leave the “Enable DNS resolution” box checked so that GuardDuty can use the Route 53 resolver to find the GuardDuty VPC endpoint. The DHCP option set that you have configured for your custom DNS server will have set the resolver.conf file for your hosts so that they use your custom DNS server. The GuardDuty agent will use the .2 resolver option. To enable the Route 53 DNS Resolver in your VPC follow the steps below.
+
+    * Visit the [Amazon VPC Console](https://console.aws.amazon.com/vpc/). 
+    * Select the VPC that you want to change the DNS settings.
+    * In the top right corner use the **Actions** drop down and click edit **VPC settings**
+
+
+    ![Image](../../images/edit-vpc-settings.png)
+
+
+    * Once you’re on the VPC settings page make sure the **Enable DNS resolution** box is checked. This will enable Route53 DNS Resolver for this VPC.
+    
+
+    ![Image2](../../images/dns-settings.png)
+
+
+    * If you have configured a custom DNS server because you want to limit traffic that can use the Route 53 resolver then you can use Route 53 DNS firewall to allow resolution to the GuardDuty endpoint and nothing else. To do this you will need to make two rules in your Route 53 DNS firewall policy. The rule with the top priority will allow resolution to “guardduty-data.<region>.amazonaws.com”. The rule that will follow in rule evaluation priority should deny “*.”. The combination of these rules will allow resolution to the GuardDuty endpoint through the Route 53 resolver, while denying any other resolution.
+::alert[GuardDuty is also monitoring this Route53 resolver traffic for suspicious activity.]{header="Note"}
+
+
+2. If you’re using a [centralized endpoint VPC architecture](https://aws.amazon.com/blogs/networking-and-content-delivery/centralize-access-using-vpc-interface-endpoints/) you can create an entry in your custom DNS server to resolve the GuardDuty endpoint. To do this you will need to check the endpoint specific to your central VPC that the GuardDuty agent is trying to resolve and then add that as your DNS entry.
+
+### Troubleshooting ECS Task Execution Role Errors
+If you see issue type **Agent exited** and additional information error message that says **CannotPullContainerError** this is likely caused by insufficient IAM permissions for the ECS Fargate task execution role. Fargate tasks **must** use a task execution role. This role grants the tasks permission to retrieve, update, and manage the GuardDuty security agent on your behalf. To fix this follow the steps below.
+
+* Visit the [AWS IAM console](https://console.aws.amazon.com/iam/).
+* In the left-hand navigation pane, choose **Roles**, and then choose **Create role**.
+* For **Trusted entity type**, choose **AWS service**.
+* For **Service or use case**, choose **Elastic Container Service**, and then choose the **Elastic Container Service Task** use case.
+* Choose **Next**.
+* In the **Add permissions** section, search for **AmazonECSTaskExecutionRolePolicy**, then select the policy.
+* Choose **Next**.
+* For **Role name**, enter **ecsTaskExecutionRole**.
+* Review the role, and then choose **Create role**.
+
+
+::alert[Runtime Monitoring supports managing the security agent for your Amazon ECS clusters (AWS Fargate) only through GuardDuty. There is no support for managing the security agent manually on Amazon ECS clusters.]{header="Note"}
+
 ## Resources
 
 ### Workshops
@@ -517,7 +668,7 @@ ORDER BY  numRequests DESC limit 10;
 * [Activation Days](https://awsactivationdays.splashthat.com/)
 * [Amazon GuardDuty workshop](https://catalog.workshops.aws/guardduty)
 * [Amazon Detective workshop](https://catalog.workshops.aws/detective)
-* [EKS security workshop](https://catalog.workshops.aws/containersecurity)
+* [Container security workshop](https://catalog.workshops.aws/containersecurity)
 
 ### Videos
 
