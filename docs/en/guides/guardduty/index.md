@@ -639,6 +639,8 @@ Another reason that you might see the error message “VPC Endpoint Creation Fai
 
 
     * If you have configured a custom DNS server because you want to limit traffic that can use the Route 53 resolver then you can use Route 53 DNS firewall to allow resolution to the GuardDuty endpoint and nothing else. To do this you will need to make two rules in your Route 53 DNS firewall policy. The rule with the top priority will allow resolution to “guardduty-data.<region>.amazonaws.com”. The rule that will follow in rule evaluation priority should deny “*.”. The combination of these rules will allow resolution to the GuardDuty endpoint through the Route 53 resolver, while denying any other resolution.
+
+
 ---
 **GuardDuty is also monitoring this Route53 resolver traffic for suspicious activity.**
 
