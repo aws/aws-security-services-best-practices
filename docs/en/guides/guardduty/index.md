@@ -15,11 +15,12 @@ This guide is geared towards security practitioners who are responsible for moni
       * [Configuring auto-enable preferences for organization](#configuring-auto-enable-preferences-for-organization)
       * [Add accounts as members to your organization](#add-accounts-as-members-to-your-organization)
       * [GuardDuty protection plans](#guardduty-protection-plans)
+        * [Enabling S3 malware protection](#S3-Malware-Protection)
         * [Runtime Monitoring](#runtime-monitoring-deployment-for-ec2)
             * [Enabling runtime monitoring for EC2](#runtime-monitoring-deployment-for-ec2)
             * [Enabling runtime monitoring for ECS](#runtime-monitoring-deployment-for-ecs)
             * [Enabling runtime monitoring for EKS](#runtime-monitoring-deployment-for-eks)
-        * [Enabling S3 malware protection](#S3-Malware-Protection)
+
         
 * [Operationalizing GuardDuty findings](#operationalize-guardduty-findings)
     * [Filtering findings](#filtering-findings)
@@ -133,6 +134,20 @@ The accounts table displays all of the accounts that are added either Via Organi
 
 After enabling GuardDuty in your account(s), choosing additional protection types is highly recommended. GuardDuty protection plans are [additional features](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-features-activation-model.html) that add focused threat detection for Amazon EKS, Amazon S3, Amazon Aurora, Amazon EC2, Amazon ECS, and AWS Lambda. To learn more about the benefits of what each GuardDuty protection provides, refer to the protection section of the [Amazon GuardDuty User Guide](https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html).
 
+##### S3 Malware Protection
+
+You can enable S3 Malware protection through the console, CLI, API, or through infrastructure as code such as [CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-malwareprotectionplan.html) or [Terraform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/guardduty_malware_protection_plan). Keep in mind that you enable this specifically for a bucket at a time and not across a entire account or accounts. Refer to the [deployment documentation](https://docs.aws.amazon.com/guardduty/latest/ug/enable-malware-protection-s3-bucket.html) for the exact steps but we have placed images below for you to get an idea of what the deployment looks like.
+
+Before deployment you need to ensure that a role exists that gives GuardDuty access to scan S3 objects in the bucket, including the ability to allow KMS key action, and that the bucket is not explicitly denying access to this role. For more information on creating this role and support encryption mechanisms look at the [prerequisite documentation](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-iam-policy-prerequisite.html) and the [quota documentation](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-quotas-guardduty.html).
+
+When deploying you will need to determine if you want GuardDuty to tag objects based on if there was malware found (NO_THREATS_FOUND, THREATS_FOUND, UNSUPPORTED, ACCESS_DENIED, or FAILED). This tagging always you to create automated workflows depending on the tag. We give an example of this in the [S3 Malware automation workflow](#s3-malware-protection-automation-workflow) section.
+
+![S3 Malware Protection console](../../images/GD-S3-Malware-Console.png)
+*Figure 7: S3 Malware Protection console*
+
+![S3 Malware Protection configuration](../../images/GD-S3-Malware-Configuration.png)
+*Figure 8: S3 Malware Protection configuration*
+
 
 ##### Runtime Monitoring
 
@@ -142,7 +157,7 @@ If choose to allow GuardDuty to deploy the needed resources to cover both curren
 
 When configuring GuardDuty runtime monitoring it is important to understand the [prequisites](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-prerequisites.html) for runtime monitoring. This will give you information on supported OS's, Kernel version, CPU and Memory limits for the GuardDuty agent and more. After deployment ensure you [assess your coverage](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-assessing-coverage.html) of the runtime monitoring deployment to address any issues.
 
-###### **Runtime Monitoring Deployment for EC2**
+##### Runtime Monitoring Deployment for EC2
 This deployment guide assumes the following:
 
 * EC2 instances are running on supported Amazon Machine Images (AMIs), instance types, and operating systems.
@@ -189,7 +204,7 @@ Remember, it normally takes 30 minutes for hosts to show in SSM after enabling D
 
 
 
-###### **Runtime Monitoring Deployment for ECS**
+##### Runtime Monitoring Deployment for ECS
 This deployment guide assumes the following:
 
 * Foundational GuardDuty coverage is already enabled for your AWS Organization.
@@ -215,7 +230,7 @@ For steps to update the service, see the following resources:
 * [UpdateService](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_UpdateService.html) in the *Amazon Elastic Container Service API Reference*.
 * [update-service](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ecs/update-service.html) in the *AWS CLI Command Reference*.
 
-###### **Runtime Monitoring Deployment for EKS**
+##### Runtime Monitoring Deployment for EKS
 This deployment guide assumes the following:
 
 * Amazon EKS clusters are running on Amazon EC2 instances. GuardDuty does't support Amazon EKS clusters running on AWS Fargate.
@@ -234,19 +249,7 @@ In a multiple-account environments, only the delegated GuardDuty administrator a
 3. Under **Automated agent configuration**, click **Enable for all accounts** for **Amazon EKS**. GuardDuty deploys and manages the agent in your EKS clusters on AWS Fargate, on your behalf. 
 4. Toggle to the tab **Runtime coverage** and then open the tab, **EKS clusters runtime coverage**. 
 
-##### S3 Malware Protection
 
-You can enable S3 Malware protection through the console, CLI, API, or through infrastructure as code such as [CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-malwareprotectionplan.html) or [Terraform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/guardduty_malware_protection_plan). Keep in mind that you enable this specifically for a bucket at a time and not across a entire account or accounts. Refer to the [deployment documentation](https://docs.aws.amazon.com/guardduty/latest/ug/enable-malware-protection-s3-bucket.html) for the exact steps but we have placed images below for you to get an idea of what the deployment looks like.
-
-Before deployment you need to ensure that a role exists that gives GuardDuty access to scan S3 objects in the bucket, including the ability to allow KMS key action, and that the bucket is not explicitly denying access to this role. For more information on creating this role and support encryption mechanisms look at the [prerequisite documentation](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-iam-policy-prerequisite.html) and the [quota documentation](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-quotas-guardduty.html).
-
-When deploying you will need to determine if you want GuardDuty to tag objects based on if there was malware found (NO_THREATS_FOUND, THREATS_FOUND, UNSUPPORTED, ACCESS_DENIED, or FAILED). This tagging always you to create automated workflows depending on the tag. We give an example of this in the [S3 Malware automation workflow](#s3-malware-protection-automation-workflow) section.
-
-![S3 Malware Protection console](../../images/GD-S3-Malware-Console.png)
-*Figure 7: S3 Malware Protection console*
-
-![S3 Malware Protection configuration](../../images/GD-S3-Malware-Configuration.png)
-*Figure 8: S3 Malware Protection configuration*
 
 ## Operationalize GuardDuty findings
 
