@@ -624,21 +624,21 @@ Another reason that you might see the error message “VPC Endpoint Creation Fai
 
 **Option 1:** The best option is to leave the “Enable DNS resolution” box checked so that GuardDuty can use the Route 53 resolver to find the GuardDuty VPC endpoint. The DHCP option set that you have configured for your custom DNS server will have set the resolver.conf file for your hosts so that they use your custom DNS server. The GuardDuty agent will use the .2 resolver option. To enable the Route 53 DNS Resolver in your VPC follow the steps below.
 
-    * Visit the [Amazon VPC Console](https://console.aws.amazon.com/vpc/). 
-    * Select the VPC that you want to change the DNS settings.
-    * In the top right corner use the **Actions** drop down and click edit **VPC settings**
+* Visit the [Amazon VPC Console](https://console.aws.amazon.com/vpc/). 
+* Select the VPC that you want to change the DNS settings.
+* In the top right corner use the **Actions** drop down and click edit **VPC settings**
 
 
-    ![Image](../../images/edit-vpc-settings.png)
+![Image](../../images/edit-vpc-settings.png)
 
 
-    * Once you’re on the VPC settings page make sure the **Enable DNS resolution** box is checked. This will enable Route53 DNS Resolver for this VPC.
-    
-
-    ![Image2](../../images/dns-settings.png)
+* Once you’re on the VPC settings page make sure the **Enable DNS resolution** box is checked. This will enable Route53 DNS Resolver for this VPC.
 
 
-    * If you have configured a custom DNS server because you want to limit traffic that can use the Route 53 resolver then you can use Route 53 DNS firewall to allow resolution to the GuardDuty endpoint and nothing else. To do this you will need to make two rules in your Route 53 DNS firewall policy. The rule with the top priority will allow resolution to “guardduty-data.<region>.amazonaws.com”. The rule that will follow in rule evaluation priority should deny “*.”. The combination of these rules will allow resolution to the GuardDuty endpoint through the Route 53 resolver, while denying any other resolution. (GuardDuty is also monitoring this Route53 resolver traffic for suspicious) activity.**
+![Image2](../../images/dns-settings.png)
+
+
+* If you have configured a custom DNS server because you want to limit traffic that can use the Route 53 resolver then you can use Route 53 DNS firewall to allow resolution to the GuardDuty endpoint and nothing else. To do this you will need to make two rules in your Route 53 DNS firewall policy. The rule with the top priority will allow resolution to “guardduty-data.<region>.amazonaws.com”. The rule that will follow in rule evaluation priority should deny “*.”. The combination of these rules will allow resolution to the GuardDuty endpoint through the Route 53 resolver, while denying any other resolution. (GuardDuty is also monitoring this Route53 resolver traffic for suspicious) activity.**
 
 
 
