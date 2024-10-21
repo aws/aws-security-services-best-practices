@@ -198,7 +198,7 @@ Remember, it normally takes 30 minutes for hosts to show in SSM after enabling D
 9. Under **Runtime Monitoring configuration**, click **Enable**. Click **Confirm** when prompted.
 10. Under **Automated agent configuration**, click **Enable** for all accounts (recommended).
 11. Toggle to the tab **Runtime coverage** and then open the tab, **EC2 instance runtime coverage**. Within 5 minutes, EC2 instances will start to show a "Healthy" status. It may take up to 10 minutes for runtime monitoring to be "Healthy" on EC2 instances already meeting the prerequisite configuration.
-12. Repeat steps 9-11 for all Regions enabled for your AWS Organization.
+12. Repeat steps 3-5 for all Regions enabled for your AWS Organization.
 
 
 
@@ -622,7 +622,7 @@ EC2 instances in your AWS account might run in subnets from a [shared VPC](https
 
 Another reason that you might see the error message “VPC Endpoint Creation Failed” can be caused by using a custom DNS server instead of the default [Amazon Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html), often referred to as the “.2 resolver”. Since GuardDuty relies on the Route 53 resolver to know where how to find the GuardDuty VPC endpoint this can cause an issue with the VPC endpoint configuration. Although we recommend using the AWS managed DNS resolver for recursive DNS, some customers decide to use a custom DNS resolver. To fix this issue while still using your custom DNS server you have two options:
 
-1. The best option is to leave the “Enable DNS resolution” box checked so that GuardDuty can use the Route 53 resolver to find the GuardDuty VPC endpoint. The DHCP option set that you have configured for your custom DNS server will have set the resolver.conf file for your hosts so that they use your custom DNS server. The GuardDuty agent will use the .2 resolver option. To enable the Route 53 DNS Resolver in your VPC follow the steps below.
+**Option 1:** The best option is to leave the “Enable DNS resolution” box checked so that GuardDuty can use the Route 53 resolver to find the GuardDuty VPC endpoint. The DHCP option set that you have configured for your custom DNS server will have set the resolver.conf file for your hosts so that they use your custom DNS server. The GuardDuty agent will use the .2 resolver option. To enable the Route 53 DNS Resolver in your VPC follow the steps below.
 
     * Visit the [Amazon VPC Console](https://console.aws.amazon.com/vpc/). 
     * Select the VPC that you want to change the DNS settings.
@@ -638,16 +638,11 @@ Another reason that you might see the error message “VPC Endpoint Creation Fai
     ![Image2](../../images/dns-settings.png)
 
 
-    * If you have configured a custom DNS server because you want to limit traffic that can use the Route 53 resolver then you can use Route 53 DNS firewall to allow resolution to the GuardDuty endpoint and nothing else. To do this you will need to make two rules in your Route 53 DNS firewall policy. The rule with the top priority will allow resolution to “guardduty-data.<region>.amazonaws.com”. The rule that will follow in rule evaluation priority should deny “*.”. The combination of these rules will allow resolution to the GuardDuty endpoint through the Route 53 resolver, while denying any other resolution.
+    * If you have configured a custom DNS server because you want to limit traffic that can use the Route 53 resolver then you can use Route 53 DNS firewall to allow resolution to the GuardDuty endpoint and nothing else. To do this you will need to make two rules in your Route 53 DNS firewall policy. The rule with the top priority will allow resolution to “guardduty-data.<region>.amazonaws.com”. The rule that will follow in rule evaluation priority should deny “*.”. The combination of these rules will allow resolution to the GuardDuty endpoint through the Route 53 resolver, while denying any other resolution. (GuardDuty is also monitoring this Route53 resolver traffic for suspicious) activity.**
 
 
----
-**GuardDuty is also monitoring this Route53 resolver traffic for suspicious activity.**
 
----
-
-
-2. If you’re using a [centralized endpoint VPC architecture](https://aws.amazon.com/blogs/networking-and-content-delivery/centralize-access-using-vpc-interface-endpoints/) you can create an entry in your custom DNS server to resolve the GuardDuty endpoint. To do this you will need to check the endpoint specific to your central VPC that the GuardDuty agent is trying to resolve and then add that as your DNS entry.
+**Option 2:** If you’re using a [centralized endpoint VPC architecture](https://aws.amazon.com/blogs/networking-and-content-delivery/centralize-access-using-vpc-interface-endpoints/) you can create an entry in your custom DNS server to resolve the GuardDuty endpoint. To do this you will need to check the endpoint specific to your central VPC that the GuardDuty agent is trying to resolve and then add that as your DNS entry.
 
 ### Troubleshooting ECS Task Execution Role Errors
 If you see issue type **Agent exited** and additional information error message that says **CannotPullContainerError** this is likely caused by insufficient IAM permissions for the ECS Fargate task execution role. Fargate tasks **must** use a task execution role. This role grants the tasks permission to retrieve, update, and manage the GuardDuty security agent on your behalf. To fix this follow the steps below.
