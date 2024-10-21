@@ -11,15 +11,15 @@ This guide is geared towards security practitioners who are responsible for moni
 * [Deploying GuardDuty](#deploying-guardduty)
     * [Single account deployment](#single-account-deployment)
     * [Multi-account deployment](#multi-account-deployment)
-      * [Enablement of a delegated administrator](#enablement-of-a-delegated-administrator)
-      * [Configuring auto-enable preferences for organization](#configuring-auto-enable-preferences-for-organization)
-      * [Add accounts as members to your organization](#add-accounts-as-members-to-your-organization)
+        * [Enablement of a delegated administrator](#enablement-of-a-delegated-administrator)
+        * [Configuring auto-enable preferences for organization](#configuring-auto-enable-preferences-for-organization)
+        * [Add accounts as members to your organization](#add-accounts-as-members-to-your-organization)
     * [GuardDuty protection plans](#guardduty-protection-plans)
-      * [Enabling S3 malware protection](#S3-Malware-Protection)
-      * [Runtime Monitoring](#runtime-monitoring-deployment-for-ec2)
-        * [Enabling runtime monitoring for EC2](#runtime-monitoring-deployment-for-ec2)
-        * [Enabling runtime monitoring for ECS](#runtime-monitoring-deployment-for-ecs)
-        * [Enabling runtime monitoring for EKS](#runtime-monitoring-deployment-for-eks) 
+        * [Enabling S3 malware protection](#S3-Malware-Protection)
+        * [Runtime Monitoring](#runtime-monitoring-deployment-for-ec2)
+            * [Enabling runtime monitoring for EC2](#runtime-monitoring-deployment-for-ec2)
+            * [Enabling runtime monitoring for ECS](#runtime-monitoring-deployment-for-ecs)
+            * [Enabling runtime monitoring for EKS](#runtime-monitoring-deployment-for-eks) 
 * [Operationalizing GuardDuty findings](#operationalize-guardduty-findings)
     * [Filtering findings](#filtering-findings)
     * [Reducing potential noise](#reducing-potential-noise)
@@ -165,7 +165,7 @@ For more detailed information on the prerequisites, refer [here](https://docs.aw
 
 By following the steps outlined in this guide, you will learn how to leverage GuardDuty Runtime Monitoring to enhance the security posture of your EC2 instances, enabling real-time threat detection and response capabilities within your AWS environment.
 
-**Configure AWS Systems Manager (SSM) Default Host Management**
+##### Configure AWS Systems Manager (SSM) Default Host Management
 
 The Amazon EC2 instances for which you want GuardDuty to monitor runtime events must be AWS Systems Manager (SSM) managed. With Quick Setup, a capability of AWS Systems Manager, you can activate Default Host Management Configuration for all accounts and Regions that have been added to your organization in AWS Organizations. This ensures that SSM Agent is kept up to date on all Amazon Elastic Compute Cloud (EC2) instances in the organization, and that they can connect to Systems Manager.
 
@@ -180,7 +180,7 @@ The Amazon EC2 instances for which you want GuardDuty to monitor runtime events 
 ---
 
 
-**Validate SSM Host Management**
+##### Validate SSM Host Management
 Remember, it normally takes 30 minutes for hosts to show in SSM after enabling Default Host Management. 
 
 5. Visit the [AWS Systems Manager console](https://console.aws.amazon.com/systems-manager/), in the left-hand navigation pane, under the **Node Management** section, choose **Fleet Manager**.
@@ -191,7 +191,7 @@ Remember, it normally takes 30 minutes for hosts to show in SSM after enabling D
 
 ---
 
-**Enabling GuardDuty Runtime Monitoring for EC2**
+##### Enabling GuardDuty Runtime Monitoring for EC2
 
 7. Visit the [Amazon GuardDuty console](https://console.aws.amazon.com/guardduty/) in your GuardDuty delegated administrator account.
 8. In the left hand navigation pane, under the **Protection plans** section, choose **Runtime Monitoring**.
