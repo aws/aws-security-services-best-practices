@@ -14,14 +14,12 @@ This guide is geared towards security practitioners who are responsible for moni
       * [Enablement of a delegated administrator](#enablement-of-a-delegated-administrator)
       * [Configuring auto-enable preferences for organization](#configuring-auto-enable-preferences-for-organization)
       * [Add accounts as members to your organization](#add-accounts-as-members-to-your-organization)
-      * [GuardDuty protection plans](#guardduty-protection-plans)
-        * [Enabling S3 malware protection](#S3-Malware-Protection)
-        * [Runtime Monitoring](#runtime-monitoring-deployment-for-ec2)
-            * [Enabling runtime monitoring for EC2](#runtime-monitoring-deployment-for-ec2)
-            * [Enabling runtime monitoring for ECS](#runtime-monitoring-deployment-for-ecs)
-            * [Enabling runtime monitoring for EKS](#runtime-monitoring-deployment-for-eks)
-
-        
+    * [GuardDuty protection plans](#guardduty-protection-plans)
+      * [Enabling S3 malware protection](#S3-Malware-Protection)
+      * [Runtime Monitoring](#runtime-monitoring-deployment-for-ec2)
+        * [Enabling runtime monitoring for EC2](#runtime-monitoring-deployment-for-ec2)
+        * [Enabling runtime monitoring for ECS](#runtime-monitoring-deployment-for-ecs)
+        * [Enabling runtime monitoring for EKS](#runtime-monitoring-deployment-for-eks) 
 * [Operationalizing GuardDuty findings](#operationalize-guardduty-findings)
     * [Filtering findings](#filtering-findings)
     * [Reducing potential noise](#reducing-potential-noise)
@@ -130,11 +128,11 @@ The accounts table displays all of the accounts that are added either Via Organi
 6. Choose Confirm to add the accounts as members. This action also enables GuardDuty for all of the selected accounts. The Status for the accounts will change to Enabled.
 7. (Recommended) Repeat these steps in each AWS Region. This ensures that the delegated administrator can manage findings and other configurations for member accounts in all the Regions where you have GuardDuty enabled.
 
-#### GuardDuty protection plans
+### GuardDuty protection plans
 
 After enabling GuardDuty in your account(s), choosing additional protection types is highly recommended. GuardDuty protection plans are [additional features](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-features-activation-model.html) that add focused threat detection for Amazon EKS, Amazon S3, Amazon Aurora, Amazon EC2, Amazon ECS, and AWS Lambda. To learn more about the benefits of what each GuardDuty protection provides, refer to the protection section of the [Amazon GuardDuty User Guide](https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html).
 
-##### S3 Malware Protection
+#### S3 Malware Protection
 
 You can enable S3 Malware protection through the console, CLI, API, or through infrastructure as code such as [CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-malwareprotectionplan.html) or [Terraform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/guardduty_malware_protection_plan). Keep in mind that you enable this specifically for a bucket at a time and not across a entire account or accounts. Refer to the [deployment documentation](https://docs.aws.amazon.com/guardduty/latest/ug/enable-malware-protection-s3-bucket.html) for the exact steps but we have placed images below for you to get an idea of what the deployment looks like.
 
@@ -149,7 +147,7 @@ When deploying you will need to determine if you want GuardDuty to tag objects b
 *Figure 8: S3 Malware Protection configuration*
 
 
-##### Runtime Monitoring
+#### Runtime Monitoring
 
 For GuardDuty runtime monitoring protections including GuardDuty runtime monitoring for EKS, EC2, and ECS you have the ability to further scope what resources you want coverage for and how you would like to deploy the runtime agent. We recommend allowing GuardDuty to deploy runtime monitoring which will deploy a VPC endpoint and agent for EC2, ECS, and EKS using a an agent, sidecar, or EKS managed add-on, respectively. This will ensure coverage across your current resources but also apply to new resources that are created in the future. This agent if built on [EBPF technology](https://ebpf.io/what-is-ebpf/). Using the GuardDuty automation saves manual effort needed to address new resource coverage across your organization. However if you can choose to you can manage this configuration yourself.
 
@@ -157,7 +155,7 @@ If choose to allow GuardDuty to deploy the needed resources to cover both curren
 
 When configuring GuardDuty runtime monitoring it is important to understand the [prequisites](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-prerequisites.html) for runtime monitoring. This will give you information on supported OS's, Kernel version, CPU and Memory limits for the GuardDuty agent and more. After deployment ensure you [assess your coverage](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-assessing-coverage.html) of the runtime monitoring deployment to address any issues.
 
-##### Runtime Monitoring Deployment for EC2
+#### Runtime Monitoring Deployment for EC2
 This deployment guide assumes the following:
 
 * EC2 instances are running on supported Amazon Machine Images (AMIs), instance types, and operating systems.
@@ -204,7 +202,7 @@ Remember, it normally takes 30 minutes for hosts to show in SSM after enabling D
 
 
 
-##### Runtime Monitoring Deployment for ECS
+#### Runtime Monitoring Deployment for ECS
 This deployment guide assumes the following:
 
 * Foundational GuardDuty coverage is already enabled for your AWS Organization.
@@ -230,7 +228,7 @@ For steps to update the service, see the following resources:
 * [UpdateService](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_UpdateService.html) in the *Amazon Elastic Container Service API Reference*.
 * [update-service](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ecs/update-service.html) in the *AWS CLI Command Reference*.
 
-##### Runtime Monitoring Deployment for EKS
+#### Runtime Monitoring Deployment for EKS
 This deployment guide assumes the following:
 
 * Amazon EKS clusters are running on Amazon EC2 instances. GuardDuty does't support Amazon EKS clusters running on AWS Fargate.
