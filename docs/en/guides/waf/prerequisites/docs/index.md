@@ -13,11 +13,11 @@ AWS WAF is [natively integrated with other AWS services](https://docs.aws.amazon
 ![](../images/waf-supported-resources.png)
 **Figure 1:** Global and regional AWS resources you can associate with AWS
 
-There are use cases where either the need for a WAF is unclear or the resource cannot be directly associated with a web ACL. The following sections offer guidance for these sitatuions.
+There are use cases where either the need for a WAF is unclear or the resource cannot be directly associated with a web ACL. The following sections offer guidance for these situations.
 
 ### Private Application Load Balancers
 
-A private Application Load Balancer (ALB) uses VPC subnets that do not have a route to an [internet gateway](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html). In other words, the ALB cannot be reached directly fromt the Internet.
+A private Application Load Balancer (ALB) uses VPC subnets that do not have a route to an [internet gateway](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html). In other words, the ALB cannot be reached directly from the Internet.
 
 ![](../images/waf-private-alb.png)
 **Figure 2:** Protecting private Application Load Balancers
@@ -89,7 +89,7 @@ You can use [subscription filters](https://docs.aws.amazon.com/AmazonCloudWatch/
 
 You can use [metric filters](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/MonitoringLogData.html) to parse log events and extract numerical values into CloudWatch metrics. These metrics can be used for configuring alarms or dashboards.
 
-You can centralize AWS WAF logs to a CloudWatch log group in a central account, but this is not supported natively and requires a non-trivial setup. First you set up a CloudWatch log group in the same region as the web ACL (`us-east-1`` for global web ACLs). Then define a [subscription filter with AWS Lambda](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#LambdaFunctionExample). The Lambda function writes log events to a CloudWatch log group in your central account. For now, you can't use KDF to stream data across accounts.
+You can centralize AWS WAF logs to a CloudWatch log group in a central account, but this is not supported natively and requires a non-trivial setup. First you set up a CloudWatch log group in the same region as the web ACL (`us-east-1` for global web ACLs). Then define a [subscription filter with AWS Lambda](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#LambdaFunctionExample). The Lambda function writes log events to a CloudWatch log group in your central account. For now, you can't use KDF to stream data across accounts.
 
 See [Monitoring WAF Rules](../../monitoring-waf-rules/docs/) for information on using logs in CloudWatch Logs to monitor WAF behavior.
 
