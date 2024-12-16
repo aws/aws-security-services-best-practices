@@ -1,0 +1,2155 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/guides/guardduty/">
+      
+      
+        <link rel="prev" href="../detective/">
+      
+      
+        <link rel="next" href="../inspector/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Amazon GuardDuty Best Practices - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#amazon-guardduty" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Amazon GuardDuty Best Practices
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../detective/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Detective Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Amazon GuardDuty Best Practices
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Amazon GuardDuty Best Practices
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to use this guide
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-amazon-guardduty" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Amazon GuardDuty?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-the-benefits-of-enabling-guardduty" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are the benefits of enabling GuardDuty?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploying-guardduty" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploying GuardDuty
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deploying GuardDuty">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-account-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Single account deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Single account deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s3-malware-protection-single-account-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3 Malware Protection single account deployment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-account-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-account deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi-account deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enablement-of-a-delegated-administrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enablement of a delegated administrator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-auto-enable-preferences-for-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring auto-enable preferences for organization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-accounts-as-members-to-your-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add accounts as members to your organization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#guardduty-protection-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      GuardDuty protection plans
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GuardDuty protection plans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s3-malware-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3 Malware Protection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-monitoring-deployment-for-ec2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime Monitoring Deployment for EC2
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime Monitoring Deployment for EC2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-aws-systems-manager-ssm-default-host-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configure AWS Systems Manager (SSM) Default Host Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-ssm-host-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validate SSM Host Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-guardduty-runtime-monitoring-for-ec2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enabling GuardDuty Runtime Monitoring for EC2
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-monitoring-deployment-for-ecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime Monitoring Deployment for ECS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-monitoring-deployment-for-eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime Monitoring Deployment for EKS
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operationalize-guardduty-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operationalize GuardDuty findings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operationalize GuardDuty findings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filtering-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filtering findings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reducing-potential-noise" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reducing potential noise
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-notification-for-high-priority-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated notification for high priority findings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-remediation-for-common-finding-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated remediation for common finding types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3-malware-protection-automation-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3 Malware Protection automation workflow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cost Optimization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cost Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cloudtrail-andor-s3-data-event-utilization-is-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      CloudTrail and/or S3 data event utilization is high
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc-flow-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      VPC Flow Logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dns-query-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      DNS Query logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-aws-systems-manager-ssm-agent-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting AWS Systems Manager (SSM) Agent Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-shared-vpcs-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Shared VPCs Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-custom-recursive-dns-architecture-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Custom Recursive DNS Architecture Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-ecs-task-execution-role-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting ECS Task Execution Role Errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workshops" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workshops
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#videos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Videos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blogs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blogs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inspector/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Inspector Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../macie/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Macie Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-hub/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AWS Security Hub Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-lake/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Security Lake Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    AWS WAF Best Practices
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            AWS WAF Best Practices
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/prerequisites/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WAF Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/configuring-waf-rules/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuring WAF Rules
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/monitoring-waf-rules/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring WAF Rules
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/using-waf-with-other-services/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using WAF with other AWS Services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network-firewall/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AWS Network Firewall Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to use this guide
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-amazon-guardduty" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Amazon GuardDuty?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-the-benefits-of-enabling-guardduty" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are the benefits of enabling GuardDuty?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploying-guardduty" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploying GuardDuty
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deploying GuardDuty">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-account-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Single account deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Single account deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s3-malware-protection-single-account-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3 Malware Protection single account deployment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-account-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-account deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi-account deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enablement-of-a-delegated-administrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enablement of a delegated administrator
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-auto-enable-preferences-for-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring auto-enable preferences for organization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-accounts-as-members-to-your-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add accounts as members to your organization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#guardduty-protection-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      GuardDuty protection plans
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GuardDuty protection plans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s3-malware-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3 Malware Protection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-monitoring-deployment-for-ec2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime Monitoring Deployment for EC2
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime Monitoring Deployment for EC2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-aws-systems-manager-ssm-default-host-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configure AWS Systems Manager (SSM) Default Host Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-ssm-host-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validate SSM Host Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-guardduty-runtime-monitoring-for-ec2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enabling GuardDuty Runtime Monitoring for EC2
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-monitoring-deployment-for-ecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime Monitoring Deployment for ECS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-monitoring-deployment-for-eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime Monitoring Deployment for EKS
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operationalize-guardduty-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operationalize GuardDuty findings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operationalize GuardDuty findings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filtering-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filtering findings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reducing-potential-noise" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reducing potential noise
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-notification-for-high-priority-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated notification for high priority findings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-remediation-for-common-finding-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated remediation for common finding types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3-malware-protection-automation-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      S3 Malware Protection automation workflow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cost Optimization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cost Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cloudtrail-andor-s3-data-event-utilization-is-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      CloudTrail and/or S3 data event utilization is high
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc-flow-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      VPC Flow Logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dns-query-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      DNS Query logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-aws-systems-manager-ssm-agent-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting AWS Systems Manager (SSM) Agent Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-shared-vpcs-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Shared VPCs Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-custom-recursive-dns-architecture-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Custom Recursive DNS Architecture Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-ecs-task-execution-role-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting ECS Task Execution Role Errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workshops" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workshops
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#videos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Videos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blogs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blogs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="amazon-guardduty">Amazon GuardDuty</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Welcome to the Amazon GuardDuty Best Practices Guide. The purpose of this guide is to provide prescriptive guidance for leveraging Amazon GuardDuty for continuous monitoring of your AWS accounts and resources. Publishing this guidance via GitHub will allow for quick iterations to enable timely recommendations that include service enhancements, as well as, the feedback of the user community. This guide is designed to provide value whether you are deploying GuardDuty for the first time in a single account, or looking for ways to optimize GuardDuty in an existing multi-account deployment.</p>
+<h2 id="how-to-use-this-guide">How to use this guide</h2>
+<p>This guide is geared towards security practitioners who are responsible for monitoring and remediation of threats and malicious activity within AWS accounts (and resources). The best practices are organized into three categories for easier consumption. Each category includes a set of corresponding best practices that begin with a brief overview, followed by detailed steps for implementing the guidance. The topics do not need to be read in a particular order:</p>
+<ul>
+<li><a href="#deploying-guardduty">Deploying GuardDuty</a><ul>
+<li><a href="#single-account-deployment">Single account deployment</a></li>
+<li><a href="#multi-account-deployment">Multi-account deployment</a><ul>
+<li><a href="#enablement-of-a-delegated-administrator">Enablement of a delegated administrator</a></li>
+<li><a href="#configuring-auto-enable-preferences-for-organization">Configuring auto-enable preferences for organization</a></li>
+<li><a href="#add-accounts-as-members-to-your-organization">Add accounts as members to your organization</a></li>
+</ul>
+</li>
+<li><a href="#guardduty-protection-plans">GuardDuty protection plans</a><ul>
+<li><a href="#S3-Malware-Protection">Enabling S3 malware protection</a></li>
+<li><a href="#runtime-monitoring-deployment-for-ec2">Runtime Monitoring</a><ul>
+<li><a href="#runtime-monitoring-deployment-for-ec2">Enabling runtime monitoring for EC2</a></li>
+<li><a href="#runtime-monitoring-deployment-for-ecs">Enabling runtime monitoring for ECS</a></li>
+<li><a href="#runtime-monitoring-deployment-for-eks">Enabling runtime monitoring for EKS</a> </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#operationalize-guardduty-findings">Operationalizing GuardDuty findings</a><ul>
+<li><a href="#filtering-findings">Filtering findings</a></li>
+<li><a href="#reducing-potential-noise">Reducing potential noise</a></li>
+<li><a href="#automated-notification-for-high-priority-findings">Automated notification for high priority findings</a></li>
+<li><a href="#automated-remediation-for-common-finding-types">Automated remediation for common finding types</a></li>
+</ul>
+</li>
+<li><a href="#cost-optimization">Cost optimization</a><ul>
+<li><a href="#cloudtrail-andor-s3-data-event-utilization-is-high">CloudTrail and/or S3 data event utilization is high</a></li>
+<li><a href="#vpc-flow-logs">VPC Flow Logs</a></li>
+<li><a href="#dns-query-logs">DNS Query Logs</a></li>
+<li><a href="#other-considerations">Other considerations</a></li>
+</ul>
+</li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+<h2 id="what-is-amazon-guardduty">What is Amazon GuardDuty?</h2>
+<p>GuardDuty is an intelligent threat detection service that continuously monitors your AWS accounts, Amazon Elastic Compute Cloud (Amazon EC2) instances, AWS Lambda functions, Amazon Elastic Kubernetes Service (Amazon EKS) clusters, Amazon Elastic Container Service (Amazon ECS), Amazon Aurora login activity, and data stored in Amazon Simple Storage Service (Amazon S3) for malicious activity. If potential malicious activity, such as anomalous behavior, credential exfiltration, or command and control infrastructure (C2) communication is detected, GuardDuty generates detailed security findings that can be used for security visibility and assisting in remediation. Additionally, using the Amazon GuardDuty Malware Protection feature helps to detect malicious files on Amazon Elastic Block Store (Amazon EBS) volumes attached to Amazon EC2 instance and container workloads.</p>
+<p>GuardDuty monitors <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html">Foundational data sources</a> such as AWS CloudTrail event logs, AWS CloudTrail management events, Amazon VPC Flow Logs, and DNS logs. Enablement of the Foundational data sources is not required. Amazon GuardDuty pulls independent streams of data directly from those services.</p>
+<p>In addition to the foundational data sources, GuardDuty can use additional data from other AWS services in your AWS environment to monitor and provide analysis for potential security threats. Those services include:</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/guardduty/latest/ug/kubernetes-protection.html">Amazon EKS</a> – GuardDuty monitors EKS Audit Logs and operating system-level events via the GuardDuty security agent.</li>
+<li><a href="https://docs.aws.amazon.com/guardduty/latest/ug/lambda-protection.html">AWS Lambda</a> – GuardDuty monitors network activity logs, including VPC Flow Logs for suspicious network traffic.</li>
+<li><a href="https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection.html">Amazon EC2 and Containers</a> – GuardDuty monitors its findings for indicators of malware presence on attached Amazon Elastic Block Store (Amazon EBS) volumes, e.g. bitcoin mining activity.</li>
+<li><a href="https://docs.aws.amazon.com/guardduty/latest/ug/rds-protection.html">Amazon Aurora</a> – GuardDuty monitors and profiles relational database service login activity for potential threats.</li>
+<li><a href="https://docs.aws.amazon.com/guardduty/latest/ug/s3-protection.html">Amazon S3</a> – GuardDuty monitors AWS CloudTrail S3 data events to identify potential threats in your Amazon S3 resources. AWS CloudTrail S3 management events are monitored by default after GuardDuty is enabled.</li>
+<li><a href="https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring.html">Runtime Monitoring</a> - Runtime Monitoring observes and analyzes operating system-level, networking, and file events to help you detect potential threats in specific AWS workloads in your environment.</li>
+<li><a href="https://docs.aws.amazon.com/guardduty/latest/ug/gdu-malware-protection-s3.html">S3 Malware Protection</a> - Malware Protection for S3 helps you detect potential presence of malware by scanning newly uploaded objects to your selected Amazon Simple Storage Service (Amazon S3) bucket. When an S3 object or a new version of an existing S3 object gets uploaded to your selected bucket, GuardDuty automatically starts a malware scan. It is important to note that S3 malware protection is not intended to be deployed across your entire S3 estate. S3 Malware protection is purpose built to provide a cost effective solution that will scan objects that are uploaded to untrusted buckets. For example, in a scenario where you have third parties sending you documents or files and you need to ensure there is no malware before processing them in an application.</li>
+</ul>
+<h2 id="what-are-the-benefits-of-enabling-guardduty">What are the benefits of enabling GuardDuty?</h2>
+<p>GuardDuty is designed to operate completely independently from your resources and have no performance or availability impact to your workloads. The service is fully managed with integrated threat intelligence, machine learning (ML) anomaly detection, and malware scanning. GuardDuty delivers detailed and actionable alerts that are designed to be integrated with existing event management and workflow systems. There are no upfront costs and you pay only for the events analyzed, with no infrastructure to manage or threat intelligence feed subscriptions required.</p>
+<h2 id="deploying-guardduty">Deploying GuardDuty</h2>
+<h3 id="single-account-deployment">Single account deployment</h3>
+<p>The minimum requirements for enabling GuardDuty as a standalone account or as a GuardDuty administrator with AWS Organizations are covered below.</p>
+<p>The first step to using GuardDuty is to enable it in your account. Once enabled, GuardDuty will immediately begin to monitor for security threats in the current Region. For a standalone account:</p>
+<ol>
+<li>Open the GuardDuty console at: https://console.aws.amazon.com/guardduty/</li>
+<li>Choose Get Started.
+<img alt="GuardDuty landing page" src="../../images/GD-Landing-Page.png" />
+<em>Figure 1: GuardDuty landing page</em></li>
+<li>Choose Enable GuardDuty.
+<img alt="Enable GuardDuty" src="../../images/Enable-GD.png" />
+<em>Figure 2: GuardDuty enablement</em></li>
+</ol>
+<p>Once these steps are complete GuardDuty will begin collecting log data and monitoring the environment for malicious or suspicious activity.</p>
+<h4 id="s3-malware-protection-single-account-deployment">S3 Malware Protection single account deployment</h4>
+<p>Although we recommend using GuardDuty across all of your AWS environment S3 Malware protection can be enabled independently from the rest of GuardDuty on a single account. Refer to the documentation on <a href="https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-get-started-independent.html">Get started with Malware Protection for S3 only</a> to learn more.</p>
+<p><img alt="S3 Malware Protection Only" src="../../images/GD-S3-Malware-Only.png" />
+<em>Figure 3: S3 Malware Protection only</em></p>
+<h3 id="multi-account-deployment">Multi-account deployment</h3>
+<p>As prerequisites for this process, you must be in the same organization as all the accounts you want to manage, and have access to the AWS Organizations management account in order to delegate an administrator for GuardDuty within your organization. Additional permissions may be required to delegate an administrator, for more information see <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_organizations.html#organizations_permissions">Permissions required to designate a delegated administrator</a>.</p>
+<h4 id="enablement-of-a-delegated-administrator">Enablement of a delegated administrator</h4>
+<ol>
+<li>Open the AWS Organizations console at https://console.aws.amazon.com/organizations/, using the management account.</li>
+<li>Open the GuardDuty console at https://console.aws.amazon.com/guardduty/.</li>
+</ol>
+<p>Is GuardDuty already enabled in your account?</p>
+<ul>
+<li>If GuardDuty is not already enabled, you can select Get Started and then designate a GuardDuty delegated administrator on the Welcome to GuardDuty page.</li>
+<li>
+<p>If GuardDuty is enabled, you can designate a GuardDuty delegated administrator on the Settings page.</p>
+</li>
+<li>
+<p>Enter the twelve-digit AWS account ID of the account that you want to designate as the GuardDuty delegated administrator for the organization and choose Delegate.</p>
+</li>
+</ul>
+<p><img alt="GuardDuty Auto Enable off" src="../../images/GD-Auto-Enable-Off.png" />
+<em>Figure 4: GuardDuty auto-enable off</em></p>
+<h4 id="configuring-auto-enable-preferences-for-organization">Configuring auto-enable preferences for organization</h4>
+<ol>
+<li>Open the GuardDuty console at https://console.aws.amazon.com/guardduty/.</li>
+<li>In the navigation pane, choose Accounts.</li>
+<li>The Accounts page provides configuration options to the GuardDuty administrator to Auto-enable GuardDuty and the optional protection plans on behalf of the member accounts that belong to the organization. You can find this option next to Add accounts by invitation.</li>
+</ol>
+<p>This support is available to configure GuardDuty and all the supported optional protection plans in your AWS Region. You can select one of the following configuration options for GuardDuty on behalf of your member accounts:</p>
+<ul>
+<li>Enable for all accounts – Select to enable the corresponding option for all the member accounts in an organization automatically. This includes new accounts that join the organization and those accounts that may have been suspended or removed from the organization.</li>
+<li>Auto-enable for new accounts – Select to enable GuardDuty for new member accounts automatically when they join your organization.</li>
+<li>Do not enable – Select to prevent enabling the corresponding option for any account in your organization. In this case, the GuardDuty administrator will manage each account individually.</li>
+</ul>
+<p><img alt="Manage Auto-enable preferences" src="../../images/GD-Auto-Enable-Preferences.png" /></p>
+<p><em>Figure 5: GuardDuty auto-enable preferences</em></p>
+<ol>
+<li>Choose Save Changes</li>
+</ol>
+<h4 id="add-accounts-as-members-to-your-organization">Add accounts as members to your organization</h4>
+<p>This procedure covers adding members accounts to a GuardDuty delegated administrator account through AWS Organizations. To learn more about associating members in GuardDuty, see <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_accounts.html">Managing multiple accounts in Amazon GuardDuty AWS service integrations with GuardDuty</a>.</p>
+<ol>
+<li>Log in to the delegated administrator account</li>
+<li>Open the GuardDuty console at https://console.aws.amazon.com/guardduty/.</li>
+<li>In the navigation panel, choose Accounts.
+The accounts table displays all of the accounts that are added either Via Organizations or By invitation.</li>
+<li>Select one or multiple account IDs that you want to add as members. Thses account IDs must have Type as Via Organizations.</li>
+<li>You can select the down arrow of the Status column to sort the accounts by the Not a member status and then choose each account that does not have GuardDuty enable in the current Region.</li>
+<li>Choose Confirm to add the accounts as members. This action also enables GuardDuty for all of the selected accounts. The Status for the accounts will change to Enabled.</li>
+<li>(Recommended) Repeat these steps in each AWS Region. This ensures that the delegated administrator can manage findings and other configurations for member accounts in all the Regions where you have GuardDuty enabled.</li>
+</ol>
+<h3 id="guardduty-protection-plans">GuardDuty protection plans</h3>
+<p>After enabling GuardDuty in your account(s), choosing additional protection types is highly recommended. GuardDuty protection plans are <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-features-activation-model.html">additional features</a> that add focused threat detection for Amazon EKS, Amazon S3, Amazon Aurora, Amazon EC2, Amazon ECS, and AWS Lambda. To learn more about the benefits of what each GuardDuty protection provides, refer to the protection section of the <a href="https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html">Amazon GuardDuty User Guide</a>.</p>
+<h4 id="s3-malware-protection">S3 Malware Protection</h4>
+<p>You can enable S3 Malware protection through the console, CLI, API, or through infrastructure as code such as <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-malwareprotectionplan.html">CloudFormation</a> or <a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/guardduty_malware_protection_plan">Terraform</a>. Keep in mind that you enable this specifically for a bucket at a time and not across a entire account or accounts. Refer to the <a href="https://docs.aws.amazon.com/guardduty/latest/ug/enable-malware-protection-s3-bucket.html">deployment documentation</a> for the exact steps but we have placed images below for you to get an idea of what the deployment looks like.</p>
+<p>Before deployment you need to ensure that a role exists that gives GuardDuty access to scan S3 objects in the bucket, including the ability to allow KMS key action, and that the bucket is not explicitly denying access to this role. For more information on creating this role and support encryption mechanisms look at the <a href="https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-iam-policy-prerequisite.html">prerequisite documentation</a> and the <a href="https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-quotas-guardduty.html">quota documentation</a>.</p>
+<p>When deploying you will need to determine if you want GuardDuty to tag objects based on if there was malware found (NO_THREATS_FOUND, THREATS_FOUND, UNSUPPORTED, ACCESS_DENIED, or FAILED). This tagging always you to create automated workflows depending on the tag. We give an example of this in the <a href="#s3-malware-protection-automation-workflow">S3 Malware automation workflow</a> section.</p>
+<p><img alt="S3 Malware Protection console" src="../../images/GD-S3-Malware-Console.png" />
+<em>Figure 7: S3 Malware Protection console</em></p>
+<p><img alt="S3 Malware Protection configuration" src="../../images/GD-S3-Malware-Configuration.png" />
+<em>Figure 8: S3 Malware Protection configuration</em></p>
+<h4 id="runtime-monitoring">Runtime Monitoring</h4>
+<p>For GuardDuty runtime monitoring protections including GuardDuty runtime monitoring for EKS, EC2, and ECS you have the ability to further scope what resources you want coverage for and how you would like to deploy the runtime agent. We recommend allowing GuardDuty to deploy runtime monitoring which will deploy a VPC endpoint and agent for EC2, ECS, and EKS using a an agent, sidecar, or EKS managed add-on, respectively. This will ensure coverage across your current resources but also apply to new resources that are created in the future. This agent if built on <a href="https://ebpf.io/what-is-ebpf/">EBPF technology</a>. Using the GuardDuty automation saves manual effort needed to address new resource coverage across your organization. However if you can choose to you can manage this configuration yourself.</p>
+<p>If choose to allow GuardDuty to deploy the needed resources to cover both current and future VPC endpoints and agents needed to provide runtime monitoring in your environment you can further scope which resources the runtime monitoring applies to by using inclusion or exclusion tags. For example, if you have a handful of EKS clusters that you don't want to monitor, than it would be more efficient to use an exclusion tag rather than the opposite scenario where you only want to apply monitoring to a few resources where you would want to use inclusion tags. The GuardDuty documentation provides <a href="https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-configuration.html">use case examples and specific tags</a> needed to implement this functionality.</p>
+<p>When configuring GuardDuty runtime monitoring it is important to understand the <a href="https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-prerequisites.html">prequisites</a> for runtime monitoring. This will give you information on supported OS's, Kernel version, CPU and Memory limits for the GuardDuty agent and more. After deployment ensure you <a href="https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring-assessing-coverage.html">assess your coverage</a> of the runtime monitoring deployment to address any issues.</p>
+<h4 id="runtime-monitoring-deployment-for-ec2">Runtime Monitoring Deployment for EC2</h4>
+<p>This deployment guide assumes the following:</p>
+<ul>
+<li>EC2 instances are running on supported Amazon Machine Images (AMIs), instance types, and operating systems.</li>
+<li>Foundational GuardDuty coverage is already enabled for your AWS Organization.</li>
+</ul>
+<p>For more detailed information on the prerequisites, refer <a href="https://docs.aws.amazon.com/guardduty/latest/ug/prereq-runtime-monitoring-ec2-support.html">here</a>.</p>
+<p>By following the steps outlined in this guide, you will learn how to leverage GuardDuty Runtime Monitoring to enhance the security posture of your EC2 instances, enabling real-time threat detection and response capabilities within your AWS environment.</p>
+<h5 id="configure-aws-systems-manager-ssm-default-host-management">Configure AWS Systems Manager (SSM) Default Host Management</h5>
+<p>The Amazon EC2 instances for which you want GuardDuty to monitor runtime events must be AWS Systems Manager (SSM) managed. With Quick Setup, a capability of AWS Systems Manager, you can activate Default Host Management Configuration for all accounts and Regions that have been added to your organization in AWS Organizations. This ensures that SSM Agent is kept up to date on all Amazon Elastic Compute Cloud (EC2) instances in the organization, and that they can connect to Systems Manager.</p>
+<ol>
+<li>Visit the <a href="https://console.aws.amazon.com/systems-manager/">AWS Systems Manager console</a> in the Organization management account.</li>
+<li>In the left-hand navigation pane, choose <strong>Quick Setup</strong>.</li>
+<li>Under “Default Host Management Configuration”, select “Create”.</li>
+<li>Leave the options as default, and select “Create”.</li>
+</ol>
+<hr />
+<p><strong>Assuming the AWS Systems Manager (SSM) Agent is already running on the EC2 instance when you configured Default Host Management, you may need to wait up to 30 minutes for the agent to connect with Systems Manager and the EC2 instance to appear in Fleet Manager as a managed instance. At that point, Systems Manager will install the Amazon GuardDuty Runtime Monitoring SSM Plugin on the instance.</strong></p>
+<hr />
+<h5 id="validate-ssm-host-management">Validate SSM Host Management</h5>
+<p>Remember, it normally takes 30 minutes for hosts to show in SSM after enabling Default Host Management. </p>
+<ol>
+<li>Visit the <a href="https://console.aws.amazon.com/systems-manager/">AWS Systems Manager console</a>, in the left-hand navigation pane, under the <strong>Node Management</strong> section, choose <strong>Fleet Manager</strong>.</li>
+<li>Confirm that you can see your EC2 instances in Fleet Manager. Alternatively, you can use <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/Resource-explorer-quick-setup.html">AWS Resource Explorer</a> to search and discover resources in your AWS account or across an entire AWS organization. </li>
+</ol>
+<hr />
+<p><strong>If you do not see your EC2 instances in Fleet Manager after 30 minutes of enabling Default Host Management, refer to the SSM Agent Troubleshooting section at the bottom of this page.</strong></p>
+<hr />
+<h5 id="enabling-guardduty-runtime-monitoring-for-ec2">Enabling GuardDuty Runtime Monitoring for EC2</h5>
+<ol>
+<li>Visit the <a href="https://console.aws.amazon.com/guardduty/">Amazon GuardDuty console</a> in your GuardDuty delegated administrator account.</li>
+<li>In the left hand navigation pane, under the <strong>Protection plans</strong> section, choose <strong>Runtime Monitoring</strong>.</li>
+<li>Under <strong>Runtime Monitoring configuration</strong>, click <strong>Enable</strong>. Click <strong>Confirm</strong> when prompted.</li>
+<li>Under <strong>Automated agent configuration</strong>, click <strong>Enable</strong> for all accounts (recommended).</li>
+<li>Toggle to the tab <strong>Runtime coverage</strong> and then open the tab, <strong>EC2 instance runtime coverage</strong>. Within 5 minutes, EC2 instances will start to show a "Healthy" status. It may take up to 10 minutes for runtime monitoring to be "Healthy" on EC2 instances already meeting the prerequisite configuration.</li>
+<li>Repeat steps 3-5 for all Regions enabled for your AWS Organization.</li>
+</ol>
+<h4 id="runtime-monitoring-deployment-for-ecs">Runtime Monitoring Deployment for ECS</h4>
+<p>This deployment guide assumes the following:</p>
+<ul>
+<li>Foundational GuardDuty coverage is already enabled for your AWS Organization.</li>
+<li>You have access to the delegated GuardDuty administrator account.</li>
+<li>Fargate platform running on supported version (at least 1.4.0 or LATEST).</li>
+<li>EC2 container instances are running on supported ECS-AMIs, instance types, and operating systems.</li>
+</ul>
+<p>For more information on the prerequisites for Fargate (ECS only) cluster, refer <a href="https://docs.aws.amazon.com/guardduty/latest/ug/prereq-runtime-monitoring-ecs-support.html">here</a>. </p>
+<p>For more information on the prerequisites for Amazon ECS running on Amazon EC2, refer <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-guard-duty-configure-manual-guard-duty.html">here</a>.</p>
+<p>By following the steps outlined in this guide, you will learn how to leverage GuardDuty Runtime Monitoring to enhance the security posture of your ECS clusters, enabling real-time threat detection and response capabilities within your AWS environment. For more information on how Runtime Monitoring works with Fargate (Amazon ECS only), refer <a href="https://docs.aws.amazon.com/guardduty/latest/ug/how-runtime-monitoring-works-ecs-fargate.html">here</a>. </p>
+<ol>
+<li>Open the <a href="https://us-east-1.console.aws.amazon.com/guardduty/home?region=us-east-1#/runtime-monitoring"><strong>Runtime Monitoring</strong></a> page in Amazon GuardDuty in the delegated GuardDuty administrator account.</li>
+<li>Under <strong>Runtime Monitoring configuration</strong>, click <strong>Enable for all accounts</strong>. Click <strong>Save</strong> when prompted. This will turn on GuardDuty ECS monitoring in all accounts.</li>
+<li>Under <strong>Automated agent configuration</strong>, click <strong>Enable for all accounts</strong> for <strong>AWS Fargate (ECS only</strong>). GuardDuty deploys and manages the agent in your ECS clusters on AWS Fargate, on your behalf. </li>
+<li>Toggle to the tab <strong>Runtime coverage</strong> and then open the tab, <strong>ECS clusters runtime coverage</strong>. </li>
+</ol>
+<p>When you want GuardDuty to monitor tasks that are part of a service, it requires a new service deployment after you enable Runtime Monitoring. If the last deployment for a specific ECS service was started before you enabled Runtime Monitoring, you can either restart the service, or update the service by using <code>forceNewDeployment</code>.</p>
+<p>For steps to update the service, see the following resources:
+* <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service-console-v2.html">Updating an Amazon ECS service using the console</a> in the <em>Amazon Elastic Container Service Developer Guide</em>.
+* <a href="https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_UpdateService.html">UpdateService</a> in the <em>Amazon Elastic Container Service API Reference</em>.
+* <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ecs/update-service.html">update-service</a> in the <em>AWS CLI Command Reference</em>.</p>
+<h4 id="runtime-monitoring-deployment-for-eks">Runtime Monitoring Deployment for EKS</h4>
+<p>This deployment guide assumes the following:</p>
+<ul>
+<li>Amazon EKS clusters are running on Amazon EC2 instances. GuardDuty does't support Amazon EKS clusters running on AWS Fargate.</li>
+<li>The Amazon EKS cluster must be running on a supported operating system and Kubernetes version.</li>
+<li>Foundational GuardDuty coverage is already enabled for your AWS Organization.</li>
+<li>You have access to the delegated GuardDuty administrator account.</li>
+</ul>
+<p>For more detailed information on the prerequisites, refer <a href="https://docs.aws.amazon.com/guardduty/latest/ug/prereq-runtime-monitoring-ec2-support.html">here</a>.</p>
+<p>By following the steps outlined in this guide, you will learn how to leverage GuardDuty Runtime Monitoring to enhance the security posture of your EKS clusters, enabling real-time threat detection and response capabilities within your AWS environment. For more information on how Runtime Monitoring works with Amazon EKS clusters, refer <a href="https://docs.aws.amazon.com/guardduty/latest/ug/how-runtime-monitoring-works-eks.html#eksrunmon-approach-to-monitor-eks-clusters">here</a>. </p>
+<p>In a multiple-account environments, only the delegated GuardDuty administrator account can enable or disable Automated agent configuration for the member accounts, and manage Automated agent for the EKS clusters belonging to the member accounts in their organization. The GuardDuty member accounts can't modify this configuration from their accounts. The delegated GuardDuty administrator account account manages their member accounts using AWS Organizations. For more information about multi-account environments, see <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_accounts.html">Managing multiple accounts</a>.</p>
+<ol>
+<li>Open the <a href="https://us-east-1.console.aws.amazon.com/guardduty/home?region=us-east-1#/runtime-monitoring"><strong>Runtime Monitoring</strong></a> page in Amazon GuardDuty.</li>
+<li>Under <strong>Runtime Monitoring configuration</strong>, click <strong>Enable for all accounts</strong>. Click <strong>Save</strong> when prompted.</li>
+<li>Under <strong>Automated agent configuration</strong>, click <strong>Enable for all accounts</strong> for <strong>Amazon EKS</strong>. GuardDuty deploys and manages the agent in your EKS clusters on AWS Fargate, on your behalf. </li>
+<li>Toggle to the tab <strong>Runtime coverage</strong> and then open the tab, <strong>EKS clusters runtime coverage</strong>. </li>
+</ol>
+<h2 id="operationalize-guardduty-findings">Operationalize GuardDuty findings</h2>
+<p>After GuardDuty has been enabled in your account(s), GuardDuty will begin monitoring the <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html">foundational data sources</a> and analyzing features associated with optionally enabled resource protection types. A best practice recommendation after enabling GuardDuty is to leverage the 30-day trial (enabled per account) to understand the baseline of normal activity, derived by machine learning, for your accounts and resources. During the trial period GuardDuty will also use threat-based and rules-based intelligence to generate <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings.html">findings</a> in near-real time.</p>
+<p>Potential security issues are presented as findings in the GuardDuty console. All GuardDuty findings are assigned a <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings.html#guardduty_findings-severity">severity level</a> (low, medium, high) and corresponding value (1.0 – 8.9) based on potential risks. Higher value findings indicate a greater security risk. The severity level assigned to a finding is provided to help you determine a response to a potential security issue that is highlighted by a finding.
+<img alt="GuardDuty Severity levels" src="../../images/GD-Severity-Levels.png" />
+<em>Figure 9: GuardDuty severity levels</em></p>
+<p>It is recommended to familiarize your team with the <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-active.html">GuardDuty Finding Types</a>. This will give you insights into what findings you might see in your account, the details associated with these findings, and potential <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_remediate.html">remediation actions</a>. After you understand different GuardDuty findings we encourage customers to think through filtering, notifications, and potential automatic remediation which will cover in the next sections. It is also encouraged to begin writing <a href="https://github.com/aws-samples/aws-incident-response-playbooks">incident response playbooks</a> for responding to GuardDuty findings in your environment. This will likely combine multiple steps below and also details not covered that might be specific to your environment and your teams.</p>
+<h3 id="filtering-findings">Filtering findings</h3>
+<p>If you are new to GuardDuty the easiest way to view/filter your findings is via the Summary tab. The Summary dashboard displays an aggregated view of the last 10,000 GuardDuty findings generated in the current AWS Region. You can choose to view the Last 2 days (default), Last 7 days or Last 30 days. This dashboard provides 6 widgets, 3 of which include filter capabilities to customize your view.
+<img alt="GuardDuty Summary page" src="../../images/GD-Summary-page.png" />
+<em>Figure 10: GuardDuty summary page</em></p>
+<p>As the delegated administrator becomes more familiar with their organizations’ GuardDuty findings, an advanced filtering technique may be employed using the Findings tab.  The Findings tab exposes <a href="https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_filter-findings.html#filter_criteria">80+ finding attributes</a> that can match the criteria you specify or filter out any unmatched findings. A common filter technique is one that focuses on threats that have a high indication that 1. A resource has been compromised, for example looking at high severity findings 2. The type of finding indicates potential risks for unwanted billing charges, for example CryptoMining.</p>
+<p>Surfacing Bitcoin mining is an example of one such finding filter that could be created. Bitcoin is a worldwide cryptocurrency and digital payment system that can be exchanged for other currencies, products, and services. Bitcoin is a reward for bitcoin-mining and is highly sought after by threat actors. To find out if any of your EC2 instances have been compromised for purposes of Bitcoin mining you can use this attribute and value pairing: Severity:High, Finding type:CryptoCurrency:EC2/BitcoinTool.B!DNS. Applying this filter will provide a view of any EC2 instances that are querying a domain name that is associated with Bitcoin or other cryptocurrency-related activity.
+<img alt="GuardDuty Finding page" src="../../images/GD-Findings-Page.png" />
+<em>Figure 11: GuardDuty finding page</em></p>
+<p>Note: Frequently used filters can be saved to reduce future efforts. To save the specified attributes and their values (filter criteria) as a filter, select Save. Enter the filter name and description, and then choose Done.</p>
+<h3 id="reducing-potential-noise">Reducing potential noise</h3>
+<p>As accounts and workloads grow within an AWS Organization, it is possible there will be an increase in GuardDuty findings because of certain configurations. Some of the findings may be deemed low value or threats not intended to be acted upon. To make it easier to recognize security threats that are most impactful to your environment, enabling quick remediation actions, it is recommended to deploy suppression rules. A <a href="https://docs.aws.amazon.com/guardduty/latest/ug/findings_suppression-rule.html">suppression rule</a> is a set of criteria, consisting of a filter attribute paired with a value, used to filter findings by automatically archiving new findings that match the specified criteria.</p>
+<p>After creating a suppression rule, new findings that match the criteria defined in the rule are automatically archived as long as the suppression rule is in place. Existing filters can be used to create suppression rules. Suppression rules can be configured to suppress entire finding types, or define more granular filter criteria to suppress only specific instances of a particular finding type. Suppression rules can be edited at any time. It is recommended to suppress with as much granualarity as possible. This will help with reducing findings for only certain circumstances without losing total coverage of a finding type.</p>
+<p>Suppressed findings are not sent to AWS Security Hub, Amazon S3, Amazon Detective, or Amazon CloudWatch, reducing finding noise level if you consume GuardDuty findings via Security Hub, a third-party SIEM, or other alerting and ticketing applications.</p>
+<p>GuardDuty continues to generate findings even when they match suppression rules, however, those findings are automatically marked as archived. An archived finding is stored in GuardDuty for 90-days and can be viewed at any time during that period. You can view suppressed findings in the GuardDuty console by selecting Archived from the findings table, or through the GuardDuty API using the ListFindings API with a findingCriteria criterion of service.archived equal to true.</p>
+<p>A common use case for a suppression rule is filtering out a known resource that scans EC2 instances. This resource may result in a finding type Recon:EC2/Portscan which for certain resources in your environment may be intended. For this scenario it is recommended to suppress associated findings using a combination of resource tagging and Finding Type.</p>
+<h3 id="automated-notification-for-high-priority-findings">Automated notification for high priority findings</h3>
+<p>After creating suppression rule filters to allow for surfacing only the most impactful findings for your environment, the next recommended action is automating the notification of high priority findings. Amazon EventBridge is a serverless event bus that makes it easier to build event-driven applications at scale using events generated from AWS services. GuardDuty creates an event for Amazon EventBridge for newly generated findings. All findings are dynamic, meaning that, if GuardDuty detects new activity related to the same security issue it will update the original finding with the new information as a newly aggregated finding. Thus, creating a new event for EventBridge to potentially process. Delegated administrators can optionally change the frequency of publishing new findings to EventBridge in GuardDuty Settings under Findings export options. By default, EventBridge is updated every 6 hours but can be changed to 1 hour or 15 minutes intervals.</p>
+<p>Every GuardDuty finding is assigned a finding ID. GuardDuty creates an EventBridge event for every finding with a unique finding ID.  By using Amazon EventBridge with GuardDuty, you can automate tasks to help you respond to security issues related to GuardDuty findings. One such task is sending notifications to a preferred notification channel. Commonly used notification channels are email and Enterprise messaging applications that support incoming messages via Webhook.</p>
+<p>Another common scenario is to send GuardDuty findings to a ticketing system or SIEM solution for tracking and event correlation. It is recommended to leverage Security Hub as a central aggregation point in AWS for security findings before <a href="https://docs.aws.amazon.com/securityhub/latest/partnerguide/prepare-receive-findings.html">sending these findings to a ticketing system or SIEM solution</a>. You can also leverage EventBridge to send GuardDuty findings directly to a ticketing system or SIEM solution. Please refer to your solutions documentation for guidance on how to send information via EventBridge.</p>
+<p>When leveraging email as a preferred notification channel, GuardDuty is integrated with Amazon Simple Notification Services (Amazon SNS) via EventBridge. Amazon Simple Notification Service (Amazon SNS) is a fully managed messaging service for both application-to-application (A2A) and application-to-person (A2P) communication. The notification workflow is as depicted in the image below.
+<img alt="GuardDuty Notification workflow" src="../../images/GD-Notification-Workflow.png" />
+<em>Figure 12: GuardDuty notification workflow</em></p>
+<p>All GuardDuty findings not matching a suppression rule are automatically delivered to the account event bus. There are only two configurations required to deploy email notification via Amazon SNS for unsuppressed findings:</p>
+<ol>
+<li>Create and subscribe to a SNS topic</li>
+<li>Create an EventBridge rule</li>
+</ol>
+<p>SNS is the target service for EventBridge actions in this workflow. SNS only requires two steps: 1. Create a new Topic (choose type as Standard) and provide a topic Name, 2. Create a Subscription with Email as the protocol. Entering an email address under Endpoint and clicking Create subscription finalizes the steps required in the console. The last step is to click Confirm subscription within the email sent to the email address used for the endpoint.
+<img alt="GuardDuty SNS email" src="../../images/GD-SNS-Email.png" />
+<em>Figure 13: GuardDuty SNS email</em></p>
+<p><img alt="SNS Subscription Confirmed" src="../../images/GD-Subscription-Confirmed.png" /></p>
+<p><em>Figure 14: SNS subscription confirmation</em></p>
+<p>The basis of EventBridge is to create <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rules.html">rules</a> that route <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html">events</a> to a <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-targets.html">target</a>. In this example below, a rule with an event pattern is constructed. This results in the rule being ran when an event matches the defined pattern. This rule will look for EC2 instances that exhibit SSH brute force attack behavior with the added detail of the resource being leveraged as the threat actor.</p>
+<p>With both the SNS topic/subscription in place, deploying this EventBridge rule will automatically send an email notification to the registered email address. It is recommended to use an email alias associated with a team when sending notifications of high severity findings.
+<img alt="GuardDuty EventBridge rule" src="../../images/GD-EventBridge-Rule.png" />
+<em>Figure 15: GuardDuty EventBridge rule</em></p>
+<p>Tip: For more detailed instructions on how to build an EventBridge rule for GuardDuty findings that target SNS for email notification with customization, refer to this <a href="https://www.youtube.com/watch?v=HSon9kZ0mCw">AWS Knowledge Center video</a>.</p>
+<h3 id="automated-remediation-for-common-finding-types">Automated remediation for common finding types</h3>
+<p><em>Stealth:S3/ServerAccessLoggingDisabled</em>
+A common use case for automation with GuardDuty finding types is to address S3 and EC2 related findings as a result of misconfiguration (intentional or unintentional). For example, finding type Stealth:S3/ServerAccessLoggingDisabled informs you that S3 server access logging is disabled for a bucket within your AWS environment. If disabled, no web request logs are created for any attempts to access the identified S3 bucket, however, S3 management API calls to the bucket, such as <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucket.html">DeleteBucket</a>, are still tracked. If S3 data event logging is enabled through CloudTrail for this bucket, web requests for objects within the bucket will still be tracked. This could be the result of a misconfiguration or part of an unauthorized user’s technique to evade detection.</p>
+<p>Using the associated finding details, an administrator can learn about the AWS resources that were involved in the suspicious activity, when this activity took place, and additional information. After gathering the information, the administrator could pivot from the finding into the S3 bucket to re-enable Server Access Logging. Remediating this automatically would save the administrator time and allow for focused investigation into how a potential threat actor was able to perform the API call.</p>
+<p>A common remediation approach decouples the GuardDuty detection from the automation action using an AWS Config Managed Rule to trigger on <a href="https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-logging-enabled.html">s3-bucket-logging-enabled</a> configuration changes. Once triggered, AWS Config will immediately evaluate the S3 bucket and display a status of NON_COMPLIANT if logging is disabled. You can associate remediation actions with AWS Config rules and choose to execute them automatically to address non-compliant resources without manual intervention. In this scenario, the non-compliant s3-bucket-logging-enabled status will trigger the <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html">Systems Manager Automation</a> document named <a href="https://docs.aws.amazon.com/systems-manager-automation-runbooks/latest/userguide/automation-aws-configures3bucketlogging.html">AWS-ConfigureS3BucketLogging</a>. By selecting Automatic remediation and AWS-ConfigureS3BucketLogging as your Remediation action detail when configuring your AWS Config rule Action, S3 server access logging will be re-enabled anytime a S3 bucket is non-compliant to the Config rule.</p>
+<p><img alt="GuardDuty Finding automation workflow" src="../../images/GD-Finding-Automation.png" /></p>
+<p><em>Figure 16: GuardDuty finding automation</em></p>
+<p><em>Backdoor:EC2/C&amp;CActivity.B</em>
+EC2 instances querying an IP address that is associated with a known command and control server is another common use case for automated remediation. This finding informs you that the listed instance within your AWS environment is querying an IP associated with a known command and control (C&amp;C) server. The listed instance might be compromised. This type of finding has multiple steps towards remediations, that may include actions like performing a snapshot of the volume(s) before terminating the instance. This snapshot can provide information to a forensics team. However, the first step in remediating this finding is too isolate the instance.</p>
+<p>The same event workflow described in the Automated Notifications section can be utilized to change the security group of the instance to stop inbound/outbound connections to the internet. An <a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html">AWS Lambda function</a> would be the target of an EventBridge rule set to match on Backdoor:EC2/C&amp;CActivity.B. (An EventBridge can support multiple targets; a best practice for this scenario would also include an SNS topic target)
+Here is an example Lambda function written Python to perform this task:</p>
+<pre><code class="language-Python">import boto3
+
+ec2_client = boto3.client('ec2')
+
+def lambda_handler(event, context):
+    try:
+        # Check if the event is triggered by GuardDuty finding
+        if 'detail' in event and 'type' in event['detail'] and event['detail']['type'] == 'Backdoor:EC2/C&amp;CActivity.B':
+            # Extract relevant information from the GuardDuty finding
+            instanceId = event['detail']['resource']['instanceDetails']['instanceId']
+            SecurityGroupId = &quot;sg-XXXXXXXXXXXX&quot;  # Replace with the desired Security Group ID
+
+            # Construct the modification command
+            command = {
+                'InstanceId': instanceId,
+                'Groups': [SecurityGroupId]
+            }
+
+            # Send the command to modify the EC2 instance's security group
+            ec2_client.modify_instance_attribute(**command)
+
+            return 'Updated security group for instance: {}'.format(instanceId)
+        else:
+            return 'No action taken. Event is not a GuardDuty finding of type Backdoor:EC2/C&amp;CActivity.B'
+    except Exception as e:
+        print('Error:', str(e))
+        raise e
+</code></pre>
+<h3 id="s3-malware-protection-automation-workflow">S3 Malware Protection automation workflow</h3>
+<p>Giving GuardDuty the ability to add tags such as NO_THREATS_FOUND, THREATS_FOUND, UNSUPPORTED, ACCESS_DENIED, or FAILED based on the result of the malware scan gives you the ability to create automated workflows. For example, if you are allowing untrusted third parties to upload documents into S3 before you bring them into an application you can use GuardDuty S3 malware protection to scan these documents and then either move them into the application bucket or a quarantine bucket based on the tag given. As a primer we have included a picture below illustrating how GuardDuty S3 Malware Protection processes files and integrates with other AWS services.</p>
+<p><img alt="S3 Malware Protection automation workflow" src="../../images/GD-S3-Automation-Workflow.png" />
+<em>Figure 17: S3 Malware Protection automation workflow</em></p>
+<p>To achieve the example we described in the first paragraph we can use <a href="https://aws.amazon.com/eventbridge/">Amazon EventBridge</a> and AWS Lambda to build out our automated solution based on the S3 object scan result getting published to your default event bus which is <a href="https://docs.aws.amazon.com/guardduty/latest/ug/monitor-with-eventbridge-s3-malware-protection.html">configured by default</a> when S3 Malware Protection is configured in your aWS account. Then you can configure a Lambda function to process the file based on the object tag that was given by GuardDuty.</p>
+<p>You can see an example EventBridge rule in the <a href="https://docs.aws.amazon.com/guardduty/latest/ug/monitor-with-eventbridge-s3-malware-protection.html">GuardDuty documentation</a>. From here you will need to configure a Lambda function to uses that EventBridge rule as a trigger and then moves the file based on your needs. Example Pyton code to do this is shown below. Keep in mind this is example code and should be altered to fit your use case.</p>
+<pre><code class="language-Python">#Script that evaluates messages about the scan status of S3 malware scanning and then moves the files to
+#the appropriate bucket based on the status.
+
+
+import boto3
+import json
+import os
+import logging
+from botocore.exceptions import ClientError
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+gdclient = boto3.client('guardduty')
+s3client = boto3.client('s3')
+
+infected_bucket = os.environ['INFECTED_BUCKET']
+clean_bucket = os.environ['CLEAN_BUCKET']
+
+def lambda_handler(event, context):
+    logger.info('Event Data')
+    logger.info(event)
+
+    scan_status = event[&quot;detail&quot;][&quot;scanStatus&quot;]
+    bucket_name = event[&quot;detail&quot;][&quot;s3ObjectDetails&quot;][&quot;bucketName&quot;]
+    object_key = event[&quot;detail&quot;][&quot;s3ObjectDetails&quot;][&quot;objectKey&quot;]
+    scan_result = event[&quot;detail&quot;][&quot;scanResultDetails&quot;][&quot;scanResultStatus&quot;]
+
+    if scan_status == 'COMPLETED':
+        logger.info(&quot;Scan status is COMPLETED&quot;)
+
+        if scan_result == 'THREATS_FOUND':
+            logger.info(&quot;Threats found in the object&quot;)
+            logger.info(&quot;Moving file to infected bucket: %s&quot;,infected_bucket)
+
+            copy_source = {'Bucket': bucket_name, 'Key': object_key}
+
+            try:
+                response = s3client.copy_object(
+                    Bucket=infected_bucket,
+                    CopySource=copy_source,
+                    Key=object_key
+                )
+
+                print(response)
+
+                logger.info(&quot;File copy successful&quot;)
+                logger.info(&quot;Deleting object from source bucket&quot;)
+                response = s3client.delete_object(
+                    Bucket=bucket_name,
+                    Key=object_key)
+
+                print (response)
+
+            except ClientError:
+                raise
+
+        elif scan_result == 'NO_THREATS_FOUND':
+            logger.info(&quot;No threats found in the object&quot;)
+            logger.info(&quot;Moving file to clean bucket: %s&quot;,clean_bucket)
+
+            copy_source = {'Bucket': bucket_name, 'Key': object_key}
+
+            try:
+                response = s3client.copy_object(
+                    Bucket=clean_bucket,
+                    CopySource=copy_source,
+                    Key=object_key
+                )
+
+                print(response)
+
+                logger.info(&quot;File copy successful&quot;)
+                logger.info(&quot;Deleting object from source bucket&quot;)
+                response = s3client.delete_object(
+                    Bucket=bucket_name,
+                    Key=object_key)
+
+                print (response)
+
+            except ClientError:
+                raise
+
+
+        else:
+            logger.info(&quot;scan_result is: %s not moving&quot;, scan_result)
+</code></pre>
+<h2 id="cost-optimization">Cost Optimization</h2>
+<p>When GuardDuty is enabled for the first time in an account, that account will be automatically provided with a 30-day free trial period for each region. Subsequently each feature also has a free trial too. For more information on pricing and free trials please refer to the <a href="https://aws.amazon.com/guardduty/pricing/">GuardDuty pricing page</a>. This is an important first step in understanding monthly GuardDuty costs in a given account. During the trial an administrator can view cost estimations based on Account ID, Data source, Feature and S3 buckets. If enabling GuardDuty in an AWS organization, the administrator can monitor cost metrics for all of the member accounts.</p>
+<p>AWS account administrators may be required to investigate charges related to GuardDuty if an increase in costs occurs. Some common reason for increased monthly GuardDuty costs includes:</p>
+<h3 id="cloudtrail-andor-s3-data-event-utilization-is-high">CloudTrail and/or S3 data event utilization is high</h3>
+<p>An increase in CloudTrail charges could be attributed to multiple reasons depending on whether they originate from management event costs or data event costs. Although there are many ways to query AWS log data we will show examples using Athena to look at exact API calls and the services associated with them. To understand CloudTrail API volumes using Athena:</p>
+<ol>
+<li>If not already present, create a new CloudTrail trail [2]. Choose to account for both management and data events here. If the trail is not needed beyond the scope of this analysis, the trail may be deleted or disable logging data to it.</li>
+<li>Create an Athena table [3] that pulls from the S3 location where the CloudTrail logs are stored</li>
+<li>Once this table has been created, navigate to the Athena console to perform a query over a 24-hour period to understand the top event names and event sources that contributed to the spike</li>
+</ol>
+<pre><code class="language-SQL">SELECT eventName,count(eventName) AS eventVolume,eventSource
+FROM your_athena_tablename
+WHERE eventtime between '2021-01-24' AND '2021-01-25'
+GROUP BY eventName, eventSource
+ORDER BY eventVolume DESC limit 10;
+</code></pre>
+<ol>
+<li>Upon gaining an understanding of which events and event sources were responsible for a bulk of the activity, it may be suitable to alter the SQL query to view data by hour, user-agent, IP or principal. This will help to identify the exact source of the increased API calls</li>
+</ol>
+<p><em>[2] Creating a trail - <a href="https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-a-trail-using-the-console-first-time.html">https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-a-trail-using-the-console-first-time.html</a></em>
+<em>[3] Querying AWS CloudTrail Logs - Using the CloudTrail Console to Create an Athena Table for CloudTrail Logs  - <a href="https://docs.aws.amazon.com/athena/latest/ug/cloudtrail-logs.html#create-cloudtrail-table-ct">https://docs.aws.amazon.com/athena/latest/ug/cloudtrail-logs.html#create-cloudtrail-table-ct</a></em></p>
+<h3 id="vpc-flow-logs">VPC Flow Logs</h3>
+<p>An increase in VPC Flow log related costs can be a result of GuardDuty analyzing flow logs to identify malicious, unauthorized, or unexpected behavior in AWS accounts and workloads. This data source is charged per Gigabyte (GB) per month and is offered with tiered volume discounts.
+To understand VPC Flow log volumes using Athena, perform the steps:</p>
+<ol>
+<li>Ensure that Flow logs are being published to S3 [4]</li>
+<li>Create an Athena table [5] that pulls from the S3 location where the flow logs are stored [5]</li>
+<li>Once this table has been created, navigate to the Athena console to perform a query over a 24 period to understand the top flows that contributed to the spike</li>
+</ol>
+<pre><code class="language-SQL">SELECT COUNT(version) AS Flows,
+        SUM(numpackets) AS Packetcount,
+         sourceaddress
+FROM vpc_flow_logs
+WHERE date = DATE('2021-01-31')
+GROUP BY  sourceaddress
+ORDER BY  Flows DESC LIMIT 10;
+</code></pre>
+<ol>
+<li>Alternatively, if VPC flow logs are setup with CloudWatch logs as their final destination, the customer may use CloudWatch insights to extract the top-talker information [6]. Here are some sample queries that can be called directly from the insights console [7]</li>
+</ol>
+<p><em>[4] Publishing flow logs to Amazon S3 - <a href="https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html">https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html</a></em>
+<em>[5] Querying Amazon VPC Flow Logs - <a href="https://docs.aws.amazon.com/athena/latest/ug/vpc-flow-logs.html">https://docs.aws.amazon.com/athena/latest/ug/vpc-flow-logs.html</a></em>
+<em>[6] Analyzing Log Data with CloudWatch Logs Insights - <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html">https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html</a></em>
+<em>[7] Sample Queries - <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_QuerySyntax-examples.html">https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_QuerySyntax-examples.html</a></em></p>
+<p>Querying flow logs using Amazon Athena - <a href="https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-athena.html">https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-athena.html</a>*</p>
+<h3 id="dns-query-logs">DNS Query logs</h3>
+<p>An increase in DNS log related costs can be a result of GuardDuty analyzing DNS requests and responses to identify malicious, unauthorized, or unexpected behavior in AWS accounts and workloads. This data source is charged per Gigabyte (GB) per month and is offered with tiered volume discounts.
+Much like VPC Flow logs, an account may have their DNS flow logs exported to CloudWatch or S3 [8]. Top-talkers for DNS can be queried in CloudTrail Insights:</p>
+<ol>
+<li>Navigate to Route53 and verify that 'Query Logging' is enabled</li>
+<li>Check the logger configuration and confirm that a 'CloudWatch Logs log group' is the destination type</li>
+<li>Verify that one or more VPC’s are present under 'VPC’s that queries are logged for'</li>
+<li>Click the log group shown as a part of the 'Destination ARN'</li>
+<li>Click Insights on the left tab</li>
+<li>Select the log-group where the queries are being logged</li>
+<li>Select a time range and supply a query to understand which instance and hostnames have the most outbound queries</li>
+</ol>
+<pre><code class="language-SQL">stats count(*) as numRequests by srcids.instance,query_name
+    | sort numRequests desc
+    | limit 10
+</code></pre>
+<p>Alternatively, if the DNS logs are being routed to a S3 bucket, Athena can be used to create a table that pulls this data from S3 [9]. Steps to perform:</p>
+<ol>
+<li>Navigate to Route53 and verify that 'Query Logging' is enabled</li>
+<li>Check the logger configuration and confirm that 'S3 bucket' is the destination type</li>
+<li>Verify that one or more VPC’s are present under 'VPC’s that queries are logged for'</li>
+<li>Navigate to Athena and create a table using the following command</li>
+</ol>
+<pre><code class="language-SQL">CREATE EXTERNAL TABLE IF NOT EXISTS default.route53query (
+  `version` float,
+  `account_id` string,
+  `region` string,
+  `vpc_id` string,
+  `query_timestamp` string,
+  `query_name` string,
+  `query_type` string,
+  `query_class` string,
+  `rcode` string,
+  `answers` array&lt;string&gt;,
+  `srcaddr` string,
+  `srcport` int,
+  `transport` string,
+  `srcids` string,
+  `isMatchedDomain` string
+)
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+WITH SERDEPROPERTIES (
+  'serialization.format' = '1'
+) LOCATION 's3://&lt;bucket name&gt;/AWSLogs/&lt;account number&gt;/vpcdnsquerylogs/'
+TBLPROPERTIES ('has_encrypted_data'='false');
+</code></pre>
+<ol>
+<li>Query data using the following query</li>
+</ol>
+<pre><code class="language-SQL">SELECT count(version) AS numRequests,
+         srcids,
+        query_name
+FROM route53query
+WHERE query_timestamp
+    BETWEEN '2021-01-14'
+        AND '2021-01-15'
+GROUP BY  srcids,query_name
+ORDER BY  numRequests DESC limit 10;
+</code></pre>
+<p><em>[8] Log your VPC DNS queries with Route 53 Resolver Query Logs - https://aws.amazon.com/blogs/aws/log-your-vpc-dns-queries-with-route-53-resolver-query-logs/</em>
+<em>[9] How to automatically parse Route 53 Resolver query logs - https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-automatically-parse-route-53-resolver-query-logs/</em>
+--</p>
+<h3 id="other-considerations">Other considerations</h3>
+<ul>
+<li>Sometimes an understanding of a surge in the costs occurring the start of the month for CloudTrail S3 and VPC/DNS flow log analysis is required. This is most likely due to the pricing structure of these data sources. GuardDuty offers tiered discounts and becomes inexpensive to use as more events are analyzed through the course of the month. See pricing page (<a href="https://aws.amazon.com/guardduty/pricing/">https://aws.amazon.com/guardduty/pricing/</a>) for a better understanding.</li>
+<li>GuardDuty costs can increase due to configuration changes on an account including deployment of new applications or the use of a third-party security/scanning tool that makes repeated ‘Describe’ API calls. These might cause an increase in CloudTrail events, and/or traffic (VPC &amp; DNS logs).</li>
+<li>It is not recommended to rely on the CloudTrail event history's CSV download to compare event volumes because it may have event filters or incomplete data. This feature is more suited for smaller CSV downloads.</li>
+<li>CloudTrail insights can be useful to augment these investigations. CloudTrail Insights continuously monitors CloudTrail write management events, and uses mathematical models to determine the normal levels of API and service event activity for an account.</li>
+<li>If a new member account is added or if a GuardDuty service is resumed after being disabled for an extended time those costs may also be perceived as surges.</li>
+<li>S3 protection can be disabled but GuardDuty does not allow you to remove any additional data sources. However, if DNS is disabled at the VPC level, those logs are not processed by GuardDuty. Accounts will not be charged or have DNS-based results.</li>
+<li>GuardDuty is optimized for security value and will not charge customers for processing some low-risk events that would otherwise be delivered to a customer's CloudTrail. Therefore, the event counts may not exactly match.</li>
+<li>If Runtime Monitoring is enabled for your account, you will not be charged for analysis of VPC Flow Logs from instances where the GuardDuty agent is deployed and active.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="troubleshooting-aws-systems-manager-ssm-agent-issues">Troubleshooting AWS Systems Manager (SSM) Agent Issues</h3>
+<p>There are several issues that might cause the SSM agent to work improperly. You can use the Systems Manager Automation runbook to automatically troubleshoot an EC2 instance that SSM is unable to manage</p>
+<ul>
+<li>Open <a href="https://us-east-1.console.aws.amazon.com/systems-manager/automation/execute/AWSSupport-TroubleshootManagedInstance?region=us-east-1">this link</a> to configure the<a href="https://us-east-1.console.aws.amazon.com/systems-manager/automation/execute/AWSSupport-TroubleshootManagedInstance?region=us-east-1"></a>Systems Manager Automation runbook.</li>
+<li>Navigate to the AWS Region for the EC2 instance you want to troubleshoot.</li>
+<li>Under the <strong>Input parameters</strong>, change the dropdown from "Show managed instances only" to "Show all instances".</li>
+<li>Select the EC2 instance you want to troubleshoot.</li>
+<li>Leave all the other settings, and at the bottom of the page, click <strong>Execute</strong>. This process normally takes up to 5 minutes to complete.</li>
+<li>Once the automation document has as an Overall status of Success, expand the Outputs section.</li>
+<li>Review the outputs to see the specific problem with your SSM configuration.</li>
+</ul>
+<h3 id="troubleshooting-shared-vpcs-issues">Troubleshooting Shared VPCs Issues</h3>
+<p>EC2 instances in your AWS account might run in subnets from a <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html">shared VPC</a> owned by another AWS account. In this scenario the GuardDuty console might show an error message “VPC Endpoint Creation Failed” for EC2 instances listed in the Runtime Monitoring section.
+* Enable GuardDuty EC2 Runtime Monitoring in the AWS account that owns the shared VPC.
+* Ensure there is at least one EC2 instance running in the shared VPC and in the AWS account that owns the VPC.</p>
+<h3 id="troubleshooting-custom-recursive-dns-architecture-issues">Troubleshooting Custom Recursive DNS Architecture Issues</h3>
+<p>Another reason that you might see the error message “VPC Endpoint Creation Failed” can be caused by using a custom DNS server instead of the default <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html">Amazon Route 53 Resolver</a>, often referred to as the “.2 resolver”. Since GuardDuty relies on the Route 53 resolver to know where how to find the GuardDuty VPC endpoint this can cause an issue with the VPC endpoint configuration. Although we recommend using the AWS managed DNS resolver for recursive DNS, some customers decide to use a custom DNS resolver. To fix this issue while still using your custom DNS server you have two options:</p>
+<p><strong>Option 1:</strong> The best option is to leave the “Enable DNS resolution” box checked so that GuardDuty can use the Route 53 resolver to find the GuardDuty VPC endpoint. The DHCP option set that you have configured for your custom DNS server will have set the resolver.conf file for your hosts so that they use your custom DNS server. The GuardDuty agent will use the .2 resolver option. To enable the Route 53 DNS Resolver in your VPC follow the steps below.</p>
+<ul>
+<li>Visit the <a href="https://console.aws.amazon.com/vpc/">Amazon VPC Console</a>. </li>
+<li>Select the VPC that you want to change the DNS settings.</li>
+<li>In the top right corner use the <strong>Actions</strong> drop down and click edit <strong>VPC settings</strong></li>
+</ul>
+<p><img alt="Image" src="../../images/edit-vpc-settings.png" /></p>
+<ul>
+<li>Once you’re on the VPC settings page make sure the <strong>Enable DNS resolution</strong> box is checked. This will enable Route53 DNS Resolver for this VPC.</li>
+</ul>
+<p><img alt="Image2" src="../../images/dns-settings.png" /></p>
+<ul>
+<li>If you have configured a custom DNS server because you want to limit traffic that can use the Route 53 resolver then you can use Route 53 DNS firewall to allow resolution to the GuardDuty endpoint and nothing else. To do this you will need to make two rules in your Route 53 DNS firewall policy. The rule with the top priority will allow resolution to “guardduty-data.<region>.amazonaws.com”. The rule that will follow in rule evaluation priority should deny “<em>.”. The combination of these rules will allow resolution to the GuardDuty endpoint through the Route 53 resolver, while denying any other resolution. (GuardDuty is also monitoring this Route53 resolver traffic for suspicious) activity.</em>*</li>
+</ul>
+<p><strong>Option 2:</strong> If you’re using a <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/centralize-access-using-vpc-interface-endpoints/">centralized endpoint VPC architecture</a> you can create an entry in your custom DNS server to resolve the GuardDuty endpoint. To do this you will need to check the endpoint specific to your central VPC that the GuardDuty agent is trying to resolve and then add that as your DNS entry.</p>
+<h3 id="troubleshooting-ecs-task-execution-role-errors">Troubleshooting ECS Task Execution Role Errors</h3>
+<p>If you see issue type <strong>Agent exited</strong> and additional information error message that says <strong>CannotPullContainerError</strong> this is likely caused by insufficient IAM permissions for the ECS Fargate task execution role. Fargate tasks <strong>must</strong> use a task execution role. This role grants the tasks permission to retrieve, update, and manage the GuardDuty security agent on your behalf. To fix this follow the steps below.</p>
+<ul>
+<li>Visit the <a href="https://console.aws.amazon.com/iam/">AWS IAM console</a>.</li>
+<li>In the left-hand navigation pane, choose <strong>Roles</strong>, and then choose <strong>Create role</strong>.</li>
+<li>For <strong>Trusted entity type</strong>, choose <strong>AWS service</strong>.</li>
+<li>For <strong>Service or use case</strong>, choose <strong>Elastic Container Service</strong>, and then choose the <strong>Elastic Container Service Task</strong> use case.</li>
+<li>Choose <strong>Next</strong>.</li>
+<li>In the <strong>Add permissions</strong> section, search for <strong>AmazonECSTaskExecutionRolePolicy</strong>, then select the policy.</li>
+<li>Choose <strong>Next</strong>.</li>
+<li>For <strong>Role name</strong>, enter <strong>ecsTaskExecutionRole</strong>.</li>
+<li>Review the role, and then choose <strong>Create role</strong>.</li>
+</ul>
+<hr />
+<p><strong>Runtime Monitoring supports managing the security agent for your Amazon ECS clusters (AWS Fargate) only through GuardDuty. There is no support for managing the security agent manually on Amazon ECS clusters.</strong></p>
+<hr />
+<h2 id="resources">Resources</h2>
+<h3 id="workshops">Workshops</h3>
+<ul>
+<li><a href="https://awsactivationdays.splashthat.com/">Activation Days</a></li>
+<li><a href="https://catalog.workshops.aws/guardduty">Amazon GuardDuty workshop</a></li>
+<li><a href="https://catalog.workshops.aws/detective">Amazon Detective workshop</a></li>
+<li><a href="https://catalog.workshops.aws/containersecurity">Container security workshop</a></li>
+</ul>
+<h3 id="videos">Videos</h3>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=nuMOaQctNgE&amp;list=PLB3flZ7qA4xu__uOEfpc-coXm04swNWva&amp;index=4&amp;pp=iAQB">Introducing GuardDuty ECS Runtime Monitoring</a></li>
+<li><a href="https://www.youtube.com/watch?v=mxNyxJ_Mo8k&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=14&amp;pp=iAQB">Amazon GuardDuty EKS Protection Overview</a></li>
+<li><a href="https://www.youtube.com/watch?v=yNUdNH31BUw&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=15&amp;pp=iAQB">Amazon GuardDuty S3 Protection Overview</a></li>
+<li><a href="https://www.youtube.com/watch?v=4rR37ZBJWdI&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=30&amp;pp=iAQB">Amazon GuardDuty findings summary view</a></li>
+<li><a href="https://www.youtube.com/watch?v=dpc6jvtHB0g&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=38&amp;pp=iAQB">Enable GuardDuty Lambda Protection to monitor your Lambda execution environment</a></li>
+<li><a href="https://www.youtube.com/watch?v=t3rVVilJWEk&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=40&amp;pp=iAQB">GuardDuty EKS Runtime Monitoring</a></li>
+<li><a href="https://www.youtube.com/watch?v=f_CFtrAG8Nw&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=41&amp;pp=iAQB">Amazon GuardDuty RDS Protection</a></li>
+<li><a href="https://youtu.be/uweeumMAif4">S3 Malware Protection overview</a></li>
+</ul>
+<h3 id="blogs">Blogs</h3>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/containers/measure-cluster-performance-impact-of-amazon-guardduty-eks-agent/">Measure cluster performance impact of Amazon GuardDuty EKS Agent</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/how-aws-threat-intelligence-deters-threat-actors/">How AWS threat intelligence deters threat actors</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/improve-your-security-investigations-with-detective-finding-groups-visualizations/">Improve your security investigations with Detective finding groups visualizations</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/three-ways-to-accelerate-incident-response-in-the-cloud-insights-from-reinforce-2023/">Three ways to accelerate incident response in the cloud: insights from re:Inforce 2023</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/detect-threats-to-your-data-stored-in-rds-databases-by-using-guardduty/">Detect threats to your data stored in RDS databases by using GuardDuty</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/reduce-triage-time-for-security-investigations-with-detective-visualizations-and-export-data/">Reduce triage time for security investigations with Amazon Detective visualizations and export data</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-use-amazon-guardduty-and-aws-waf-v2-to-automatically-block-suspicious-hosts/">How to use Amazon GuardDuty and AWS WAF v2 to automatically block suspicious hosts</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-improve-security-incident-investigations-using-amazon-detective-finding-groups/">How to improve security incident investigations using Amazon Detective finding groups</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/automatically-block-suspicious-dns-activity-with-amazon-guardduty-and-route-53-resolver-dns-firewall/">Automatically block suspicious DNS activity with Amazon GuardDuty and Route 53 Resolver DNS Firewall</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-use-new-amazon-guardduty-eks-protection-findings/">How to use new Amazon GuardDuty EKS Protection findings</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>

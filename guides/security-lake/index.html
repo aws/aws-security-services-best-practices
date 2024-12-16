@@ -1,0 +1,1682 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/guides/security-lake/">
+      
+      
+        <link rel="prev" href="../security-hub/">
+      
+      
+        <link rel="next" href="../waf/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Amazon Security Lake Best Practices - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#security-lake" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Amazon Security Lake Best Practices
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../detective/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Detective Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guardduty/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon GuardDuty Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inspector/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Inspector Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../macie/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Macie Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-hub/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AWS Security Hub Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Amazon Security Lake Best Practices
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Security Lake Best Practices
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-amazon-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Amazon Security Lake?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-the-benefits-of-enabling-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are the benefits of enabling Security Lake?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to use this guide
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requisites-for-deploying-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-requisites for deploying Security Lake
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pre-requisites for deploying Security Lake">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#permissions-and-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permissions and roles
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delegated-administration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Delegated administration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloudtrail-management-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      CloudTrail management events
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-your-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan your deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plan your deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-regions-to-collect-security-data-from" class="md-nav__link">
+    <span class="md-ellipsis">
+      What regions to collect security data from
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rollup-regions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rollup regions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#native-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Native data sources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-lake-partners" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Lake partners
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom data sources
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementing-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementing Security Lake
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fine-tuning-your-security-lake-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fine tuning your Security Lake implementation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fine tuning your Security Lake implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes-by-log-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changes by log source
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes-by-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changes by region
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes-by-account-and-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changes by account and region
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-regions-and-accounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding regions and accounts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-s3-lifecycle-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changing S3 lifecycle directly
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-collection-of-third-party-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configure collection of third party data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configure collection of third party data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#partner-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Partner sources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-security-hub-to-route-findings-to-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Security Hub to route findings to Security Lake
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom sources
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operationalizing-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operationalizing Security Lake
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operationalizing Security Lake">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-native-analytics" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS native analytics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subscriber-partners" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subscriber partners
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ocsf-schema-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCSF schema updates
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cost considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cost considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cost-breakdown-and-visibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cost breakdown and visibility
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#built-in-cost-savings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Built in cost savings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confirm-you-are-not-collecting-duplicate-native-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Confirm you are not collecting duplicate native logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloudtrail-management-event-cost-savings" class="md-nav__link">
+    <span class="md-ellipsis">
+      CloudTrail management event cost savings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rollup-regions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rollup regions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#moving-logs-to-glacier" class="md-nav__link">
+    <span class="md-ellipsis">
+      Moving logs to glacier
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional resources
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    AWS WAF Best Practices
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            AWS WAF Best Practices
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/prerequisites/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WAF Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/configuring-waf-rules/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuring WAF Rules
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/monitoring-waf-rules/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring WAF Rules
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/using-waf-with-other-services/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using WAF with other AWS Services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network-firewall/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AWS Network Firewall Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-amazon-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Amazon Security Lake?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-the-benefits-of-enabling-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are the benefits of enabling Security Lake?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to use this guide
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requisites-for-deploying-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-requisites for deploying Security Lake
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pre-requisites for deploying Security Lake">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#permissions-and-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permissions and roles
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delegated-administration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Delegated administration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloudtrail-management-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      CloudTrail management events
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-your-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan your deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plan your deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-regions-to-collect-security-data-from" class="md-nav__link">
+    <span class="md-ellipsis">
+      What regions to collect security data from
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rollup-regions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rollup regions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#native-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Native data sources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-lake-partners" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Lake partners
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom data sources
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementing-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementing Security Lake
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fine-tuning-your-security-lake-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fine tuning your Security Lake implementation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fine tuning your Security Lake implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes-by-log-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changes by log source
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes-by-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changes by region
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes-by-account-and-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changes by account and region
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-regions-and-accounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding regions and accounts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-s3-lifecycle-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changing S3 lifecycle directly
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-collection-of-third-party-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configure collection of third party data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configure collection of third party data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#partner-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Partner sources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-security-hub-to-route-findings-to-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Security Hub to route findings to Security Lake
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom sources
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operationalizing-security-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operationalizing Security Lake
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operationalizing Security Lake">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-native-analytics" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS native analytics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subscriber-partners" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subscriber partners
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ocsf-schema-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCSF schema updates
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cost considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cost considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cost-breakdown-and-visibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cost breakdown and visibility
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#built-in-cost-savings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Built in cost savings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confirm-you-are-not-collecting-duplicate-native-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Confirm you are not collecting duplicate native logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloudtrail-management-event-cost-savings" class="md-nav__link">
+    <span class="md-ellipsis">
+      CloudTrail management event cost savings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rollup-regions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rollup regions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#moving-logs-to-glacier" class="md-nav__link">
+    <span class="md-ellipsis">
+      Moving logs to glacier
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional resources
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="security-lake">Security Lake</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Welcome to the Amazon Security Lake Best Practices Guide. The purpose of this guide is to provide prescriptive guidance for leveraging Amazon Security Lake to centralize your security data in a purpose-built data lake that's stored in your AWS account. Publishing this guidance via GitHub will allow for quick iterations to enable timely recommendations that include service enhancements and the feedback of the user community. This guide is designed to provide value whether you are deploying Security Lake for the first time, or looking for ways to optimize Security Lake in an existing multi-account deployment. </p>
+<h2 id="what-is-amazon-security-lake">What is Amazon Security Lake?</h2>
+<p>Amazon Security Lake is a fully managed security data lake service. You can use Security Lake to automatically centralize security data from AWS environments, SaaS providers, on premises, cloud sources, and third-party sources into a purpose-built data lake that's stored in your AWS account. It is backed by Amazon Simple Storage Service (Amazon S3) buckets, meaning you retain ownership of the data you collect. Security Lake simplifies collecting security data and gathering insights from it. This supports a wide range of use cases with the ultimate goal of improving the protection of your workloads, applications, and data.</p>
+<h2 id="what-are-the-benefits-of-enabling-security-lake">What are the benefits of enabling Security Lake?</h2>
+<p>Security Lake automates the collection of security-related log and event data from integrated AWS services and third-party services. It also helps you manage the lifecycle of data with customizable retention and replication settings. Security Lake converts ingested data into Apache Parquet format and a standard open-source schema called the <a href="https://github.com/ocsf">Open Cybersecurity Schema Framework (OCSF)</a>. With OCSF support, Security Lake normalizes and combines security data from AWS and a broad range of enterprise security data sources.</p>
+<p>Other AWS services and third-party services can subscribe to the data that's stored in Security Lake for incident response and security data analytics.</p>
+<h2 id="how-to-use-this-guide">How to use this guide</h2>
+<p>This guide is geared towards security practitioners who are responsible for collecting and normalizing security logs across AWS and hybrid environments. The best practices are presented in the order they should be considered for a Security Lake deployment for easier consumption. However, the topics can be consumed in any order necessary. </p>
+<ul>
+<li><a href="#pre-requisites-for-deploying-Security-Lake">Pre-requisites for deploying Security Lake</a><ul>
+<li><a href="#permissions-and-roles">Permissions and roles</a></li>
+<li><a href="#delegated-administration">Delegated administration</a></li>
+<li><a href="#cloudTrail-management-events">CloudTrail management events</a></li>
+</ul>
+</li>
+<li><a href="#plan-your-deployment">Plan your deployment</a><ul>
+<li><a href="#what-regions-to-collect-security-data-from">What regions to collect security data from</a></li>
+<li><a href="#native-data-sources">Native data sources</a></li>
+<li><a href="#security-Lake-partners">Security Lake partners</a></li>
+<li><a href="#custom-data-sources">Custom data sources</a></li>
+</ul>
+</li>
+<li><a href="#implementing-Security-Lake">Implementing Security Lake</a></li>
+<li><a href="#fine-tuning-your-Security-Lake-implementation">Fine tuning your Security Lake implementation</a><ul>
+<li><a href="#changes-by-log-source">Changes by log source</a></li>
+<li><a href="#changes-by-region">Changes by region</a></li>
+<li><a href="#changes-by-account-and-region">Changes by account and region</a></li>
+<li><a href="#adding-regions-and-accounts">Adding regions and accounts</a></li>
+<li><a href="#changing-S3-lifecycle-directly">Changing S3 lifecycle directly</a></li>
+</ul>
+</li>
+<li><a href="#configure-collection-of-third-party-data">Configure collection of third-party data</a><ul>
+<li><a href="#partner-sources">Partner sources</a></li>
+<li><a href="#using-Security-Hub-to-route-findings-to-Security-Lake">Using Security Hub to route findings to Security Lake</a></li>
+<li><a href="#custom-sources">Custom sources</a></li>
+</ul>
+</li>
+<li><a href="#operationalizing-Security-Lake">Operationalizing Security Lake</a><ul>
+<li><a href="#aws-native-analytics">AWS native analytics</a></li>
+<li><a href="#subscriber-partners">Subscriber partners</a></li>
+<li><a href="#ocsf-schema-updates">OCSF schema updates</a></li>
+</ul>
+</li>
+<li><a href="#cost-considerations">Cost considerations</a><ul>
+<li><a href="#cost-breakdown-and-visibility">Cost breakdown and visibility</a></li>
+<li><a href="#built-in-cost-savings">Built in cost savings</a></li>
+<li><a href="#confirm-you-are-not-collecting-duplicate-native-logs">Confirm you are not collecting duplicate native logs</a></li>
+<li><a href="#cloudTrail-management-event-cost-savings">CloudTrail management event cost savings</a></li>
+<li><a href="#rollup-regions">Rollup regions</a></li>
+<li><a href="#moving-logs-to-glacier">Moving logs to glacier</a></li>
+</ul>
+</li>
+<li><a href="#additional-resources">Additional resources</a></li>
+</ul>
+<h2 id="pre-requisites-for-deploying-security-lake">Pre-requisites for deploying Security Lake</h2>
+<p>In order to deploy Security Lake, you will need to address the following pre-requisites ahead of time. </p>
+<h3 id="permissions-and-roles">Permissions and roles</h3>
+<p>Before getting started with Amazon Security Lake you need to ensure you have permissions to administer the service. You can use the AWS Managed Policy called “<a href="https://docs.aws.amazon.com/security-lake/latest/userguide/security-iam-awsmanpol.html#security-iam-awsmanpol-AmazonSecurityLakeAdministrator">AmazonSecuriyLakeAdministrator</a>”, but always keep least privilege in mind. If you plan to enable or configure Security Lake programmatically, or plan to use the API or CLI to access it, you must create the IAM roles noted <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/getting-started.html#get-started-programmatic">here</a> . If you use the console to enable and configure Security Lake, these roles will be managed for you. While not necessary, we generally recommend customers deploy Security Lake using the console for this reason. </p>
+<h3 id="delegated-administration">Delegated administration</h3>
+<p>You will need to use your AWS Organization Management Account to designate a Security Lake delegated administrator account. You should think through which account in your AWS Organization is best suited to use as the Security Lake delegated administrator. The <a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/security-reference-architecture/welcome.html">AWS Security Reference Architecture</a> recommends using the <a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/security-reference-architecture/log-archive.html">Log Archive account</a> as the delegated administration for Security Lake. More details on recommended account structure for your organization can be found <a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/security-reference-architecture/organizations.html">here</a>. </p>
+<h3 id="cloudtrail-management-events">CloudTrail management events</h3>
+<p>To collect CloudTrail Management events with Security Lake you will need to have at least one CloudTrail multi-region organization trail that collects read and write CloudTrail managements events enabled. If you’re using Control Tower this is likely part of your Control Tower configuration. For information about creating and managing a trail through CloudTrail, see <a href="https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html">Creating a trail for an organization</a> in the <em>AWS CloudTrail User Guide</em>. For information about creating and managing a trail through AWS Control Tower, see <a href="https://docs.aws.amazon.com/controltower/latest/userguide/logging-using-cloudtrail.html">Logging AWS Control Tower actions with AWS CloudTrail</a> in the <em>AWS Control Tower User Guide</em>.</p>
+<h2 id="plan-your-deployment">Plan your deployment</h2>
+<p>Security Lake offers a 15-day free trial. We recommend making the most out of this free trial by making the following decisions ahead of enabling Security Lake. </p>
+<h3 id="what-regions-to-collect-security-data-from">What regions to collect security data from</h3>
+<p>Security Lake is a regional service with global visibility. This gives you the ability to access the Security Lake console in one region and configure log collection across all of your desired regions. We recommend enabling Security Lake in all regions, even those you are not actively using. Security Lake is a pay as you go service. So, since it will collect next to no data in unused regions, it remains cost effective to enable Security Lake in all regions. Then, in the event activity occurs in an unexpected region, you will have captured the related logs and can use them for investigation. Alternatively, customers can choose to entirely block unused regions using an SCP such as <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_general.html#example-scp-deny-region">this</a>. </p>
+<h3 id="rollup-regions">Rollup regions</h3>
+<p>You can optionally aggregate your data using “rollup regions”. A rollup region is a region you choose to receive a copy of security data from “contributing regions” that you specify. To elaborate on this point it is important to remember that although S3 bucket names are globally unique the data stored in S3 is specific to a region. When configuring Security Lake a separate bucket is created for each region you are collecting logs in. Using rollup regions, you can have contributing regions “rollup” their data to your rollup region bucket allowing all of your logs to be stored in the region you specify. This can provide needed flexibility for data residency requirements. Note that data from the rollup region is replicated, not moved. If you’d like to minimize duplicative data you can use a storage class transition for the contributing region to set an expiration period for the data. We recommend setting the expiration period to a comfortable length based on your own risk profile and control environment. For example, some customers find an expiration period of 3 days is the appropriate balance between cost and the risk of lost logs since it’s long enough to cover an issue that occurs over the weekend. Other customers prefer an expiration period of 7 days to have a longer time to identify any issues.  </p>
+<h3 id="native-data-sources">Native data sources</h3>
+<p>Before deploying Security Lake, consider what native data sources you would like to collect. Security Lake supports the managed collection of the following native AWS logs: </p>
+<ul>
+<li>Default logs<ul>
+<li>AWS CloudTrail management events</li>
+<li>Amazon Elastic Kubernetes Service (Amazon EKS) Audit Logs</li>
+<li>Amazon Route 53 resolver query logs</li>
+<li>AWS Security Hub findings (includes findings Security Hub consumes)</li>
+<li>Amazon Virtual Private Cloud (Amazon VPC) Flow Logs</li>
+</ul>
+</li>
+<li>Opt-in logs<ul>
+<li>AWS CloudTrail data events (S3, Lambda)</li>
+<li>Amazon Web Application Firewall logs</li>
+</ul>
+</li>
+</ul>
+<p>During deployment, you will be able to choose which logs to collect. Default logs will already be selected, but you can choose to not collect any of them. AWS CloudTrail data events and WAF logs aren’t collected by default due to their high volume and associated cost in collecting them. If you would like to collect these logs, you will need to opt-in to collecting them during deployment or via a configuration change after deployment. </p>
+<p>We recommend turning on all of the default AWS log sources. Security Lake will collect these logs on your behalf without you needing to make any additional configuration at the service or resource level (except for CloudTrail management events as noted in the pre-requisites section above). Security Lake will then transform this data into <a href="https://github.com/ocsf">Open Cybersecurity Schema Framework (OCSF)</a> format, and put these logs in an S3 bucket in your environment in Apache Parquet files. Opt-in log sources are generally very high volume, resulting in higher costs to collect and store these logs. Many customers see value in collecting these logs but we recommend fully understanding the security benefit they provide versus the cost to collect them before deciding to collect these log sources.</p>
+<h3 id="security-lake-partners">Security Lake partners</h3>
+<p>A major benefit of Security Lake is the pre-built partner integrations designed to send data to Security Lake or consume data from it. There are three types of Security Lake partners: source partners, subscriber partners, and service partners. <a href="https://aws.amazon.com/security-lake/partners/#Source_Partners">Source partners</a> are third-parties that can send security logs and findings to Security Lake in the OCSF format. <a href="https://aws.amazon.com/security-lake/partners/#Subscriber_Partners">Subscriber partners</a> are third-parties that receive data from Security Lake. They are often tools that help with security use cases such as threat detection, investigation, and incident response. <a href="https://aws.amazon.com/security-lake/partners/#Service_Partners">Service partners</a> are third-parties that help you build or utilize Security Lake. </p>
+<p>To make the most of the Security Lake 15-day free trial, you can test integrations in a sandbox account to make sure you can quickly deploy partner integrations when testing Security Lake with production data. Each partner has specific integration details which can be found <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/integrations-third-party.html">here</a>. </p>
+<h3 id="custom-data-sources">Custom data sources</h3>
+<p>Security Lake also supports aggregation of custom data sources. If you are using a tool that is currently not a Security Lake partner, creating a custom source will allow you to still send logs or findings to Security Lake. Some customers choose to deploy Security Lake in phases, starting with native AWS logs, then adding partner sources and subscribers, and then adding custom sources. Refer to the <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/custom-sources.html">Security Lake documentation</a>, or this <a href="https://aws.amazon.com/blogs/security/patterns-for-consuming-custom-log-sources-in-amazon-security-lake/">blog</a>, for details on how to set up custom sources.</p>
+<h2 id="implementing-security-lake">Implementing Security Lake</h2>
+<p>You should now be ready to deploy Security Lake across your AWS Organization. During deployment you will select which accounts and regions where you would like to enable Security Lake, and specify the data sources you would like to collect. You can also optionally configure rollup regions and lifecycle policies at this time. We will walk through enabling Security Lake using the AWS console. For information on how to configure Security Lake using the CLI or API refer to the <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/getting-started.html#get-started-console">Security Lake documentation</a>. </p>
+<ol>
+<li>From your Organization Management account, open the Security Lake console at: https://console.aws.amazon.com/securitylake </li>
+<li>Click “Get started”
+    <img alt="image0" src="../../images/security-lake/Image0.jpg" /></li>
+<li>Enter the 12 digit account ID of the account you’d like to use as the delegated administrator for Security Lake, then click “Delegate” 
+    <img alt="image1" src="../../images/security-lake/Image1.jpg" /></li>
+<li>Switch to the delegated admin account and open the Security Lake console at: https://console.aws.amazon.com/securitylake. You will see the same landing page you saw when in the Organization Management account. Click “Get started” again, which will now take you to the Security Lake enablement page.</li>
+<li>First, you will select what native log sources to ingest with Security Lake. You can either collect the default sources, or choose to specify what sources using the radio buttons at the top of this window. If you choose to specify log sources, you will then have to check which logs you’d like to ingest.
+    <img alt="image2" src="../../images/security-lake/Image2.jpg" />
+    <img alt="image3" src="../../images/security-lake/Image3.jpg" /></li>
+<li>Next, you will select what regions to ingest the previously selected log sources from. Again, you will have the option to collect from the default regions (all supported regions), or specify regions manually.
+    <img alt="image4" src="../../images/security-lake/Image4.jpg" />
+    <img alt="image5" src="../../images/security-lake/Image5.jpg" /></li>
+<li>Next, you will select the accounts to ingest data from. You can select to collect from all accounts in your organization, specific accounts (listed in CSV format), or just the current account. The check box at the bottom of this window applies your Security Lake collection settings to any new accounts added to your organization. This allows for managed log collection even as your organization grows. We recommend leaving this feature enabled to reduce manual effort when new accounts are added to your organization. Uncheck this box if you do not wish to have his behavior. If you’ve already deployed Security Lake, and would like to confirm this setting is enabled, you can use this <a href="https://docs.aws.amazon.com/security-lake/latest/APIReference/API_GetDataLakeOrganizationConfiguration.html">API call to check</a>, and this <a href="https://docs.aws.amazon.com/security-lake/latest/APIReference/API_CreateDataLakeOrganizationConfiguration.html">API call to enable the setting</a>. 
+    <img alt="image6" src="../../images/security-lake/Image6.jpg" /></li>
+<li>Please note that during initial setup, Security Lake can only be configured to collect all selected log sources from all selected accounts and regions. In other words, the logs you select will be applied to all accounts and regions where you are enabling Security Lake. If you have more specific requirements, like collecting different log sources in different regions or excluding a log source for a certain account you can configure this after initial deployment via the Security Lake console. </li>
+<li>Optionally configure service access and tags. For more details on service access, refer to the <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/getting-started.html#prerequisites">Security Lake documentation</a>. 
+   <img alt="image7" src="../../images/security-lake/Image7.jpg" /></li>
+<li>Click “Next” to be taken to the next page of options. Here, you can optionally configure rollup regions and storage class transitions. 
+    <img alt="image8" src="../../images/security-lake/Image8.jpg" /></li>
+<li>If you choose to configure rollup regions, click “Add rollup Region” and specify the rollup region and the contributing region. Repeat this for each region you’d like to have contributing to the rollup region. Note that a region cannot be a contributing region and a rollup region. Also, more than one rollup region can be created like in the example below. 
+    <img alt="image9" src="../../images/security-lake/Image9.jpg" /></li>
+<li>If you’d like to add a storage transition that will apply across your entire Security Lake deployment, you can do so now by clicking “Add transition”, specifying the desired storage class, and entering the number of days. You can create more granular storage transitions for each region after initial deployment via the Security Lake console. 
+    <img alt="image10" src="../../images/security-lake/Image10.jpg" /></li>
+<li>If you configured a rollup region, you will also be prompted to create a new service roll for replication, or choose to use an existing one. For details on using an existing role, see the <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/manage-regions.html#add-rollup-region">Security Lake documentation</a>. 
+    <img alt="image11" src="../../images/security-lake/Image11.jpg" /></li>
+<li>Click next to be taken to review your deployment of Security Lake. These settings can be changed later, but we recommend taking time to confirm your configuration options now. When you are ready, click “Create” to deploy Security Lake. </li>
+<li>After a few minutes, you should see confirmation that security lake has been successfully deployed in all of the selected regions. Security Lake will immediately begin collecting data. </li>
+</ol>
+<h2 id="fine-tuning-your-security-lake-implementation">Fine tuning your Security Lake implementation</h2>
+<p>After the initial deployment of Security Lake, you are able to further refine what logs you are collecting in which accounts and regions via the Security Lake console. You can also add coverage for new accounts and regions you excluded during initial set up. </p>
+<h3 id="changes-by-log-source">Changes by log source</h3>
+<p>Changing your Security Lake configuration by log source allows you to pick a log source and specify exactly what regions it is collected in. This is the best way to change the collection of one log source for many regions. This is done via the Security Lake console, on the “Sources” page. </p>
+<p>On this page, select a log source, and click “Configure” in the top right. You will then be able to choose whether you’d like to enable or disable that log source in the regions you specify. These changes will affect all accounts Security Lake is configured to collect logs from for the specified regions. </p>
+<p><img alt="image12" src="../../images/security-lake/Image12.jpg" />
+<img alt="image13" src="../../images/security-lake/Image13.jpg" /></p>
+<h3 id="changes-by-region">Changes by region</h3>
+<p>Changing your Security Lake configuration by region allows you to pick a region and specify what log sources you’d like collected in that region. This is the best way to change a specific region’s collection settings. You can also modify the storage transitions for the underlying S3 bucket using this method. This is done via the Security Lake console, on the “Regions” page. </p>
+<p>On this page, select a region, and click “Edit” in the upper right of the page. Next, click the check box next to the statement beginning with “Override sources for all accounts in...”. Then, you can configure the collected log sources for all accounts in the selected region. You are also able to configure S3 storage transitions and add tags from this same page. </p>
+<p><img alt="image14" src="../../images/security-lake/Image14.jpg" />
+<img alt="image15" src="../../images/security-lake/Image15.jpg" />
+<img alt="image16" src="../../images/security-lake/Image16.jpg" /></p>
+<h3 id="changes-by-account-and-region">Changes by account and region</h3>
+<p>Changing your Security Lake configuration by account/region pairings allows for the most granular changes to what log sources are collected from where. This is done via the Security Lake console on the “Accounts” page. </p>
+<p>On this page, select an account and region pairing and click “Edit” in the upper right corner. You are then able to change log source collection for that specific account in that specific region. </p>
+<p><img alt="image17" src="../../images/security-lake/Image17.jpg" />
+<img alt="image18" src="../../images/security-lake/Image18.jpg" /></p>
+<h3 id="adding-regions-and-accounts">Adding regions and accounts</h3>
+<p>If you did not include all accounts and regions when initially setting up Security Lake, you are able to add them via the Security Lake console, on the “Regions” and “Accounts” pages. Each of these pages has an orange button in the top right corner to add new regions or accounts. You will then see a similar set up wizard to specify what log sources you’d like for the entire region, or the new accounts that you specify (list by account ID separated by commas). </p>
+<h3 id="changing-s3-lifecycle-directly">Changing S3 lifecycle directly</h3>
+<p>Since Security Lake’s underlying storage architecture is S3, you can configure lifecycle management directly at the level of the buckets and prefixes. This allows for more granular customization to bucket lifecycles than the bulk changes supported in the ASL console. However, note that change made directly in S3 will not be reflected in the Security Lake console. Refer to the <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html">S3 documentation</a> for more detail. </p>
+<h2 id="configure-collection-of-third-party-data">Configure collection of third party data</h2>
+<p>Security Lake enables you to easily collect AWS log sources, but one of the main concepts of a data lake is to be able to collect many different data sources so that you can derive insights from this data.</p>
+<h3 id="partner-sources">Partner sources</h3>
+<p>If you would like to collect a third party log source, begin by checking if it is a supported <a href="https://aws.amazon.com/security-lake/partners/#Source_Partners">Security Lake source partner</a>. Security Lake source partners have already built an integration that allows you to send logs or findings from their solution to Security Lake in OCSF format. The details of this integration vary by partner, but links to all partner integration documentation is can be found <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/integrations-third-party.html">here</a>. Follow the applicable guidance published by the partner.</p>
+<h3 id="using-security-hub-to-route-findings-to-security-lake">Using Security Hub to route findings to Security Lake</h3>
+<p>Security Hub supports the collection of security findings from a wide range of third-party sources. These findings can then be sent to Security Lake. If you are looking to send security data from a third-party security source to Security Lake, and it isn’t a source partner, we recommend checking if it has a Security Hub integration by reviewing this <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-partner-providers.html">list</a>.</p>
+<h3 id="custom-sources">Custom sources</h3>
+<p>In Amazon Security Lake you can use Custom sources to collect logs or findings from any source. For example, you can collect logs from an on-premises DNS server, SaaS applications, custom applications, or from other cloud providers. You will be responsible for any necessary transformation to OCSF before bringing these types of log sources into Security Lake. AWS services like <a href="https://aws.amazon.com/glue/">Glue</a>, <a href="https://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/what-is-datapipeline.html">Data Pipeline</a>, and <a href="https://aws.amazon.com/kinesis/">Kinesis</a> can help convert your custom log sources into OCSF. <a href="https://aws.amazon.com/appfabric/">AWS AppFabric</a> can also help by converting logs from <a href="https://aws.amazon.com/appfabric/supported-applications/">supported SaaS applications</a> into OCSF. For more details about AppFabric’s integration with Security Lake, refer to the AppFabric <a href="https://docs.aws.amazon.com/appfabric/latest/adminguide/security-lake.html#security-lake-audit-log-ingestion">documentation</a>.</p>
+<p>To understand how to create a custom source in Security Lake refer to the <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/custom-sources.html">Security Lake documentation</a>. For a pattern on how to collect data from a custom source we recommend looking at this <a href="https://aws.amazon.com/blogs/security/get-custom-data-into-amazon-security-lake-through-ingesting-azure-activity-logs/">Security Lake blog post</a>. </p>
+<h2 id="operationalizing-security-lake">Operationalizing Security Lake</h2>
+<p>Once your security logs have been centrally collected and normalized to OCSF format, you will naturally want to derive insights and value from the data you are collecting. This can be done using AWS native analytics solutions or by using Security Lake subscriber partner solutions. </p>
+<h3 id="aws-native-analytics">AWS native analytics</h3>
+<p>Your Security Lake data ultimately resides in S3, so there is a wide range of AWS native analytics solutions you can take advantage of. The native solutions we recommend considering for use with Security Lake are <a href="https://aws.amazon.com/athena/">Athena</a>, <a href="https://aws.amazon.com/quicksight/?amazon-quicksight-whats-new.sort-by=item.additionalFields.postDateTime&amp;amazon-quicksight-whats-new.sort-order=desc">QuickSight</a>, and <a href="https://aws.amazon.com/opensearch-service/">OpenSearch</a>.  </p>
+<p>Athena allows you to run SQL queries against Security Lake data. Once Security Lake is deployed, it is integrated with Athena by default. If you have never used Athena before, you will need to configure an S3 bucket for Athena to write query results to. See the Athena <a href="https://docs.aws.amazon.com/athena/latest/ug/query-results-specify-location-console.html">documentation</a> for help doing this. You can find examples of queries you can run on your Security Lake data, along with additional guidance, <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/subscriber-query-examples.html">here</a>. Athena is the recommended analytics approach for security data you are not accessing frequently. It can also enable your security team to run ad-hoc investigations and reports. In some cases, Athena can enable customers to shorten retention windows in downstream, more costly, analytics solutions or stop sending rarely used logs all together. </p>
+<p>QuickSight allows you to create dashboards and reports based on Security Lake data and share them with your stakeholders. This the recommended approach for customers looking for cost effective reporting capabilities to use with Security Lake. QuickSight also offers generative AI features through <a href="https://aws.amazon.com/quicksight/q/">Amazon Q in QuickSight</a>, allowing users to interact with their security data using natural language. If you are interested in using QuickSight with Security Lake, we recommend evaluating the pre-built AWS Solution “<a href="https://aws.amazon.com/solutions/implementations/security-insights-on-aws/">Security Insights on AWS</a>”. </p>
+<p>OpenSearch is an open-source search and analytics suite that can be deployed as a managed service in AWS. OpenSearch supports using an ingestion pipeline for Security Lake and a zero-ETL integration with Security Lake. The ingestion pipeline approach is recommended for Security Lake customers looking for near real-time search and analytics capabilities or that need alerting based on their Security Lake data. The zero-ETL approach is recommended for customers who would like to query Security Lake data without the extra step, and cost, of moving it to an OpenSearch cluster. The zero-ETL approach offers a balance between cost efficiency and performance, especially with OpenSearch features like indexed views and dashboards. Both deployment options are documented in the following blog posts: <a href="https://aws.amazon.com/blogs/big-data/generate-security-insights-from-amazon-security-lake-data-using-amazon-opensearch-ingestion/">ingestion pipeline approach</a> and <a href="https://aws.amazon.com/blogs/aws/introducing-amazon-opensearch-service-zero-etl-integration-for-amazon-security-lake/">zero-ETL approach</a>.</p>
+<h3 id="subscriber-partners">Subscriber partners</h3>
+<p><a href="https://aws.amazon.com/security-lake/partners/#Subscriber_Partners">Subscriber partners</a> offer additional ways to make use of your Security Lake data. Many popular SIEM, SOAR, XDR, and security analytics tools are Security Lake partners. This means they can ingest data from your deployment of Security Lake. These partners play a critical role in extending what you can do with your Security Lake data. Security Lake can also simplify the implementation and management of these security analytics solutions. Customers can use Security Lake as a managed solution to collect native AWS logs, aggregate them to one account and region, and then have one point of integration with the downstream analytics solution. </p>
+<p>Security Lake subscribers have two different access models. Data access, which allows logs to be sent to the partner solution, and query access, which only allows the partner solution to run queries against Security Lake data and return the results. When configuring a Security Lake subscriber of either type, you are able to select what log sources the subscriber has access to. For additional details on configuring subscribers and  managing their access, refer to the Security Lake <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/subscriber-management.html">documentation</a>. </p>
+<p>Use cases for subscribers might be sending certain log data to a SIEM or SOAR solution for correlation or response and remediation. Another example would be to create a cross account subscriber that will allow a development team to access CloudTrail data to troubleshoot issues in their account without the need to create a separate individual account CloudTrail trail. There are also many other use cases such as using <a href="https://github.com/aws-samples/amazon-security-lake-machine-learning">SageMaker to run machine learning analytics</a> or integrating with a long list of <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/integrations-third-party.html">third party integrations</a>that can help you derive value from your security logs. Each subscriber partner will also offer guidance on how to properly set up the integration between their solution and Security Lake. Guidance on these integrations is offered <a href="https://docs.aws.amazon.com/security-lake/latest/userguide/integrations-third-party.html">here</a>. However, all subscribers will require some configuration within the Security Lake console, on the subscriber page, like in the example below. </p>
+<p><img alt="image19" src="../../images/security-lake/Image19.png" />
+<img alt="image20" src="../../images/security-lake/Image20.png" />
+<img alt="image21" src="../../images/security-lake/Image21.png" /></p>
+<h3 id="ocsf-schema-updates">OCSF schema updates</h3>
+<p>Security Lake will periodically go through schema updates as newer versions of OCSF are released. When this occurs, you will have the option to choose when to update your deployment of Security Lake to the new schema version. However, partners may not support the new schema right as it is released. We recommend validating partner support of any new schema versions prior to updating.</p>
+<h2 id="cost-considerations">Cost considerations</h2>
+<p>With Security Lake, you pay as you go with no upfront costs. Security Lake prices are based on two dimensions: data ingestion and data normalization. Monthly costs are determined by the volume of log and event data ingested from AWS services per gigabyte. There is no charge for bringing third-party or your own data.  For more information on pricing view the <a href="https://aws.amazon.com/security-lake/pricing/">Security Lake pricing page</a>.  In this section we want to highlight important cost considerations.</p>
+<h3 id="cost-breakdown-and-visibility">Cost breakdown and visibility</h3>
+<p>Security Lake provisions other services on your behalf to successfully manage and orchestrate a data lake. This includes S3, Lake Formation, Glue, Lambda, EventBridge, Kinesis and SQS. Each of these services will generate cost independently following their respective pricing structure. The cost they generate will report to the individual services and is not included in the Security Lake pricing structure or reported back as charges tied to Security Lake in tools like Cost Explorer or the usage page of the Security Lake console. The majority of the orchestration costs related to Security Lake will be associated with the delegated admin account where you choose to run Security Lake. </p>
+<p>Security Lake’s pricing structure includes charges for the ingestion and normalization of AWS log sources. These charges are associated with Security Lake in tools like Cost Explorer and are what is showed on the usage of page of the Security Lake console. These charges will be associated with the account that the logs originated from, meaning that in most cases, the majority of the charges directly associated to Security Lake will be tied to member accounts. </p>
+<h3 id="built-in-cost-savings">Built in cost savings</h3>
+<p>By collecting all of your logs with Security Lake you are storing all of your logs in an S3 bucket in your environment. As a customer you get to choose what S3 storage tier you will use for these logs, everything from standard storage priced at \$0.023/GB to deep archive priced at \$0.00099/GB. In addition to this flexibility Security Lake also stores these logs as Apache Parquet files that allow 90%+ compression ratio of pre-text raw log volumes.</p>
+<h3 id="confirm-you-are-not-collecting-duplicate-native-logs">Confirm you are not collecting duplicate native logs</h3>
+<p>Enabling Security Lake will not change any existing log collection settings you have. This means that if you enable Security Lake to collect a native log source you were already collecting, you will begin collecting more than one copy of the same data (although the format of the logs will differ). You can disable the previous log collection after enabling Security Lake. However, before doing so, we recommend identifying internal stakeholders or workloads using the previous logs and planning on how to switch them over to using Security Lake.</p>
+<h3 id="cloudtrail-management-event-cost-savings">CloudTrail management event cost savings</h3>
+<p>To collect CloudTrail Management events you will need to create a CloudTrail organizational trail as mentioned above. This will result in CloudTrail sending logs to a bucket of your choice. The delivery of the first copy of these logs is free, however S3 storage cost is incurred. Security Lake will collect a copy of CloudTrail Management events and store these logs in the Security Lake S3 bucket. This will result in a duplication of CloudTrail logs. It is recommended to set an <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html">S3 lifecycle policy</a> on the CloudTrail bucket to expire log files after a short period of time, largely dependent on what you decide at your organization. These log files will be delivered at the same time so expiration can be very short.</p>
+<h3 id="rollup-regions_1">Rollup regions</h3>
+<p>When using a rollup region you are aggregating data from 1 or more regional buckets to a single region’s bucket. This will result in a duplication of logs in each regional bucket as a copy now exists in your rollup region’s bucket. Some customers prefer to keep multiple copies of their logs for resiliency. However, for cost optimization, it is recommended to handle this data duplication in the same manner as the duplication of CloudTrail Management events discussed in the previous section. Create an <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html">S3 lifecycle policy</a> to expire these logs after a short period of time.</p>
+<h3 id="moving-logs-to-glacier">Moving logs to glacier</h3>
+<p>Glacier storage classes can reduce S3 storage costs, but come with tradeoffs that should be carefully considered based on how you plan to interact with your security log data. Glacier storage classes are designed for long term storage of data that will not need to be accessed frequently. As a tradeoff for low storage cost, these classes have things like minimum retention periods, miniumum object sizes, added metadata for each object, slower retreival times, and direct retreival costs. For a full breakdown, refer to the <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html">S3 user guide</a>. Be sure to fully understand the pricing structure of Glacier storage classes to make sure the storage savings outweigh the additional cost dimensions for your given use case. You should also consider how you will retrieve data when necessary, and make sure any applicable delays are acceptable for your organization. </p>
+<h2 id="additional-resources">Additional resources</h2>
+<p><a href="https://docs.aws.amazon.com/security-lake/latest/userguide/what-is-security-lake.html">Documentation: Amazon Security Lake User Guide</a></p>
+<p><a href="https://docs.aws.amazon.com/security-lake/latest/APIReference/Welcome.html">Documentation: Amazon Security Lake API Reference</a></p>
+<p><a href="https://www.youtube.com/watch?v=qcXB6Y_7bNo&amp;pp=ygUUYW1hem9uIHNlY3VyaXR5IGxha2U%3D">Video: AWS re:Inforce 2023 - Build your security data lake w/ Amazon Security Lake, featuring IPG</a></p>
+<p><a href="https://www.youtube.com/watch?v=fKGhscpwN-k&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=35&amp;t=90s&amp;pp=iAQB">Video: How to get started and manage Amazon Security Lake with AWS Organizations</a></p>
+<p><a href="https://www.youtube.com/watch?v=CbzLCntmgiY">Video: Understanding Amazon Security Lake Cost</a></p>
+<p><a href="https://www.youtube.com/watch?v=M0GviMezp3w&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=41&amp;t=1s&amp;pp=iAQB">Video: Amazon Security Lake with Amazon Athena and Amazon QuickSight</a></p>
+<p><a href="https://www.youtube.com/watch?v=8MDP3LX2A-A&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=26&amp;t=3s&amp;pp=iAQB">Video: Amazon Security Lake Custom Source</a></p>
+<p><a href="https://www.youtube.com/watch?v=VSwSwNFPz14&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=4&amp;t=190s&amp;pp=iAQB">Video: Amazon Security Lake integration with Splunk</a></p>
+<p><a href="https://aws.amazon.com/blogs/security/patterns-for-consuming-custom-log-sources-in-amazon-security-lake/">Blog: Patterns for consuming custom log sources in Amazon Security Lake</a> </p>
+<p><a href="https://aws.amazon.com/blogs/security/get-custom-data-into-amazon-security-lake-through-ingesting-azure-activity-logs/">Blog: Get custom data into Amazon Security Lake through ingesting Azure activity logs</a></p>
+<p><a href="https://aws.amazon.com/blogs/big-data/ingest-transform-and-deliver-events-published-by-amazon-security-lake-to-amazon-opensearch-service/">Blog: Ingest transform and deliver events published by Amazon Security Lake to Amazon OpenSearch Service</a></p>
+<p><a href="https://aws.amazon.com/blogs/security/how-amazon-security-lake-is-helping-customers-simplify-security-data-management-for-proactive-threat-analysis/">Blog: How Amazon Security Lake is helping customers simplify security data management for proactive threat analysis</a></p>
+<p><a href="https://aws.amazon.com/blogs/security/how-to-deploy-an-amazon-opensearch-cluster-to-ingest-logs-from-amazon-security-lake/">Blog: How to deploy an Amazon OpenSearch cluster to ingest logs from Amazon Security Lake</a></p>
+<p><a href="https://aws.amazon.com/blogs/big-data/generate-security-insights-from-amazon-security-lake-data-using-amazon-opensearch-ingestion/">Blog: Generate security insights from Amazon Security Lake data using Aamzon OpenSearch Ingestion</a></p>
+<p><a href="https://aws.amazon.com/blogs/aws/introducing-amazon-opensearch-service-zero-etl-integration-for-amazon-security-lake/">Blog: Introducing Amazon OpenSearch Service and Amazon Security Lake integration to simplify security analytics</a>.</p>
+<p><a href="https://github.com/ocsf">OCSF Github page</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>
