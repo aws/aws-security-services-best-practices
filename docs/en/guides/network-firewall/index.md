@@ -152,7 +152,7 @@ drop ip any any -> $HOME_NET any (flow:to_server; noalert; sid:202501023;)
 pass tcp $HOME_NET any -> any any (msg:"pass rule do not log"; flags:R; sid:202501054;)
 
 # Silently allow/ignore inspection of bogon traffic
-# This traffic should not normally hit the Network Firewall, but we have seen cases where this is a missconfigruation that causes it to
+# This traffic should not normally hit the Network Firewall, but we have seen cases where this is a misconfiguration that causes it to
 pass ip $HOME_NET any -> 169.254.0.0/16 any (sid:202501067;)
 
 # Turn on JA3/S hash logging for all other tls alert rules (like sid:999991)
@@ -199,8 +199,8 @@ reject tls $HOME_NET any -> any any (tls.sni; content:".top"; nocase; endswith; 
 reject http $HOME_NET any -> any any (http.host; content:".top"; endswith; msg:"High risk TLD .top blocked"; flow:to_server; sid:202501045;)
 
 # Alert on requests to possible suspicious TLDs
-alert tls $HOME_NET any -> any any (tls.sni; pcre:"/^(?!.*\.(com|org|net|io|aws)$).*/i"; flow:to_server; msg:"Requst to possible suspicious TLDs"; sid:202501065;)
-alert http $HOME_NET any -> any any (http.host; pcre:"/^(?!.*\.(com|org|net|io|aws)$).*/i"; flow:to_server; msg:"Requst to possible suspicious TLDs"; sid:202501066;)
+alert tls $HOME_NET any -> any any (tls.sni; pcre:"/^(?!.*\.(com|org|net|io|edu|aws)$).*/i"; flow:to_server; msg:"Request to possible suspicious TLDs"; sid:202501065;)
+alert http $HOME_NET any -> any any (http.host; pcre:"/^(?!.*\.(com|org|net|io|edu|aws)$).*/i"; flow:to_server; msg:"Request to possible suspicious TLDs"; sid:202501066;)
 
 # Silently (do not log) allow AWS public service endpoints that we have not setup VPC endpoints for yet
 # VPC endpoints are highly encouraged. They reduce NFW data processing costs and allow for additional security features like VPC endpoint policies.
@@ -218,9 +218,9 @@ alert tls $HOME_NET any -> any any (tls.sni; content:"www.example.com"; startswi
 pass tls $HOME_NET any -> any any (tls.sni; content:"www.example.com"; startswith; nocase; endswith; flow:to_server; msg:"pass rules do not alert/log"; sid:202501053;)
 
 # Custom Default Block Rules
-# Use this instead of firwall policy default actions like "Drop Established" or "Drop All"
+# Use this instead of firewall policy default actions like "Drop Established" or "Drop All"
 # Block and log any egress traffic not already allowed above
- 
+
 reject tls $HOME_NET any -> any any (ssl_state:client_hello; flow:to_server; msg:"Default Egress HTTPS Reject"; sid:999991;)
 reject http $HOME_NET any -> any any (msg:"Default Egress HTTP Reject"; flow:to_server; sid:999992;)
 reject tcp $HOME_NET any -> any any (app-layer-protocol:!tls; app-layer-protocol:!http; msg:"Default Egress TCP Reject"; flow:to_server; sid:999993;)
