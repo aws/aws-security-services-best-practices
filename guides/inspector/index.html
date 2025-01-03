@@ -1,0 +1,1630 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/guides/inspector/">
+      
+      
+        <link rel="prev" href="../guardduty/">
+      
+      
+        <link rel="next" href="../macie/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Amazon Inspector Best Practices - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#amazon-inspector" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Amazon Inspector Best Practices
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../detective/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Detective Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guardduty/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon GuardDuty Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Amazon Inspector Best Practices
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Inspector Best Practices
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to use this guide
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-amazon-inspector" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Amazon Inspector?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-the-benefits-of-enabling-amazon-inspector" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are the benefits of enabling Amazon Inspector?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting started
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-ssm-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS SSM Agent
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AWS SSM Agent">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabling-default-host-management-in-aws-systems-manager-ssm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enabling Default Host Management in AWS Systems Manager (SSM)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Considerations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#region-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Region Considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stand-alone-account-enablement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stand-alone account enablement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-account-organization-enablement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Account organization enablement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Coverage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Coverage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#amazon-ec2-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Amazon EC2 Scanning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#windows-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Windows Scanning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ecr-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      ECR Scanning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lambda-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lambda Scanning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD Scanning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cis-scans" class="md-nav__link">
+    <span class="md-ellipsis">
+      CIS Scans
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operationalizing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operationalizing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operationalizing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#actioning-inspector-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Actioning Inspector Findings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#software-bill-of-materials-sbom-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Software Bill of Materials (SBOM) Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suppression-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Suppression Rules
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vulnerability-database-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      Vulnerability Database Search
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cost considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-aws-systems-manager-ssm-agent-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting AWS Systems Manager (SSM) Agent Issues
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workshops" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workshops
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-videos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demo videos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blogs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blogs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Resources
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../macie/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Macie Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-hub/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AWS Security Hub Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-lake/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Security Lake Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    AWS WAF Best Practices
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            AWS WAF Best Practices
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/prerequisites/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WAF Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/configuring-waf-rules/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuring WAF Rules
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/monitoring-waf-rules/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring WAF Rules
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/using-waf-with-other-services/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using WAF with other AWS Services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network-firewall/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AWS Network Firewall Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to use this guide
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-amazon-inspector" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Amazon Inspector?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-the-benefits-of-enabling-amazon-inspector" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are the benefits of enabling Amazon Inspector?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting started
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-ssm-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS SSM Agent
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AWS SSM Agent">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabling-default-host-management-in-aws-systems-manager-ssm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enabling Default Host Management in AWS Systems Manager (SSM)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment Considerations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#region-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Region Considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stand-alone-account-enablement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stand-alone account enablement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-account-organization-enablement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Account organization enablement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Coverage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Coverage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#amazon-ec2-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Amazon EC2 Scanning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#windows-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Windows Scanning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ecr-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      ECR Scanning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lambda-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lambda Scanning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD Scanning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cis-scans" class="md-nav__link">
+    <span class="md-ellipsis">
+      CIS Scans
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operationalizing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operationalizing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operationalizing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#actioning-inspector-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Actioning Inspector Findings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#software-bill-of-materials-sbom-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Software Bill of Materials (SBOM) Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suppression-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Suppression Rules
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vulnerability-database-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      Vulnerability Database Search
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cost considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-aws-systems-manager-ssm-agent-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting AWS Systems Manager (SSM) Agent Issues
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workshops" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workshops
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-videos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demo videos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blogs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blogs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Resources
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="amazon-inspector">Amazon Inspector</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Welcome to the Amazon Inspector Best Practices Guide. The purpose of this guide is to provide prescriptive guidance for leveraging Amazon Inspector for continuous monitoring of software vulnerabilities and unintended network exposure in AWS workloads such as Amazon EC2, AWS Lambda functions, and Amazon ECR. Publishing this guidance via GitHub will allow for quick iterations to enable timely recommendations that include service enhancements, as well as, the feedback of the user community. This guide is designed to provide value whether you are deploying Inspector for the first time in a single account, or looking for ways to optimize Inspector in an existing multi-account deployment.</p>
+<h2 id="how-to-use-this-guide">How to use this guide</h2>
+<p>This guide is geared towards security practitioners who are responsible for monitoring and remediation of security events, abnormal activity, and vulnerabilities within AWS accounts (and resources). The best practices are organized into different categories for easier consumption. Each category includes a set of corresponding best practices that begin with a brief overview, followed by detailed steps for implementing the guidance. The topics do not need to be read in a particular order:</p>
+<ul>
+<li><a href="#what-is-amazon-inspector">What is Amazon Inspector</a></li>
+<li><a href="#what-are-the-benefits-of-enabling-amazon-inspector">What are the benefits of enabling Amazon Inspector</a></li>
+<li><a href="#getting-started">Getting started</a><ul>
+<li><a href="#aws-ssm-agent">AWS SSM agent</a></li>
+<li><a href="#deployment-considerations">Deployment considerations</a></li>
+<li><a href="#region-considerations">Region considerations</a></li>
+</ul>
+</li>
+<li><a href="#implementation">Implementation</a><ul>
+<li><a href="#stand-alone-account-enablement">Stand-alone account enablement</a></li>
+<li><a href="#multi-account-organization-enablement">Multi-Account organization enablement</a></li>
+</ul>
+</li>
+<li><a href="#coverage">Coverage</a><ul>
+<li><a href="#amazon-ec2-scanning">Amazon EC2 scanning</a></li>
+<li><a href="#windows-scanning">Windows scanning</a></li>
+<li><a href="#ecr-scanning">ECR scanning</a></li>
+<li><a href="#lambda-scanning">Lambda scanning</a></li>
+<li><a href="#cicd-scanning">CI/CD</a></li>
+<li><a href="#cis-scans">CIS Scans</a></li>
+</ul>
+</li>
+<li><a href="#operationalizing">Operationalizing</a><ul>
+<li><a href="#actioning-inspector-findings">Actioning Inspector findings</a></li>
+<li><a href="#software-bill-of-materials-sbom-configuration">Software bill of materials (SBOM) configuration</a></li>
+<li><a href="#suppression-rules">Suppression rules</a></li>
+<li><a href="#vulnerability-database-search">Vulnerability database search</a></li>
+</ul>
+</li>
+<li><a href="#cost-considerations">Cost considerations</a></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+<h2 id="what-is-amazon-inspector">What is Amazon Inspector?</h2>
+<p>Amazon Inspector is a vulnerability management service that continuously monitors your AWS workloads for software vulnerabilities and unintended network exposure. Amazon Inspector automatically discovers and scans running Amazon EC2 instances, container images in Amazon Elastic Container Registry (Amazon ECR), and AWS Lambda functions.</p>
+<h2 id="what-are-the-benefits-of-enabling-amazon-inspector">What are the benefits of enabling Amazon Inspector?</h2>
+<p>Amazon Inspector continuously discovers resources across your AWS Organization. After you deploy Amazon Inspector it will identify and automatically assess your resources for vulnerabilities. Keeping a continuous state of your environment Amazon Inspector understands when resources no longer exist or more importantly when new resources are deployed so that it can begin assessing these resources for vulnerabilities without requiring any manual configurations.  </p>
+<p>Continuous assessment of your resources including Amazon EC2 instances, images in ECR, and Lambda functions for vulnerabilities so that you are always up to date on the current state of your resources, even as new vulnerabilities are discovered. Amazon Inspector continues to assess your environment throughout the lifecycle of your resources by automatically monitoring resources in response to changes that could introduce a new vulnerability, such as: installing a new package in an Amazon EC2 instance, installing a patch, and when a new common vulnerabilities and exposures (CVE) that impacts the resource is published. Unlike traditional security scanning software, Amazon Inspector has minimal impact on the performance of your fleet.</p>
+<p>Amazon Inspector creates a finding when it discovers a software vulnerability, code vulnerability, or network configuration issues. A finding describes the vulnerability, identifies the affected resource, rates the severity of the vulnerability, and provides remediation guidance. Amazon Inspector also provide an Amazon Inspector score that provides context into the severity of a vulnerability. Visit the Inspector documentation to learn more about the <a href="https://docs.aws.amazon.com/inspector/latest/user/findings-understanding-score.html#findings-understanding-inspector-score">Amazon Inspector score</a>. You can analyze findings using the Amazon Inspector console, or view and process your findings through other AWS services.</p>
+<p>Integration with Organizations enables you to quickly deploy and see vulnerability posture across all of their accounts from a single location and verify that Amazon inspector is automatically enabled and performing assessments as new accounts are added to the organization. This reduces the amount of effort needs to maintain a ready state of vulnerability management across your AWS environment.</p>
+<h2 id="getting-started">Getting started</h2>
+<p>In this section we will cover what you need to consider before activating Amazon Inspector in your AWS Organization. </p>
+<h3 id="aws-ssm-agent">AWS SSM Agent</h3>
+<p>Although not required, it is recommended when using Amazon Inspector to detect software vulnerabilities in Amazon EC2 instance, the instance is managed instance in <a href="https://aws.amazon.com/systems-manager/">AWS Systems Manager (SSM)</a>. An SSM managed instance has the AWS SSM Agent installed and running, and SSM has permission to manage the instance. <a href="https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonSSMManagedInstanceCore.html">AmazonSSMManagedInstanceCore</a> is the recommended policy to use when you attach an instance profile. This policy has all the permissions needed for Amazon Inspector EC2 scanning. If you are already using SSM to manage your instances, no additional steps are needed for Amazon Inspector to begin scans.</p>
+<p>If you have instances that do not or can not have an SSM agent for example because of an unsupported operating system you will still be able to scan them for software vulnerabilities using Inspector <a href="https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html#agentless">agentless scanning</a> also referred to as hybrid scanning mode. Scanning with the SSM agent uses an event driven pattern, for example when new packages are installed on an instance Inspector will initiate an evaluation of the package. With agentless scanning, Inspector scans instances once per 24 hours.</p>
+<p>The AWS SSM Agent is installed by default on Amazon EC2 instances created from <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/ami-preinstalled-agent.html">some Amazon Machine Images (AMIs)</a>. For more information, see <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/prereqs-ssm-agent.html">About SSM Agent</a> in the AWS Systems Manager User Guide. However, even if it is installed, you may need to activate the AWS SSM Agent manually, and grant SSM permission to manage your instance.</p>
+<p>In addition to providing the visibility that is needed to look for vulnerabilities on Amazon EC2 instance the presence of the AWS SSM agent provides value for activities such as scheduling automated patching, creating maintenance windows, reporting on patching compliance, providing a mechanism to run automation across your fleet of instances, and provide secure access to instances without the need to expose port 22 or 3389 for remote access to SSH or RDP.</p>
+<p>If you're interested in using the AWS SSM agent, refer to the section below on enabling default host management in AWS Systems Manager.</p>
+<h4 id="enabling-default-host-management-in-aws-systems-manager-ssm">Enabling Default Host Management in AWS Systems Manager (SSM)</h4>
+<p>Hybrid scanning in Amazon Inspector includes agent-based scanning and agentless scanning. By default, Amazon Inspector uses these scan methods on all eligible Amazon EC2 instances. Agent-based scanning uses the SSM agent to collect software inventory. Agentless scanning uses Amazon EBS snapshots to collect software inventory. By default, the SSM agent is already installed in Amazon EC2 instances based on Amazon Machine Images. However, you might need to activate the SSM agent manually in some cases. For more information, see <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html">Working with the SSM agent</a> in the AWS Systems Manager User Guide. To manage EC2 instances automatically with Systems Manager, use the Default Host Management Configuration setting.</p>
+<p>For assessing network reachability of Amazon EC2 instances, vulnerability scanning of container images, or vulnerability scanning of Lambda functions, no agents are necessary. </p>
+<ol>
+<li>Sign in to your organization management account for AWS Organizations.</li>
+<li>Navigate to Systems Manager and open the <a href="https://console.aws.amazon.com/systems-manager/quick-setup">Quick Setup</a> page.</li>
+<li>Click <strong>Create</strong> for <strong>Default Host Management Configuration</strong>.</li>
+<li>Make sure the box is selected for <strong>Enable automatic updates of the SSM Agent every two weeks</strong>.</li>
+<li>Click <strong>Create</strong>. You will see a banner stating, "Your Default Host Management Configuration Quick Setup is being updated.". It normally takes up to 30 minutes for the agent to connect with Systems Manager and the EC2 instance to appear in the Systems Manager Inventory as a managed instance (required for Inspector to perform agent-based scanning). </li>
+<li>You may continue to the next steps without waiting 30 minutes for the Host Management Configuration to complete. </li>
+</ol>
+<h3 id="deployment-considerations">Deployment Considerations</h3>
+<p>To deploy Inspector across your AWS Organization you need to enable it in the AWS management account and the security tooling account whether this is done in the Console, CLI, or API. If you are not familiar with the concept of the security tooling account it is recommended to familiarize yourself with the <a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/security-reference-architecture/organizations.html">recommended account structure</a> in the Security Reference Architecture. To summarize, this is a dedicated account in your AWS Organization that is used as the delegated administrator account for native AWS security services such as Amazon Inspector, Amazon GuardDuty, AWS Security Hub, and Amazon Detective.</p>
+<h3 id="region-considerations">Region Considerations</h3>
+<p>Amazon Inspector is a regional service. This means that to use Amazon Inspector you need to enable it in every region that you would like to have vulnerability monitoring capabilities in. You can enable Inspector across all accounts and regions using the AWS CLI script on <a href="https://github.com/aws-samples/inspector2-enablement-with-cli">GitHub</a> or you can do this by toggling between regions in the console.</p>
+<p>A question that is often asked is “Should I use a security service in a region that my company is not actively using?”. Although there is not a straightforward answer to this question as there are many factors that might influence your answer such as risk appetite, budget, and compensating controls, among others. There are some things to keep in mind when making this decision.</p>
+<ol>
+<li>Inspector is a service that you only pay for what you use. So, if you have a region that has minimal use you can have Inspector on giving visibility into your vulnerability landscape without incurring disproportionate cost associated with the resources being used in a region.</li>
+<li>If you have a compensating control associated with none used regions such as a service control policy that blocks all use in this region. It is still recommended to have a detective control to validate detection of this compensating control being changed at any point in the future.</li>
+</ol>
+<p>This decision is ultimately one that your company needs to make based on your own circumstances, but a rule of thumb in security is that more visibility before an investigation is better as it often hard, if not impossible to obtain after the fact.</p>
+<h2 id="implementation">Implementation</h2>
+<p>In this section we will cover the minimum requirements for enabling Inspector in a stand-alone account and in a multi-account organization.</p>
+<h3 id="stand-alone-account-enablement">Stand-alone account enablement</h3>
+<p><img alt="Inspector Getting started" src="../../images/I-Getting-Started.png" />
+<em>Figure 1: Inspector getting started page</em></p>
+<p>The first step is to navigate to the Inspector console. Once you are in the Inspector console you should see a landing page with a getting started button. Click on “Get started”.</p>
+<p><img alt="Inspector activation" src="../../images/I-Activate.png" />
+<em>Figure 2: Activate Inspector page</em></p>
+<p>After clicking on “Get started” you will be brought to the Inspector enablement page. Review the Service role permissions so that you have an understanding of the permissions Inspector needs in order to provide its features and functions then select the yellow box labeled “Activate Inspector” to enable Inspector.</p>
+<p>Once these two steps are done Inspector will be enabled in this account. It is important to refer to sections below to make sure you have enabled all relevant features of Inspector.</p>
+<h3 id="multi-account-organization-enablement">Multi-Account organization enablement</h3>
+<p>When you implement Inspector for the first time in your AWS Organization as stated above you will set the delegated administrator in your organization management account in each region that you want to use Inspector. Keep in mind you will need to use the same account in all regions.</p>
+<p><img alt="Inspector Getting started" src="../../images/I-Getting-Started.png" />
+<em>Figure 3: Inspector getting started page</em></p>
+<p>The first step is to navigate to the Inspector console in your organizations management account. Once you are on the Inspector console you will see a landing page with a getting started button. Click on “Get started”.</p>
+<p><img alt="Inspector delegated admin" src="../../images/I-Delegate-Admin.png" />
+<em>Figure 4: Delegated admin assignment page</em></p>
+<p>After clicking on “Get started” you will be brought to the Inspector enablement page. Next you will need to enter the account ID for the account you want to designate as the Inspector delegated administrator account. Once you have entered the account ID select “Delegate”. At this point you will switch to the Delegated administrator to finish configuring Amazon Inspector across your AWS Organization.</p>
+<p><img alt="Inspector Getting started" src="../../images/I-Getting-Started.png" />
+<em>Figure 5: Inspector getting started page</em></p>
+<p>Once you are in the Inspector delegated administrator account you will again see a landing page with a getting started button. Click on “Get started”. Once this is complete Inspector will be enabled. There are a few more deployment considerations that we will cover.</p>
+<p><img alt="Inspector Account management" src="../../images/I-Account-Management.png" />
+<em>Figure 6: Inspector account management page</em></p>
+<p>Next you will need to make sure you activate scanning for all current accounts and all scanning types including Amazon EC2 scanning, Amazon ECR Scanning, AWS Lambda standard scanning, and AWS Lambda code scanning. It is also highly recommended to “Automatically activate Inspector for new member accounts”. This helps you understand that you don’t have a gap in vulnerability coverage when new accounts are created in your organization. This will also automate the process of onboarding new accounts and automatically aggregate all findings to your delegated administrator account reducing manual tasks and saving time.</p>
+<ul>
+<li>Sign in to the Delegated Admin account for Inspector.</li>
+<li>Open the Inspector console.</li>
+<li>From the <a href="https://console.aws.amazon.com/inspector/v2/home?#/settings/account-management/accounts">Account management</a> page, under <strong>Automatically activate Inspector for new member accounts</strong> toggle on the option to <strong>Automatically activate Inspector for new member accounts</strong>. </li>
+<li>Make sure that all of the options are selected and click <strong>Save</strong>. You should see a banner with the message "You have successfully updated the auto-activate scan settings for your organization.".</li>
+<li>Scroll down to where accounts are listed under <strong>Organization</strong>. Depending on how many accounts you have, you should click the gear icon on the right to view 50 accounts per page. </li>
+<li>Per page, select all accounts. Click the <strong>Activate</strong> dropdown menu, select all of the options, and click <strong>Submit</strong>. </li>
+<li>Within minutes, resources will start being scanned and you will see any generated findings on the <a href="https://console.aws.amazon.com/inspector/v2/home?#/findings/all">Findings</a> page.</li>
+</ul>
+<p>Alternatively, you may enable Inspector across all accounts and regions using CLI. Check out the <a href="https://github.com/aws-samples/inspector2-enablement-with-cli">enablement script on Github</a>.</p>
+<h2 id="coverage">Coverage</h2>
+<p>In this section we will cover the enablement of different features to configure Inspector across all supported resources in your environment.</p>
+<h3 id="amazon-ec2-scanning">Amazon EC2 Scanning</h3>
+<p>After enabling Inspector in your Organization there are two more Amazon EC2 scanning related configurations that you need to address.</p>
+<p>Inspector Deep Inspection for Amazon EC2 gives Inspector the ability to detect package vulnerabilities for application programming language packages in your Linux-based Amazon EC2 Instances. New accounts enabling Inspector will have deep inspection enabled by default. If you have an account that was previously enabled and want to confirm that this is enabled, you can look at the account management page in the Inspector console and look for any accounts that have deep inspection scanning deactivated like the picture below. For full details on Inspector Deep inspection and instructions on how to configure deep inspection scans refer to the <a href="https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html#deep-inspection">Inspector Deep inspection documentation</a>.</p>
+<p><img alt="Inspector deep scan activated" src="../../images/I-Deep-Scan-Activated.png" />
+<em>Figure 7: Inspector EC2 deep scan activated</em></p>
+<p><img alt="Inspector deep scan deactivated" src="../../images/I-Deep-Scan-Deactivated.png" />
+<em>Figure 8: Inspector EC2 deep scan deactivated</em></p>
+<p>By default, Deep Inspection scanning looks at the default paths below.</p>
+<ul>
+<li>/usr/lib</li>
+<li>/usr/lib64</li>
+<li>/usr/local/lib</li>
+<li>/usr/local/lib64</li>
+</ul>
+<p>All individual accounts can add up to 5 custom paths. The delegated administrator can add an additional 5 paths that will apply across the organization. This amounts to a total of up to 10 custom paths scanned per account in the organization. An example of a custom path would be “/home/usr1/project01”. It is recommended to put in all custom paths applicable to your organization to provide full visibility for Inspector Deep inspection.</p>
+<p><img alt="Inspector EC2 scan settings" src="../../images/I-EC2-Settings.png" />
+<em>Figure 9: Inspector EC2 scan settings</em></p>
+<h3 id="windows-scanning">Windows Scanning</h3>
+<p>Amazon Inspector automatically discovers all supported Windows instances and includes them in continuous scanning without any extra actions. Unlike scans for Linux based instances, Amazon Inspector runs Windows scans at regular intervals. Windows instances are initially scanned at discovery and then scanned every 6 hours. However, the default 6‐hour scan interval is adjustable. If 6 hours is your desired scan frequency than no action is needed. If you would like to adjust the scan frequency you can do this using the aws ssm update-association CLI command. For steps on how to adjust the scan frequency please refer to the <a href="https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html#windows-scanning">Inspector Windows scanning documentation</a>.</p>
+<h3 id="ecr-scanning">ECR Scanning</h3>
+<p>When you first activate ECR scanning, and your repository is configured for continuous scanning, Amazon Inspector detects all eligible images that you have pushed within 30 days, or pulled within the last 90 days. Amazon Inspector continues to monitor images as long as they were pushed or pulled within the last 90 days (by default), or within the ECR rescan duration you configure. You might choose to stop scanning instances after a defined period of time because they are no longer used for applications in your environment or based on other compensating controls you might have in place. You can configure Inspector to re-scan based on either image push date or image pull date. For example, if you select 60 days for push date, and 180 days for pull date configurations, Amazon Inspector will continue to monitor images if they were pushed in the last 60 days or if they have been pulled at least once in the last 180 days. We recommend understanding the application deployment patterns at your organization when deciding the re-scan duration settings. For example if you build images often you might want shorter scan durations. Also, if you utilize <a href="https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html">ECR lifecycle policies</a> this might affect how long images exist in ECR. For detailed instructions on how to set this duration please refer to the <a href="https://docs.aws.amazon.com/inspector/latest/user/scanning-ecr.html#scan-duration-ecr">ECR automated re-scan duration documentation</a>.</p>
+<p><img alt="Inspector ECR scan settings" src="../../images/I-ECR-Settings.png" />
+<em>Figure 10: Inspector ECR scan settings</em></p>
+<h3 id="lambda-scanning">Lambda Scanning</h3>
+<p>Lambda scanning has two different functionalities. The first is the ability to scan Lambda functions for software vulnerabilities in programming languages and packages. The second is the ability to scan your custom privileged application code for code vulnerabilities. Under account management make sure that these are both activated to provide full Inspector visibility. If you see any accounts with Lambda scanning or code scanning deactivated refer to the <a href="https://docs.aws.amazon.com/inspector/latest/user/scanning-lambda.html">Lambda scanning documentation for detailed steps on activation</a>.</p>
+<p><img alt="Inspector Lambda scanning" src="../../images/I-Auto-Enable.png" />
+<em>Figure 11: Inspector Account management page</em></p>
+<h3 id="cicd-scanning">CI/CD Scanning</h3>
+<p>You can integrate Amazon Inspector directly in CI/CD tools such as Jenkins. For <a href="https://docs.aws.amazon.com/inspector/latest/user/cicd-jenkins.html">Jenkins</a> and <a href="https://docs.aws.amazon.com/inspector/latest/user/cicd-teamcity.html">TeamCity</a> tools Inspector has dedicated plugins that can be installed so you can add vulnerability scanning directly into these pipelines. These plugins can be used as a pass or fail mechanism based on finding severities.</p>
+<p>If Amazon Inspector does not provide plugins for your CI/CD solution, you can create your own <a href="https://docs.aws.amazon.com/inspector/latest/user/scanning-cicd.html">custom CI/CD integration</a> using a combination of the Amazon Inspector SBOM Generator and the Amazon Inspector Scan API.</p>
+<h3 id="cis-scans">CIS Scans</h3>
+<p>In addition to traditional vulnerability scans many customers also want to run scans to assess adherence to CIS Benchmarks. If you're not familiar, CIS Benchmarks from the Center for Internet Security (CIS) are a set of globally recognized and consensus-driven best practices to help security practitioners implement and manage their cybersecurity defenses. Developed with a global community of security experts, the guidelines help organizations proactively safeguard against emerging risks. Companies implement the CIS Benchmark guidelines to limit configuration-based security vulnerabilities in their digital assets. Just like you can check your AWS environment against CIS Benchmarks using AWS Security Hub, Inspector allows you to run CIS Benchmarks against your operating systems in AWS.</p>
+<p>Start by familiarizing yourself with the necessary <a href="https://docs.aws.amazon.com/inspector/latest/user/scanning-cis.html#cis-requirements">requirements for running CIS scans</a> such as the need for deep scanning to be enabled and an SSM agent to be present on an instance.</p>
+<p>Next, we recommend you think about your desired outcome for CIS scans before configuration. For example, you should answer questions before configuration such as what we have listed below, which is not an exhaustive list. This will help you get the most out of your CIS scans without creating extra findings that don't help with your overall security goals.</p>
+<ul>
+<li>How often do we build images? Do we need to run frequent scans or run one time scans based on frequent image build?</li>
+<li>What images / environments need to run level 1 vs level 2 scans?</li>
+<li>Will you push out CIS scans across your AWS Organization from the delegated administrator account or will individual account owners be responsible for creating them at the account level.</li>
+<li>Do you have a tag in place that you can use to target instances when configuring your scan configuration settings?</li>
+</ul>
+<h2 id="operationalizing">Operationalizing</h2>
+<h3 id="actioning-inspector-findings">Actioning Inspector Findings</h3>
+<p>Many organizations have a well-established vulnerability management program, but if you don’t or you are unsure of what you do now works with Amazon Inspector we want to highlight a few important themes that you should be thinking about.</p>
+<p><img alt="Inspector finding detail" src="../../images/I-Finding-Detail.png" />
+<em>Figure 12: Inspector finding details</em></p>
+<p><img alt="Inspector score" src="../../images/I-Inspector-Score.png" />
+<em>Figure 13: Inspector score example</em></p>
+<p><img alt="Inspector code remediation" src="../../images/I-Code-Remediation.png" />
+<em>Figure 14: Generative AI powered code remediation recommendation</em></p>
+<p>Inspector vulnerability findings give great detail into the resource affected, the CVE, and generative AI powered code remediation suggestions giving security and application teams the context needed to more quickly remediate vulnerabilities in your AWS environment. Inspector findings are also stateful. This means that if you update a package that contained a vulnerability Inspector will see the package change, initiate an assessment, and if the vulnerability was in fact remediated then close the finding. This understanding is important for understanding you will handle Inspector findings. Below will dive into some of the different themes we think you should be thinking through.</p>
+<ol>
+<li>A critical component of an effective vulnerability management program is the ability to assess and prioritize security findings. This is where pulling in context, organizational history, and tuning detection systems comes into place. Prioritization of security findings helps establish the appropriate speed for response level. We recommend prioritizing the investigation of all critical and high severity findings.</li>
+<li>Understand what you will do with findings when they are created by Inspector. For example, Amazon Inspector has 5 different finding severity levels described <a href="https://docs.aws.amazon.com/inspector/latest/user/findings-understanding-severity.html">here</a>. It is important to understand how quickly you will require teams in your organization to remediate findings. This is likely to depend on severity, as you will want to more quickly respond to critical findings vs informational findings.</li>
+<li>After understanding response times, it is important to focus on how you will alert on new vulnerabilities. For example, do you have a ticketing system that you would like to integrate with? If so, this is something that AWS Security Hub can assist with. You might want to send these alerts directly to applications teams for remediation, or maybe they need to be cleared through security first. With Inspectors integration with Amazon EventBridge and AWS Security Hub you have many different alerting and tracking options. It is important to understand what works best for your organization and to have this workflow established.</li>
+<li>Remediation of vulnerabilities should be pushed to application owners as they are the ones who understand the implications of updating packages used by their application code. It would be an anti-pattern for security teams to be responsible for software patching. A two-way communication channel between the security teams should be established for communicating risk, its acceptance and/or mitigation.</li>
+<li>Ideally at every organization we want to automate as much as possible to save time and potential errors associated with repetitive manual actions from humans. Unfortunately, this can’t also be done 100% of the time, but we should always be working to get there. First work through what services you will use to automate vulnerability remediation such as <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html">AWS Systems Manager Patch Manager</a>. Then understand what environments, resources, and CVEs you feel comfortable automatically remediating. The amount of automation that can be created will largely depend on resource timing and ability. There will be an intersection where risk is not great enough to constitute how much time you spent on furthering automation versus working on other high priority projects. Once you start to build this out there are a lot of different resources that can help with automating patch management in AWS. Since there are a number of different resources on this, we have created a dedicated section in the resources section below of valuable resources that you should look at.</li>
+<li>In addition to automating where possible many customers use Amazon Inspector to find vulnerabilities in resources early in the development lifecycle and remediate before being deployed in a production environment. Using Amazon Inspector in development and staging accounts during development and testing give you the visibility to understand what vulnerabilities exist in applications before deploying to production. There are also multiple blogs that cover how Inspector fits into a CI/CD pipeline in the resources section.</li>
+</ol>
+<p><img alt="Inspector finding flow" src="../../images/I-Finding-Flow.png" />
+<em>Figure 15: Inspector finding flow</em></p>
+<h3 id="software-bill-of-materials-sbom-configuration">Software Bill of Materials (SBOM) Configuration</h3>
+<p>In Amazon Inspector you can export a Software Bill of Materials or SBOM for short. If you’re not familiar an SBOM it is a nested inventory of all the open source and third-party software components of your codebase. This can help you gain visibility into information about your software supply, such as your commonly used packages, and associated vulnerabilities across your organization.</p>
+<p>To export SBOMs you need to use the Console or API set this up. Steps on how to configure this can be found in the <a href="https://docs.aws.amazon.com/inspector/latest/user/sbom-export.html">Inspector SBOM documentation</a>. It is important to keep in mind that this is a one-time export. If you need to do this on a regular basis it is recommended to set up a Lambda Function that uses the create sbom export API on a regular schedule to automatically create these SBOMs. This will help you if you need to look at an SBOM you have an update to date SBOM. This could also be event driven, for example running an SBOM export for an instance when it is created.</p>
+<p><img alt="Inspector SBOM settings" src="../../images/I-SBOM.png" />
+<em>Figure 16: Inspector SBOM settings</em></p>
+<h3 id="suppression-rules">Suppression Rules</h3>
+<p>You might have CVEs in your environment that are not applicable because of a compensating control or that you’re unable to remediate and have categorized them as an accepted risk. For these circumstances you can create suppression rules in Inspector. You can use suppression rules to automatically exclude Amazon Inspector findings that match specified criteria. For example, you can create a rule to suppress all findings with a low vulnerability score. Suppression rules don't have any impact on the finding itself and don't prevent Amazon Inspector from generating a finding. Suppression rules are only used to filter your list of findings. If Amazon Inspector generates a new finding that matches a suppression rule, the service automatically sets the status of the finding to Suppressed. The findings that match suppression rule criteria won't appear in the console by default.</p>
+<p>Additionally, if you are using AWS Security Hub as your aggregation point for Inspector in other AWS security services you can use automation rules to address findings. For example, you can use automation rules to upgrade all findings for a particular production account to a severity that warrants an immediate action or downgrades the severity of findings for particular environments that have controls in place that don’t allow public resources. To learn more about AWS Security Hub automation rules refer to the <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/automation-rules.html">AWS Security Hub automation rules documentation</a>.</p>
+<h3 id="vulnerability-database-search">Vulnerability Database Search</h3>
+<p>Amazon Inspector continuously updates its vulnerability database with the latest CVEs to confirm that our customers are able to assess their environments for up-to-date information. From time to time, you might ask “Is Inspector looking for this CVE?”. You can use the vulnerability database search capability in the AWS console to help answer this question, by simply providing a Common Vulnerability and Enumerations (CVE) ID, for example, “CVE-2023-1264“. This allows you to confirm the CVEs covered by Inspector scanning engine and do preliminary research on a CVE.</p>
+<p><img alt="Inspector vulnerability database" src="../../images/I-Vuln-DB.png" />
+<em>Figure 17: Inspector vulnerability database page</em></p>
+<h2 id="cost-considerations">Cost considerations</h2>
+<p>Amazon Inspector pricing is thoroughly covered in the pricing page covering pricing components, and multiple pricing examples that go through examples of what pricing might look like in your environment. We won’t cover that here and instead focus on two different questions that are frequently asked. 1. My organization is cost conscious or going through a cost optimization exercise, I want to confirm that I am using Amazon Inspector in a cost-effective way. 2. I am going to test Inspector or I want to enable Inspector in my environment but I want to estimate costs before getting started.</p>
+<p>Amazon Inspector is a cost-effective service that charges you based on usage in your environment. To verify that you are using Inspector cost effectively it is important to understand that since it is usage based you should make sure you do not have extra resources in your environment that are not being used. This will not only save Inspector cost but will potentially save you on Amazon EC2, ECR, and Lambda costs. Secondly each scanning function of Amazon Inspector is optional, so you can choose to use what you need. It is not recommended to disable any of the features as this could potentially cause a lack of visibility into vulnerabilities in your environment and introduce unnecessary challenges, but at every organization there is budgets limits that should be taken into consideration when using Amazon Inspector features. Another option that can be used but should be carefully evaluated is the tag that can be used to exlude scanning for EC2 instances. For more information on how to configure this tag please refer to the <a href="https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html#exclude-ec2">scanning Amazon EC2 Instances documentation</a>.</p>
+<p>The best way to estimate costs with Amazon Inspector is to take advantage of the 15-day free trial. Inspector can be turned on and off across hundreds or thousands of accounts in an organization in a matter of minutes. Once you enable Inspector you will be able to see the costs associated with running Inspector in your organization past the 15-day free trial.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="troubleshooting-aws-systems-manager-ssm-agent-issues">Troubleshooting AWS Systems Manager (SSM) Agent Issues</h3>
+<p>There are several issues that might cause the SSM agent to work improperly. You can use the Systems Manager Automation runbook to automatically troubleshoot an EC2 instance that SSM is unable to manage</p>
+<ul>
+<li>Open <a href="https://us-east-1.console.aws.amazon.com/systems-manager/automation/execute/AWSSupport-TroubleshootManagedInstance?region=us-east-1">this link</a> to configure the Systems Manager Automation runbook.</li>
+<li>Navigate to the AWS Region for the EC2 instance you want to troubleshoot.</li>
+<li>Under the <strong>Input parameters</strong>, change the dropdown from "Show managed instances only" to "Show all instances".</li>
+<li>Select the EC2 instance you want to troubleshoot.</li>
+<li>Leave all the other settings, and at the bottom of the page, click <strong>Execute</strong>. This process normally takes up to 5 minutes to complete.</li>
+<li>Once the automation document has as an Overall status of Success, expand the Outputs section.</li>
+<li>Review the outputs to see the specific problem with your SSM configuration.</li>
+</ul>
+<h2 id="resources">Resources</h2>
+<h3 id="workshops">Workshops</h3>
+<ul>
+<li><a href="https://awsactivationdays.splashthat.com/">Activation Days</a></li>
+<li><a href="https://catalog.workshops.aws/inspector/en-US">Amazon Inspector workshop</a></li>
+<li><a href="https://catalog.workshops.aws/detective">Amazon Detective workshop</a></li>
+<li><a href="https://catalog.workshops.aws/containersecurity">EKS security workshop</a></li>
+</ul>
+<h3 id="demo-videos">Demo videos</h3>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=5ngtzZHSwqU&amp;list=PLB3flZ7qA4xu__uOEfpc-coXm04swNWva&amp;index=5&amp;pp=iAQB">Enhance workload security with agentless scanning and CI/CD integration</a></li>
+<li><a href="https://www.youtube.com/watch?v=Nx8s7lwapoE&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=87&amp;t=608s&amp;pp=iAQB">Inspector overview demo</a></li>
+<li><a href="https://www.youtube.com/watch?v=viAn4E7uwRU&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=18&amp;pp=iAQB">Vulnerability intelligence database search</a></li>
+<li><a href="https://www.youtube.com/watch?v=ukvG_oRZ9iQ&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=19&amp;pp=iAQB">Windows support for continual EC2 vulnerability scanning</a></li>
+<li><a href="https://www.youtube.com/watch?v=6dUvnDx4D-Y&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=20&amp;pp=iAQB">Software bill of materials export capability</a></li>
+<li><a href="https://www.youtube.com/watch?v=o0TAwqYN5rI&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=27&amp;t=199s&amp;pp=iAQB">Inspector deep inspection of EC2 instances</a></li>
+<li><a href="https://www.youtube.com/watch?v=VjIhTXeIgM0&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=37&amp;pp=iAQB">How to use Lambda code scanning</a></li>
+<li><a href="https://www.youtube.com/watch?v=XXlY1yF_nUo&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=55&amp;pp=iAQB">AWS Lambda functions support</a></li>
+<li><a href="https://www.youtube.com/watch?v=BsrRibUfQls&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=61&amp;pp=iAQB">Inspector for Lambda workloads</a></li>
+<li><a href="https://www.youtube.com/watch?v=JhtdPhuAVGM&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=90&amp;pp=iAQB">Inspector suppression rules demo</a></li>
+</ul>
+<h3 id="blogs">Blogs</h3>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/security/use-amazon-inspector-to-manage-your-build-and-deploy-pipelines-for-containerized-applications/">Use Amazon Inspector to manage your build and deploy pipelines for containerized applications</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-scan-ec2-amis-using-amazon-inspector/">How to scan EC2 AMIs using Amazon Inspector</a></li>
+<li><a href="https://aws.amazon.com/blogs/mt/automate-vulnerability-management-and-remediation-in-aws-using-amazon-inspector-and-aws-systems-manager-part-1/">Automate vulnerability management and remediation in AWS using Amazon Inspector and AWS Systems manager part 1</a></li>
+<li><a href="https://aws.amazon.com/blogs/mt/automate-vulnerability-management-and-remediation-in-aws-using-amazon-inspector-%20and-aws-systems-manager-part-2/">Automate vulnerability management and remediation in AWS using Amazon Inspector and AWS Systems manager part 2</a></li>
+</ul>
+<h3 id="other-resources">Other Resources</h3>
+<ul>
+<li><a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/vulnerability-management/introduction.html">Building a scalable vulnerability management program on AWS - Guide</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>

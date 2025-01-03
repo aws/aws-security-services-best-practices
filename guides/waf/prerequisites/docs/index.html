@@ -1,0 +1,1127 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/guides/waf/prerequisites/docs/">
+      
+      
+        <link rel="prev" href="../../">
+      
+      
+        <link rel="next" href="../../configuring-waf-rules/docs/">
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>WAF Prerequisites - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#waf-prerequisites" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              WAF Prerequisites
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../detective/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Detective Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guardduty/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon GuardDuty Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../inspector/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Inspector Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../macie/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Macie Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security-hub/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AWS Security Hub Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security-lake/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon Security Lake Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    AWS WAF Best Practices
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            AWS WAF Best Practices
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    WAF Prerequisites
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    WAF Prerequisites
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#identifying-resources-to-protect-with-aws-waf" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identifying resources to protect with AWS WAF
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Identifying resources to protect with AWS WAF">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-services-natively-supported-by-aws-waf" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS services natively supported by AWS WAF
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-application-load-balancers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Private Application Load Balancers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amazon-cloudfront-distributions-that-point-to-amazon-s3-buckets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Amazon CloudFront distributions that point to Amazon S3 buckets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-load-balancers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network Load Balancers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-endpoints-hosted-outside-of-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP endpoints hosted outside of AWS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-load-balancers-behind-a-cloudfront-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Application Load Balancers behind a CloudFront distribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-resources-behind-a-non-cloudfront-content-delivery-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS resources behind a non-CloudFront content delivery network
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#storing-aws-waf-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storing AWS WAF logs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Storing AWS WAF logs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#storing-aws-waf-logs-in-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storing AWS WAF logs in S3
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storing-aws-waf-logs-in-cloudwatch-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storing AWS WAF logs in CloudWatch Logs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-waf-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filtering WAF logs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estimating-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      Estimating cost
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ownership-of-waf-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ownership of WAF rules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-many-web-acls-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      How many web ACLs to use
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuring-waf-rules/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuring WAF Rules
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../monitoring-waf-rules/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring WAF Rules
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../using-waf-with-other-services/docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using WAF with other AWS Services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../network-firewall/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AWS Network Firewall Best Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../contributors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#identifying-resources-to-protect-with-aws-waf" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identifying resources to protect with AWS WAF
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Identifying resources to protect with AWS WAF">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-services-natively-supported-by-aws-waf" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS services natively supported by AWS WAF
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-application-load-balancers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Private Application Load Balancers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amazon-cloudfront-distributions-that-point-to-amazon-s3-buckets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Amazon CloudFront distributions that point to Amazon S3 buckets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-load-balancers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network Load Balancers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-endpoints-hosted-outside-of-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP endpoints hosted outside of AWS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-load-balancers-behind-a-cloudfront-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Application Load Balancers behind a CloudFront distribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-resources-behind-a-non-cloudfront-content-delivery-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      AWS resources behind a non-CloudFront content delivery network
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#storing-aws-waf-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storing AWS WAF logs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Storing AWS WAF logs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#storing-aws-waf-logs-in-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storing AWS WAF logs in S3
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storing-aws-waf-logs-in-cloudwatch-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storing AWS WAF logs in CloudWatch Logs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-waf-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filtering WAF logs
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estimating-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      Estimating cost
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ownership-of-waf-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ownership of WAF rules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-many-web-acls-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      How many web ACLs to use
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="waf-prerequisites">WAF Prerequisites</h1>
+<p>Consider the following topics before creating your first AWS WAF web ACL.</p>
+<h2 id="identifying-resources-to-protect-with-aws-waf">Identifying resources to protect with AWS WAF</h2>
+<p>It's important to understand what type of resources you can protect natively with AWS WAF. If your use case is not supported directly, there may be architecture changes to consider. This section outlines the best practice for the most common use cases.</p>
+<h3 id="aws-services-natively-supported-by-aws-waf">AWS services natively supported by AWS WAF</h3>
+<p>AWS WAF is <a href="https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works-resources.html">natively integrated with other AWS services</a>. Simply associate the web ACL to the resource you want to protect.</p>
+<p><img alt="" src="../images/waf-supported-resources.png" />
+<strong>Figure 1:</strong> Global and regional AWS resources you can associate with AWS</p>
+<p>There are use cases where either the need for a WAF is unclear or the resource cannot be directly associated with a web ACL. The following sections offer guidance for these situations.</p>
+<h3 id="private-application-load-balancers">Private Application Load Balancers</h3>
+<p>A private Application Load Balancer (ALB) uses VPC subnets that do not have a route to an <a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html">internet gateway</a>. In other words, the ALB cannot be reached directly from the Internet.</p>
+<p><img alt="" src="../images/waf-private-alb.png" />
+<strong>Figure 2:</strong> Protecting private Application Load Balancers</p>
+<p>It is uncommon to protect private ALBs with AWS WAF because the risk usually (but not always) does not justify the cost. Here are a few situations where you might protect private ALBs:</p>
+<ul>
+<li>Protect private ALBs with AWS WAF if they are indirectly handling unfiltered traffic from the Internet or any network you don't control. If the source IP address is not preserved, you may need to inspect an HTTP header that <a href="https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-forwarded-ip-address.html">forwards the IP address</a>. Typically this header is <code>X-Forwarded-For</code>.</li>
+<li>If your private ALB is subject to threats from your own network without other mitigating controls such as narrow <a href="https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html">VPC security group ingress rules</a> then consider protecting it with AWS WAF.</li>
+</ul>
+<h3 id="amazon-cloudfront-distributions-that-point-to-amazon-s3-buckets">Amazon CloudFront distributions that point to Amazon S3 buckets</h3>
+<p>It is uncommon to protect CloudFront distributions that only have origins that point to Amazon S3 buckets. AWS is responsible for protecting Amazon S3 endpoints from malicious requests.</p>
+<p><img alt="" src="../images/waf-cloudfront-s3.png" />
+<strong>Figure 3:</strong> Protecting CloudFront distributions with Amazon S3 bucket origins</p>
+<p>AWS WAF <a href="https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-geo-match.html">geographic match statements</a> can be used to block requests based on region of origin. If you need to prevent users in specific geographic locations from accessing content distributed by CloudFront, you can use native <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html">geographic restrictions</a> in CloudFront. If you use the CloudFront geo restriction feature, the feature doesn't forward blocked requests to AWS WAF. If you want to block requests based on geography and other AWS WAF criteria, use the AWS WAF geo match statement and do not use the CloudFront geo restriction feature.</p>
+<p>Use <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html">origin access control</a> (OAC) to restrict access to your bucket so that Amazon S3 only allows requests from your CloudFront distribution.</p>
+<h3 id="network-load-balancers">Network Load Balancers</h3>
+<p>AWS WAF web ACLs cannot be associated with Network Load Balancers (NLB). If your NLB is handling HTTP traffic then consider using Application Load Balancer (ALB) instead. If you are using NLB to listen on static IP addresses, then you can <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/application-load-balancer-type-target-group-for-network-load-balancer/">create an ALB as the target of your NLB</a> and protect the ALB with AWS WAF. By default, NLB preserves the client IP of traffic sent to ALB targets. This is important for IP-based AWS WAF rules to work properly.</p>
+<p><img alt="" src="../images/waf-nlb.png" />
+<strong>Figure 4:</strong> Using ALB with AWS WAF to protect NLB targets</p>
+<h3 id="http-endpoints-hosted-outside-of-aws">HTTP endpoints hosted outside of AWS</h3>
+<p>You can create an ALB with <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-ip-address-type">IP address targets</a>. If your VPC has a route to your endpoint's network, you can specify any <a href="https://datatracker.ietf.org/doc/html/rfc1918">RFC 1918</a> address as a target. Contact AWS Support if you need to use IP targets outside of RFC 1918.</p>
+<p><img alt="" src="../images/waf-non-aws-target.png" />
+<strong>Figure 5:</strong> Using AWS WAF to protect endpoints outside of AWS</p>
+<h3 id="application-load-balancers-behind-a-cloudfront-distribution">Application Load Balancers behind a CloudFront distribution</h3>
+<p>It is uncommon to use AWS WAF to protect an Application Load Balancer (ALB) that is the origin for a CloudFront distribution. Associate a web ACL with the CloudFront distribution to filter unwanted traffic at CloudFront edge locations. CloudFront forwards the client IP to the ALB in the <code>X-Forwarded-For</code> HTTP header, but there are some IP-based rules that will not work properly. For example, <a href="https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-ip-rep.html#aws-managed-rule-groups-ip-rep-amazon">Amazon IP reputation list</a> and <a href="https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-ip-rep.html#aws-managed-rule-groups-ip-rep-anonymous">Anonymous IP list</a> currently do not support forwarded IPs.</p>
+<p><img alt="" src="../images/waf-cloudfront-alb.png" />
+<strong>Figure 6:</strong> Using AWS WAF to protect ALBs behind CloudFront</p>
+<p>CloudFront requires ALB origins to be reachable by the Internet. Follow these steps make sure your ALB only accepts Internet traffic from your CloudFront distribution.</p>
+<ol>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/limit-access-to-your-origins-using-the-aws-managed-prefix-list-for-amazon-cloudfront/">Limit access to your origins using the AWS-managed prefix list for Amazon CloudFront</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-enhance-amazon-cloudfront-origin-security-with-aws-waf-and-aws-secrets-manager/">Configure your ALB to respond to requests only when they include a customer header added by CloudFront</a>. This ensures your origin only accepts requests from your CloudFront distribution.</li>
+</ol>
+<h3 id="aws-resources-behind-a-non-cloudfront-content-delivery-network">AWS resources behind a non-CloudFront content delivery network</h3>
+<p>If your application uses a CDN other than CloudFront, you can protect your origin with a regional AWS WAF web ACL. AWS WAF will not be able to see the client IP directly, so you must rely on the CDN forwarding client IPs in an HTTP header. Some AWS managed rule groups do not support forwarded IPs. See <a href="https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-forwarded-ip-address.html">forwarded IP addresses</a> for the rule statements that can use forwarded IPs.</p>
+<h2 id="storing-aws-waf-logs">Storing AWS WAF logs</h2>
+<p>AWS WAF logs can be stored in Amazon S3 or Amazon CloudWatch Logs. You can configure WAF to use Amazon Kinesis Data Firehose to deliver WAF logs to a variety of destinations, including Amazon S3.</p>
+<h3 id="storing-aws-waf-logs-in-s3">Storing AWS WAF logs in S3</h3>
+<p>Amazon S3 is the most cost-effective option for storing AWS WAF logs. There are two ways to configure AWS WAF to store logs in an S3 bucket.</p>
+<ol>
+<li>Using Kinesis Data Firehose.</li>
+<li>Directly by specifying the target bucket. This is simpler, but is more expensive than using KDF unless your log volume exceeds 80 billion events per month.</li>
+</ol>
+<p>When using Amazon S3 for AWS WAF logs, they are typically stored in a central bucket. In the web ACL you can specify the ARN of a bucket in any account or region. See <a href="https://docs.aws.amazon.com/waf/latest/developerguide/logging-s3.html">the documentation</a> for information about the bucket policy changes you need.</p>
+<p>See <a href="../../monitoring-waf-rules/docs/">Monitoring WAF Rules</a> for information on using logs Amazon S3 to monitor WAF behavior.</p>
+<h3 id="storing-aws-waf-logs-in-cloudwatch-logs">Storing AWS WAF logs in CloudWatch Logs</h3>
+<p>You can use <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Subscriptions.html">subscription filters</a> to have AWS WAF logs delivered to other services such as Amazon Kinesis or AWS Lambda for custom processing, analysis, or loading to other systems.</p>
+<p>You can use <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/MonitoringLogData.html">metric filters</a> to parse log events and extract numerical values into CloudWatch metrics. These metrics can be used for configuring alarms or dashboards.</p>
+<p>You can centralize AWS WAF logs to a CloudWatch log group in a central account, but this is not supported natively and requires a non-trivial setup. First you set up a CloudWatch log group in the same region as the web ACL (<code>us-east-1</code> for global web ACLs). Then define a <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#LambdaFunctionExample">subscription filter with AWS Lambda</a>. The Lambda function writes log events to a CloudWatch log group in your central account. For now, you can't use KDF to stream data across accounts.</p>
+<p>See <a href="../../monitoring-waf-rules/docs/">Monitoring WAF Rules</a> for information on using logs in CloudWatch Logs to monitor WAF behavior.</p>
+<h2 id="filtering-waf-logs">Filtering WAF logs</h2>
+<p>If you want to avoid logging fields that might contain sensitive data, you can <a href="https://docs.aws.amazon.com/waf/latest/developerguide/logging-management.html">omit fields from AWS WAF logs</a>. Note that AWS WAF does not log the HTTP body.</p>
+<p>AWS WAF logs are detailed, as they can contain up to 100 rule labels. To optimize the cost of storing AWS WAF logs you can specify conditions that determine whether logs are kept or dropped (see <a href="https://docs.aws.amazon.com/waf/latest/developerguide/logging-management.html">log filtering</a>). You can only filter based on rule labels and rule actions, not based on values in HTTP request fields.</p>
+<h2 id="estimating-cost">Estimating cost</h2>
+<p>There are a few topics to consider while reviwing <a href="https://aws.amazon.com/waf/pricing/">AWS WAF pricing</a>. </p>
+<p>The per-request pricing scales up based on two factors.</p>
+<ul>
+<li>Additional $0.20 per million requests for each 500 WCUs the Web ACL uses beyond the default allocation of 1,500</li>
+<li>Additional $0.30 per million requests for each additional 16KB analyzed beyond the default body inspection limit (16KB for CloudFront web ACLs, 8KB for regional web ACLs)</li>
+</ul>
+<p>The following AWS WAF charges are waived for resouces that are protected by AWS Shield Advanced.</p>
+<ul>
+<li>$0.60 per million requests analyzed by AWS WAF</li>
+<li>$5.00 per month per web ACL</li>
+</ul>
+<p>Shield Advanced does not cover these AWS WAF charges. This list may grow over time as more advanced capabilities are supported by AWS WAF.</p>
+<ul>
+<li>Additional charges when using more than 1,500 WCUs</li>
+<li>Additional charges when inspecting bodies larger than the default limit</li>
+<li>Charges for Fraud Control account creation fraud prevention</li>
+<li>Charges for Fraud Control account takeover prevention</li>
+<li>Charges for Bot Control</li>
+<li>Charges for CAPTCHA and Challenge actions</li>
+</ul>
+<p>CloudFront charges for requests even if they are blocked by AWS WAF. AWS Shield Advanced provides DDoS cost protection to safeguard against scaling charges resulting from DDoS-related usage spikes on CloudFront distributions protected by Shield Advanced. You can <a href="https://docs.aws.amazon.com/waf/latest/developerguide/request-refund.html">request a credit</a> for charges through AWS Support. To be eligible to receive a credit for CloudFront and ALB protected resources, you must have associated an AWS WAF web ACL and implemented a rate-based rule in the web ACL.</p>
+<h2 id="ownership-of-waf-rules">Ownership of WAF rules</h2>
+<p>In a simple organization, application teams typically manage their own AWS WAF rules. They create web ACLs and own all the rules inside them. They also tend to keep AWS WAF logs in their own account.</p>
+<p>Larger organizations tend to have a company-wide security policy that requires all web applications to have a minimum baseline of AWS WAF rules. A security team needs to audit web applications for compliance reporting and automatic remediation. Customers use AWS Firewall Manager to define AWS WAF policies that enforce required rules. Application teams can customize FMS-managed web ACLs with application-specific rules. In this way, their web ACLs contain a mix of required and custom rules.</p>
+<p>Application teams should be aware of the responsibility model their organization uses. Security teams may wish to update the required rules, which requires coordinated testing. Also when using FMS, AWS WAF logs are typically stored in a central S3 bucket that application teams may need access to.</p>
+<h2 id="how-many-web-acls-to-use">How many web ACLs to use</h2>
+<p>AWS WAF web ACLs are associated with application resources, such as ALBs. Web ACLs can be associated with one or more resources in the same account. When should you share or dedicate web ACLs? The answer requires a balance between simplicity, isolation, and cost.</p>
+<p>To keep it simple, you can use one web ACL to protect multiple resources. Keep in mind this means multiple resources share the same AWS WAF rules. If one application needs a custom rule, it might impact requests for other applications sharing the same web ACL. If each application has unique rules, you might lean toward dedicated web ACLs instead of sharing.</p>
+<p>Cost is another factor that determines whether sharing web ACLs makes sense. AWS WAF charges are based on request volume and per-web ACL and per-rule charges. If the applications in your account handle over 10 million requests per month, request volume is the dominant pricing factor. In that case, using many web ACLs instead of one won't impact your costs very much. On the other hand, if you have many resources to protect and those resources handle a small number of requests per month, it might make sense to consolidate web ACLs to optimize cost.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>
