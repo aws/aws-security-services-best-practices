@@ -11,7 +11,7 @@ people:
 | Scott Ward  | Chris Simmons | Uday Chandrasen |  Kashish Wadhwa |
 | Priyank Ghedia | Brent Maynard | Shachar Hirshberg | Rick Anthony |
 | Lee Messier | Bryan Van Hook | Jesse Lepich | Michael Leighty |
-| Justin Criswell | Joe Wagner | | |
+| Justin Criswell | Joe Wagner | Lawton Pittenger | |
 
 Note that all recipes published on this site are available via the
 [MIT-0][mit0] license, a modification to the usual MIT license
