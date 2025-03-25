@@ -226,7 +226,6 @@ pass tls $HOME_NET any -> any any (tls.sni; content:"amazon.com"; dotprefix; noc
 # These replace "Drop All" or "Drop Established" default actions
 
 # Egress Default Block Rules
-pass tcp $HOME_NET any -> any any (flow:not_established, to_server; sid:999990;)
 reject tls $HOME_NET any -> any any (msg:"Default Egress HTTPS Reject"; ssl_state:client_hello; flowbits:set,blocked; flow:to_server; sid:999991;)
 alert tls $HOME_NET any -> any any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:999993;)
 reject http $HOME_NET any -> any any (msg:"Default Egress HTTP Reject"; flowbits:set,blocked; flow:to_server; sid:999992;)
@@ -237,7 +236,6 @@ drop ip $HOME_NET any -> any any (msg:"Default Egress IP Drop"; ip_proto:!TCP; i
 
 
 # Ingress Default Block Rules
-pass tcp any any -> $HOME_NET any (flow:not_established, to_server; sid:999998;)
 drop tls any any -> $HOME_NET any (msg:"Default Ingress HTTPS Drop"; ssl_state:client_hello; flowbits:set,blocked; flow:to_server; sid:999999;)
 alert tls any any -> $HOME_NET any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:9999910;)
 drop http any any -> $HOME_NET any (msg:"Default Ingress HTTP Drop"; flowbits:set,blocked; flow:to_server; sid:9999911;)
