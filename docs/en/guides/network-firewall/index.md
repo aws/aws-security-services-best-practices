@@ -232,7 +232,7 @@ reject http $HOME_NET any -> any any (msg:"Default Egress HTTP Reject"; flowbits
 reject tcp $HOME_NET any -> any any (msg:"Default Egress TCP Reject"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:999994;)
 drop udp $HOME_NET any -> any any (msg:"Default Egress UDP Drop"; flow:to_server; sid:999995;)
 drop icmp $HOME_NET any -> any any (msg:"Default Egress ICMP Drop"; flow:to_server; sid:999996;)
-drop ip $HOME_NET any -> any any (msg:"Default Egress IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:999997;)
+drop ip $HOME_NET any -> any any (msg:"Default Egress IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:999997;)
 
 
 # Ingress Default Block Rules
@@ -242,7 +242,7 @@ drop http any any -> $HOME_NET any (msg:"Default Ingress HTTP Drop"; flowbits:se
 drop tcp any any -> $HOME_NET any (msg:"Default Ingress TCP Drop"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:9999912;)
 drop udp any any -> $HOME_NET any (msg:"Default Ingress UDP Drop"; flow:to_server; sid:9999913;)
 drop icmp any any -> $HOME_NET any (msg:"Default Ingress ICMP Drop"; flow:to_server; sid:9999914;)
-drop ip any any -> $HOME_NET any (msg:"Default Ingress IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:9999915;)
+drop ip any any -> $HOME_NET any (msg:"Default Ingress IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:9999915;)
 ```
 
 ### Use as few Custom Rule Groups as possible
