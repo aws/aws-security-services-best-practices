@@ -264,7 +264,7 @@ By default the $HOME_NET variable is set to the CIDR range of the VPC where Netw
 
 However this default behavior might not cover the CIDR ranges of the VPCs you want to protect, like Spoke VPC A and Spoke VPC B in the above example.
 
-You want to make sure that the $HOME_NET CIDR range lines up with all your VPCs that you intend to protect and match traffic against.
+You want to make sure that the $HOME_NET CIDR range lines up with all your VPCs that you intend to protect and match traffic against. Most customers benefit from setting $HOME_NET to all [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) IP address ranges (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16).
 
 This variable can be set at a global firewall policy level or in each rule group. If it’s set at both levels, the rule group setting wins.
 
