@@ -143,7 +143,38 @@ Potential security issues are presented as findings in the GuardDuty console. Al
 
 It is recommended to familiarize your team with the [GuardDuty Finding Types](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-active.html). This will give you insights into what findings you might see in your account, the details associated with these findings, and potential [remediation actions](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_remediate.html). After you understand different GuardDuty findings we encourage customers to think through filtering, notifications, and potential automatic remediation which will cover in the next sections. It is also encouraged to begin writing [incident response playbooks](https://github.com/aws-samples/aws-incident-response-playbooks) for responding to GuardDuty findings in your environment. This will likely combine multiple steps below and also details not covered that might be specific to your environment and your teams.
 
+## Amazon GuardDuty Extended Threat Detection
+
+GuardDuty Extended Threat Detection automatically detects multi-stage attacks that span data sources, multiple types of AWS resources, and time, within an AWS account. With this capability, GuardDuty focuses on the sequence of multiple events that it observes by monitoring different types of data sources. Extended Threat Detection correlates these events to identify scenarios that present themselves as a potential threat to your AWS environment, and then generates an attack sequence finding.
+
+
+A single finding can encompass an entire attack sequence. For example, it might detect a scenario such as: 
+1. A threat actor gaining unauthorized access to a compute workload. 
+2. The actor then performing a series of actions such as privilege escalation and establishing persistence. 
+3. Finally, the actor exfiltrating data from an Amazon S3 resource.
+
+Extended Threat Detection covers threat scenarios that involve compromise related to AWS credentials misuse, and data compromise attempts in your AWS accounts. Because of the nature of these threat scenarios, GuardDuty considers all attack sequence finding types as Critical.
+
+Few Considerations
+1. Automatic Activation:
+   - ETD is automatically turned on for all GuardDuty accounts.
+   - No manual activation is required for ETD.
+   - ETD is at no additional cost.
+
+2. S3 Protection:
+   - Remains a separate feature from ETD.
+   - Must be enabled if desired.
+   - Not automatically activated with ETD.
+
+3. Functionality:
+   - ETD enhances GuardDuty's threat detection capabilities automatically.
+   - Works alongside other GuardDuty features, including optional S3 Protection.
+
+Visit the Extended Threat Detection page under Protection plans in the GuardDuty console.
+Make sure that Extended Threat Detection is enabled.
+
 ### Filtering findings
+
 
 If you are new to GuardDuty the easiest way to view/filter your findings is via the Summary tab. The Summary dashboard displays an aggregated view of the last 10,000 GuardDuty findings generated in the current AWS Region. You can choose to view the Last 2 days (default), Last 7 days or Last 30 days. This dashboard provides 6 widgets, 3 of which include filter capabilities to customize your view.
 ![GuardDuty Summary page](../../images/GD-Summary-page.png)
@@ -249,6 +280,8 @@ def lambda_handler(event, context):
         print('Error:', str(e))
         raise e
 ```
+
+
 
 ## Cost Optimization
 
@@ -403,6 +436,8 @@ ORDER BY  numRequests DESC limit 10;
 * [Enable GuardDuty Lambda Protection to monitor your Lambda execution environment](https://www.youtube.com/watch?v=dpc6jvtHB0g&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=38&pp=iAQB)
 * [GuardDuty EKS Runtime Monitoring](https://www.youtube.com/watch?v=t3rVVilJWEk&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=40&pp=iAQB)
 * [Amazon GuardDuty RDS Protection](https://www.youtube.com/watch?v=f_CFtrAG8Nw&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=41&pp=iAQB)
+* [Amazon Guardduty Extended Threat Detection](https://www.youtube.com/embed/xLqGwoSaoPw?si=_wprcGe8l9oypKFR)
+
 
 ### Blogs
 
