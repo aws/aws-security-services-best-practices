@@ -264,7 +264,8 @@ It is recommended to familiarize your team with the [GuardDuty Finding Types](ht
 GuardDuty Extended Threat Detection automatically detects multi-stage attacks that span data sources, multiple types of AWS resources, and time, within an AWS account. With this capability, GuardDuty focuses on the sequence of multiple events that it observes by monitoring different types of data sources. Extended Threat Detection correlates these events to identify scenarios that present themselves as a potential threat to your AWS environment, and then generates an attack sequence finding.
 
 
-A single finding can encompass an entire attack sequence. For example, it might detect a scenario such as: 
+A single finding can encompass an entire attack sequence. For example, it might detect a scenario such as:
+ 
 1. A threat actor gaining unauthorized access to a compute workload. 
 2. The actor then performing a series of actions such as privilege escalation and establishing persistence. 
 3. Finally, the actor exfiltrating data from an Amazon S3 resource.
@@ -272,19 +273,20 @@ A single finding can encompass an entire attack sequence. For example, it might 
 Extended Threat Detection covers threat scenarios that involve compromise related to AWS credentials misuse, and data compromise attempts in your AWS accounts. Because of the nature of these threat scenarios, GuardDuty considers all attack sequence finding types as Critical.
 
 Few Considerations
+
 1. Automatic Activation:
-   - ETD is automatically turned on for all GuardDuty accounts.
-   - No manual activation is required for ETD.
-   - ETD is at no additional cost.
+   * ETD is automatically turned on for all GuardDuty accounts.
+   * No manual activation is required for ETD.
+   * ETD is at no additional cost.
 
 2. S3 Protection:
-   - Remains a separate feature from ETD.
-   - Must be enabled if desired.
-   - Not automatically activated with ETD.
+   * Remains a separate feature from ETD.
+   * Must be enabled if desired.
+   * Not automatically activated with ETD.
 
 3. Functionality:
-   - ETD enhances GuardDuty's threat detection capabilities automatically.
-   - Works alongside other GuardDuty features, including optional S3 Protection.
+   * ETD enhances GuardDuty's threat detection capabilities automatically.
+   * Works alongside other GuardDuty features, including optional S3 Protection.
 
 Visit the Extended Threat Detection page under Protection plans in the GuardDuty console.
 Make sure that Extended Threat Detection is enabled.
