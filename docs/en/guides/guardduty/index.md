@@ -265,7 +265,7 @@ GuardDuty Extended Threat Detection automatically detects multi-stage attacks th
 
 
 A single finding can encompass an entire attack sequence. For example, it might detect a scenario such as:
- 
+
 1. A threat actor gaining unauthorized access to a compute workload. 
 2. The actor then performing a series of actions such as privilege escalation and establishing persistence. 
 3. Finally, the actor exfiltrating data from an Amazon S3 resource.
