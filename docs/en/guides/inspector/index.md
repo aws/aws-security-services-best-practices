@@ -48,7 +48,7 @@ Integration with Organizations enables you to quickly deploy and see vulnerabili
 
 ## Getting started
 
-In this section we will cover what you need to consider before activating Amazon Inspector in your AWS Organization.
+In this section we will cover what you need to consider before activating Amazon Inspector in your AWS Organization. 
 
 ### AWS SSM Agent
 
@@ -59,6 +59,21 @@ If you have instances that do not or can not have an SSM agent for example becau
 The AWS SSM Agent is installed by default on Amazon EC2 instances created from [some Amazon Machine Images (AMIs)](https://docs.aws.amazon.com/systems-manager/latest/userguide/ami-preinstalled-agent.html). For more information, see [About SSM Agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/prereqs-ssm-agent.html) in the AWS Systems Manager User Guide. However, even if it is installed, you may need to activate the AWS SSM Agent manually, and grant SSM permission to manage your instance.
 
 In addition to providing the visibility that is needed to look for vulnerabilities on Amazon EC2 instance the presence of the AWS SSM agent provides value for activities such as scheduling automated patching, creating maintenance windows, reporting on patching compliance, providing a mechanism to run automation across your fleet of instances, and provide secure access to instances without the need to expose port 22 or 3389 for remote access to SSH or RDP.
+
+If you're interested in using the AWS SSM agent, refer to the section below on enabling default host management in AWS Systems Manager.
+
+#### Enabling Default Host Management in AWS Systems Manager (SSM)
+
+Hybrid scanning in Amazon Inspector includes agent-based scanning and agentless scanning. By default, Amazon Inspector uses these scan methods on all eligible Amazon EC2 instances. Agent-based scanning uses the SSM agent to collect software inventory. Agentless scanning uses Amazon EBS snapshots to collect software inventory. By default, the SSM agent is already installed in Amazon EC2 instances based on Amazon Machine Images. However, you might need to activate the SSM agent manually in some cases. For more information, see [Working with the SSM agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html) in the AWS Systems Manager User Guide. To manage EC2 instances automatically with Systems Manager, use the Default Host Management Configuration setting.
+
+For assessing network reachability of Amazon EC2 instances, vulnerability scanning of container images, or vulnerability scanning of Lambda functions, no agents are necessary. 
+
+1. Sign in to your organization management account for AWS Organizations.
+2. Navigate to Systems Manager and open the [Quick Setup](https://console.aws.amazon.com/systems-manager/quick-setup) page.
+3. Click **Create** for **Default Host Management Configuration**.
+4. Make sure the box is selected for **Enable automatic updates of the SSM Agent every two weeks**.
+5. Click **Create**. You will see a banner stating, "Your Default Host Management Configuration Quick Setup is being updated.". It normally takes up to 30 minutes for the agent to connect with Systems Manager and the EC2 instance to appear in the Systems Manager Inventory as a managed instance (required for Inspector to perform agent-based scanning). 
+6. You may continue to the next steps without waiting 30 minutes for the Host Management Configuration to complete. 
 
 ### Deployment Considerations
 
@@ -116,6 +131,17 @@ Once you are in the Inspector delegated administrator account you will again see
 *Figure 6: Inspector account management page*
 
 Next you will need to make sure you activate scanning for all current accounts and all scanning types including Amazon EC2 scanning, Amazon ECR Scanning, AWS Lambda standard scanning, and AWS Lambda code scanning. It is also highly recommended to “Automatically activate Inspector for new member accounts”. This helps you understand that you don’t have a gap in vulnerability coverage when new accounts are created in your organization. This will also automate the process of onboarding new accounts and automatically aggregate all findings to your delegated administrator account reducing manual tasks and saving time.
+
+
+* Sign in to the Delegated Admin account for Inspector.
+* Open the Inspector console.
+* From the [Account management](https://console.aws.amazon.com/inspector/v2/home?#/settings/account-management/accounts) page, under **Automatically activate Inspector for new member accounts** toggle on the option to **Automatically activate Inspector for new member accounts**. 
+* Make sure that all of the options are selected and click **Save**. You should see a banner with the message "You have successfully updated the auto-activate scan settings for your organization.".
+* Scroll down to where accounts are listed under **Organization**. Depending on how many accounts you have, you should click the gear icon on the right to view 50 accounts per page. 
+* Per page, select all accounts. Click the **Activate** dropdown menu, select all of the options, and click **Submit**. 
+* Within minutes, resources will start being scanned and you will see any generated findings on the [Findings](https://console.aws.amazon.com/inspector/v2/home?#/findings/all) page.
+
+Alternatively, you may enable Inspector across all accounts and regions using CLI. Check out the [enablement script on Github](https://github.com/aws-samples/inspector2-enablement-with-cli).
 
 ## Coverage
 
@@ -238,6 +264,19 @@ Amazon Inspector pricing is thoroughly covered in the pricing page covering pric
 Amazon Inspector is a cost-effective service that charges you based on usage in your environment. To verify that you are using Inspector cost effectively it is important to understand that since it is usage based you should make sure you do not have extra resources in your environment that are not being used. This will not only save Inspector cost but will potentially save you on Amazon EC2, ECR, and Lambda costs. Secondly each scanning function of Amazon Inspector is optional, so you can choose to use what you need. It is not recommended to disable any of the features as this could potentially cause a lack of visibility into vulnerabilities in your environment and introduce unnecessary challenges, but at every organization there is budgets limits that should be taken into consideration when using Amazon Inspector features. Another option that can be used but should be carefully evaluated is the tag that can be used to exlude scanning for EC2 instances. For more information on how to configure this tag please refer to the [scanning Amazon EC2 Instances documentation](https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html#exclude-ec2).
 
 The best way to estimate costs with Amazon Inspector is to take advantage of the 15-day free trial. Inspector can be turned on and off across hundreds or thousands of accounts in an organization in a matter of minutes. Once you enable Inspector you will be able to see the costs associated with running Inspector in your organization past the 15-day free trial.
+
+## Troubleshooting
+### Troubleshooting AWS Systems Manager (SSM) Agent Issues
+There are several issues that might cause the SSM agent to work improperly. You can use the Systems Manager Automation runbook to automatically troubleshoot an EC2 instance that SSM is unable to manage
+
+* Open [this link](https://us-east-1.console.aws.amazon.com/systems-manager/automation/execute/AWSSupport-TroubleshootManagedInstance?region=us-east-1) to configure the Systems Manager Automation runbook.
+* Navigate to the AWS Region for the EC2 instance you want to troubleshoot.
+* Under the **Input parameters**, change the dropdown from "Show managed instances only" to "Show all instances".
+* Select the EC2 instance you want to troubleshoot.
+* Leave all the other settings, and at the bottom of the page, click **Execute**. This process normally takes up to 5 minutes to complete.
+* Once the automation document has as an Overall status of Success, expand the Outputs section.
+* Review the outputs to see the specific problem with your SSM configuration.
+
 
 ## Resources
 

@@ -22,12 +22,14 @@ This guide is geared towards security practitioners who are responsible for moni
   * [Use “flow:to_server” keyword in stateful rules](#use-flowto_server-keyword-in-stateful-rules)
   * [How to make sure your new Stateful firewall rules apply to existing flows](#how-to-make-sure-your-new-stateful-firewall-rules-apply-to-existing-flows)
   * [Set up logging and monitoring](#set-up-logging-and-monitoring)
+  * [Options for Mitigating client side TLS SNI manipulation with AWS Network Firewall](#options-for-mitigating-client-side-tls-sni-manipulation-with-aws-network-firewall)
 * [Cost Considerations](#cost-considerations)
+* [Troubleshooting stateless rules for asymmetric forwarding](#troubleshooting-stateless-rules-for-asymmetric-forwarding)
 * [Resources](#resources)
 
 ## What is AWS Network Firewall?
 
-AWS Network Firewall is a managed service that makes it easy to deploy essential network protections for all of your [Amazon Virtual Private Clouds (VPCs)](https://aws.amazon.com/vpc/). It can filter traffic at the perimeter of your VPC, including filtering traffic going to and coming from an internet gateway, NAT gateway, over VPN, or AWS Direct Connect.
+AWS Network Firewall is a managed service that makes it easy to deploy essential L3-L7 deep packet inspection protections for all of your [Amazon Virtual Private Clouds (VPCs)](https://aws.amazon.com/vpc/). It can filter traffic at the subnet level of your VPC, including filtering traffic going to and coming from an internet gateway, NAT gateway, over VPN, or AWS Direct Connect.
 
 ## What are the benefits of enabling AWS Network Firewall?
 
@@ -92,8 +94,9 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 
 ### Use Stateful rules over Stateless rules
 
+* Stateless rules should be used very sparingly because they can easily cause asymmetric flow forwarding issues (where only one side of the flow is seen by the stateful inspection engine of the firewall) and they tend to make the overall firewall ruleset more complex to understand and troubleshoot. For the large majority of use cases we recommend the stateless engine’s default action be set to “Forward to stateful rule groups” and we recommend not having any stateless rules configured since they take precedence over stateful rules.
+* If you are going to use stateless rules, it’s important to understand how to use the Network Firewall’s Stateless Rule Group Analyzer to troubleshoot and resolve asymmetric flow issues. See the “Troubleshooting stateless rules for asymmetric forwarding”
 * Customers should leverage Stateful rules if they want to get the deep packet inspection IPS capabilities of the Network Firewall. Some customers accidentally start with stateless rules only to find out later that they really needed to use stateful rules instead.
-* Stateless rules should be used very sparingly
   * Stateless rules could be used in the case where you don't want some traffic to be logged or alerted on and simply denied, but for the most part your rule groups should look like this (below) in the AWS Console:
 
 ![ANF Stateless Rule Groups](../../images/ANF-stateless-rule-evaluation.png)
@@ -131,52 +134,115 @@ The pros of using customer Suricata rules:
 Below we have also included a custom template for an egress security use case to show examples of custom suricata rules.
 
 ```
-# This is a "Stict rule ordering" egress security template meant for only the egress use case. These rules would need to be adjusted to accomodate any other use cases. Use this ruleset with "Strict" rule ordering firewall policy.
+# This is a "Strict rule ordering" egress security template meant only for the egress use case. These rules would need to be adjusted to accommodate any other use cases. Use this ruleset with "Strict" rule ordering firewall policy and no default block action, as this template includes custom default block rules at the end. 
+# This template will not work well with the "Drop All" or "Drop Established" default firewall policy actions.
+# Make sure the $HOME_NET variable is set correctly (do this at the firewall policy level so all RGs inherit it)
 
-# Silently allow low risk protocols out to anywhere
-pass ntp $HOME_NET any -> $EXTERNAL_NET 123 (flow:to_server; msg:"pass rules do not alert/log"; sid:9829158;)
-pass icmp $HOME_NET any -> $EXTERNAL_NET any (msg:"pass rules do not alert/log"; sid:20231171;)
+# Block, but do not log any ingress request traffic from the outside
+# Remove 'noalert' from this rule if you want the ingress traffic to be logged.
+drop ip any any -> $HOME_NET any (noalert; flow:to_server; sid:202501023;)
 
-# Only allow short list of egress ports, and block all the rest
-drop ip $HOME_NET any -> $EXTERNAL_NET ![123,80,443] (msg:"Disallowed Egress Port"; sid:20231671;)
+# Silently allow TCP 3-way handshake to be setup by $HOME_NET clients
+# Do not move this section, it's important that this be at the top of the entire firewall ruleset to reduce rule conflicts
+pass tcp $HOME_NET any -> any any (flow:not_established, to_server; sid:202501021;)
+pass tcp any any -> $HOME_NET any (flow:not_established, to_client; sid:202501022;)
+
+
+# Silently allow TCP RST and FIN out
+# TCP RST and FIN are trusted so it's safe to allow them out. This rule helps reduce noise in the logs.
+pass tcp $HOME_NET any -> any any (msg:"pass rule do not log"; flags:R,F; flow:to_server; sid:202501054;)
+
+# Silently allow/ignore inspection of bogon traffic
+# This traffic should not normally hit the Network Firewall, but we have seen cases where this is a misconfigruation that causes it to
+pass ip $HOME_NET any -> 169.254.0.0/16 any (flow:to_server; sid:202501067;)
+
+# Turn on JA3/S hash logging for all other tls alert rules (like sid:999991)
+alert tls $HOME_NET any -> any any (ja3.hash; content:!"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; noalert; flow:to_server; sid:202501024;)
+alert tls any any -> $HOME_NET any (ja3s.hash; content:!"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; noalert; flow:to_client; sid:202501025;)
+
+# Direct to IP connections
+reject http $HOME_NET any -> any any (http.host; content:"."; pcre:"/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/"; msg:"HTTP direct to IP via http host header (common malware download technique)"; flow:to_server; sid:202501026;)
+reject tls $HOME_NET any -> any any (tls.sni; content:"."; pcre:"/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/"; msg:"TLS direct to IP via TLS SNI (common malware download technique)"; flow:to_server; sid:202501027;)
+
+# Block higher risk Geoip
+drop ip $HOME_NET any -> any any (msg:"Egress traffic to RU IP"; geoip:dst,RU; metadata:geo RU; flow:to_server; sid:202501028;)
+drop ip $HOME_NET any -> any any (msg:"Egress traffic to CN IP"; geoip:dst,CN; metadata:geo CN; flow:to_server; sid:202501029;)
+
+# Block higher risk ccTLDs
+reject tls $HOME_NET any -> any any (tls.sni; content:".ru"; nocase; endswith; msg:"Egress traffic to RU ccTLD"; flow:to_server; sid:202501036;)
+reject http $HOME_NET any -> any any (http.host; content:".ru"; endswith; msg:"Egress traffic to RU ccTLD"; flow:to_server; sid:202501037;)
+reject tls $HOME_NET any -> any any (tls.sni; content:".cn"; nocase; endswith; msg:"Egress traffic to CN ccTLD"; flow:to_server; sid:202501038;)
+reject http $HOME_NET any -> any any (http.host; content:".cn"; endswith; msg:"Egress traffic to CN ccTLD"; flow:to_server; sid:202501039;)
+
+# Log higher risk ports
+alert ip $HOME_NET any -> any 53 (msg:"Possible GuardDuty/DNS Firewall bypass!"; flow:to_server; sid:202501055;)
+alert ip $HOME_NET any -> any 1389 (msg:"Possible Log4j callback!"; flow:to_server; sid:202501059;)
+alert ip $HOME_NET any -> any [4444,666,3389] (msg:"Egress traffic to high risk port!"; flow:to_server; sid:202501058;)
+
+# Port/protocol enforcement (TLS can only use TCP/443, TLS can't use anything other than TCP/443, etc.)
+reject tcp $HOME_NET any -> any 443 (msg:"Egress Port TCP/443 but not TLS"; app-layer-protocol:!tls; flow:to_server; sid:202501030;)
+reject tls $HOME_NET any -> any !443 (msg:"Egress TLS but not port TCP/443"; flow:to_server; sid:202501031;)
+reject tcp $HOME_NET any -> any 80 (msg:"Egress Port TCP/80 but not HTTP"; app-layer-protocol:!http; flow:to_server; sid:202501032;)
+reject http $HOME_NET any -> any !80 (msg:"Egress HTTP but not port TCP/80"; flow:to_server; sid:202501033;)
+reject tcp $HOME_NET any -> any 22 (msg:"Egress Port TCP/22 but not SSH"; app-layer-protocol:!ssh; flow:to_server; sid:202501060;)
+reject ssh $HOME_NET any -> any !22 (msg:"Egress SSH but not port TCP/22"; flow:to_server; sid:202501061;)
+
+# Silently (do not log) allow low risk protocols out to anywhere
+pass ntp $HOME_NET any -> any 123 (msg:"pass rules do not alert/log"; flow:to_server; sid:202501034;)
+pass icmp $HOME_NET any -> any any (msg:"pass rules do not alert/log"; flow:to_server; sid:202501035;)
 
 # Block high risk TLDs
-reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".ru"; nocase; flow:to_server; sid:20233181;)
-reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".ru"; flow:to_server; sid:20235181;)
-reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".xyz"; nocase; flow:to_server; sid:20232181;)
-reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".xyz"; flow:to_server; sid:20235281;)
-reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".info"; nocase; flow:to_server; sid:10233181;)
-reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".info"; flow:to_server; sid:10235181;)
-reject tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:".onion"; nocase; flow:to_server; sid:23233181;)
-reject http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:".onion"; flow:to_server; sid:20335181;)
+reject tls $HOME_NET any -> any any (tls.sni; content:".xyz"; nocase; endswith; msg:"High risk TLD .xyz blocked"; flow:to_server; sid:202501040;)
+reject http $HOME_NET any -> any any (http.host; content:".xyz"; endswith; msg:"High risk TLD .xyz blocked"; flow:to_server; sid:202501041;)
+reject tls $HOME_NET any -> any any (tls.sni; content:".info"; nocase; endswith; msg:"High risk TLD .info blocked"; flow:to_server; sid:202501042;)
+reject http $HOME_NET any -> any any (http.host; content:".info"; endswith; msg:"High risk TLD .info blocked"; flow:to_server; sid:202501043;)
+reject tls $HOME_NET any -> any any (tls.sni; content:".top"; nocase; endswith; msg:"High risk TLD .top blocked"; flow:to_server; sid:202501044;)
+reject http $HOME_NET any -> any any (http.host; content:".top"; endswith; msg:"High risk TLD .top blocked"; flow:to_server; sid:202501045;)
+
+# Alert on requests to possible suspicious TLDs
+alert tls $HOME_NET any -> any any (tls.sni; pcre:"/^(?!.*\.(com|org|net|io|edu|aws)$).*/i"; msg:"Request to possible suspicious TLDs"; flow:to_server; sid:202501065;)
+alert http $HOME_NET any -> any any (http.host; pcre:"/^(?!.*\.(com|org|net|io|edu|aws)$).*/i"; msg:"Request to possible suspicious TLDs"; flow:to_server; sid:202501066;)
+
 
 # Silently (do not log) allow AWS public service endpoints that we have not setup VPC endpoints for yet
 # VPC endpoints are highly encouraged. They reduce NFW data processing costs and allow for additional security features like VPC endpoint policies.
-pass tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"ec2messages."; startswith; nocase; content:".amazonaws.com"; endswith; nocase; flow:to_server; sid:20231181;)
-pass tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"ssm."; startswith; nocase; content:".amazonaws.com"; endswith; nocase; flow:to_server; sid:2023116132;)
-pass tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"ssmmessages."; startswith; nocase; content:".amazonaws.com"; endswith; nocase; flow:to_server; sid:2021110133;)
 
-# Allow-list of FQDNs to silently allow
-pass tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"checkip.amazonaws.com"; startswith; nocase; endswith; flow:to_server; sid:202311893;)
-pass http $HOME_NET any -> $EXTERNAL_NET any (http.host; content:"checkip.amazonaws.com"; startswith; endswith; flow:to_server; sid:20236893;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ec2messages."; startswith; nocase; content:".amazonaws.com"; endswith; nocase; flow:to_server; sid:202501047;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssm."; startswith; nocase; content:".amazonaws.com"; endswith; nocase; flow:to_server; sid:202501048;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssmmessages."; startswith; nocase; content:".amazonaws.com"; endswith; nocase; flow:to_server; sid:202501049;)
 
-# Allow-List FQDNs, but still alert on them
-alert tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"www.example.com"; startswith; nocase; endswith; flow:to_server; msg:"TLS SNI Allowed"; sid:202315893;)
-pass tls $HOME_NET any -> $EXTERNAL_NET any (tls.sni; content:"www.example.com"; startswith; nocase; endswith; flow:to_server; msg:"pass rules do not alert/log"; sid:202315873;)
+# Allow-list of strict FQDNs to silently allow
+pass tls $HOME_NET any -> any any (tls.sni; content:"checkip.amazonaws.com"; startswith; nocase; endswith; flow:to_server; sid:202501050;)
+pass http $HOME_NET any -> any any (http.host; content:"checkip.amazonaws.com"; startswith; endswith; flow:to_server; sid:202501051;)
+
+# Allow-List of strict FQDNs, but still alert on them
+alert tls $HOME_NET any -> any any (tls.sni; content:"www.example.com"; startswith; nocase; endswith; msg:"TLS SNI Allowed"; flow:to_server; sid:202501052;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"www.example.com"; startswith; nocase; endswith; msg:"pass rules do not alert/log"; flow:to_server; sid:202501053;)
+
+# Allow-List of second level/registered domain and all of its subdomains
+pass tls $HOME_NET any -> any any (tls.sni; content:"amazon.com"; dotprefix; nocase; endswith; msg:"pass rules do not alert/log"; flow:to_server; sid:202501078;)
+
+# Custom Block Rules
+# These replace "Drop All" or "Drop Established" default actions
+
+# Egress Default Block Rules
+reject tls $HOME_NET any -> any any (msg:"Default Egress HTTPS Reject"; ssl_state:client_hello; flowbits:set,blocked; flow:to_server; sid:999991;)
+alert tls $HOME_NET any -> any any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:999993;)
+reject http $HOME_NET any -> any any (msg:"Default Egress HTTP Reject"; flowbits:set,blocked; flow:to_server; sid:999992;)
+reject tcp $HOME_NET any -> any any (msg:"Default Egress TCP Reject"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:999994;)
+drop udp $HOME_NET any -> any any (msg:"Default Egress UDP Drop"; flow:to_server; sid:999995;)
+drop icmp $HOME_NET any -> any any (msg:"Default Egress ICMP Drop"; flow:to_server; sid:999996;)
+drop ip $HOME_NET any -> any any (msg:"Default Egress IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:999997;)
 
 
-# Silently allow TCP 3-way handshake to be setup by $HOME_NET clients
-pass tcp $HOME_NET any -> $EXTERNAL_NET any (flow:not_established, to_server; msg:"pass rules do not alert/log"; sid:9918156;)
-pass tcp $EXTERNAL_NET any -> $HOME_NET any (flow:not_established, to_client; msg:"pass rules do not alert/log"; sid:9918157;)
-
-# Block any egress traffic not already allowed.
-reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress TCP to_server reject (only logs once every 5 minutes)"; threshold: type limit, track by_src, seconds 600, count 1; sid:9822311;)
-drop udp $HOME_NET any -> $EXTERNAL_NET any (msg:"Default egress UDP drop (only logs once every 5 minutes)"; threshold: type limit, track by_src, seconds 600, count 1; sid:82319824;)
-drop icmp $HOME_NET any -> $EXTERNAL_NET any (msg:"Default egress ICMP drop (only logs once every 5 minutes)"; threshold: type limit, track by_src, seconds 600, count 1; sid:82319825;)
-
-# Blanket block everything else clean up rule
-# This rule will work fine with "Drop Established" or "Drop All" but those settings will fill the logs unnecessarily, so you may want to keep those options unchecked 
-drop ip any any -> any any (msg:"Default block all IP (only logs once every 5 minutes)"; threshold: type limit, track by_src, seconds 600, count 1; sid:98228398;)
+# Ingress Default Block Rules
+drop tls any any -> $HOME_NET any (msg:"Default Ingress HTTPS Drop"; ssl_state:client_hello; flowbits:set,blocked; flow:to_server; sid:999999;)
+alert tls any any -> $HOME_NET any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:9999910;)
+drop http any any -> $HOME_NET any (msg:"Default Ingress HTTP Drop"; flowbits:set,blocked; flow:to_server; sid:9999911;)
+drop tcp any any -> $HOME_NET any (msg:"Default Ingress TCP Drop"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:9999912;)
+drop udp any any -> $HOME_NET any (msg:"Default Ingress UDP Drop"; flow:to_server; sid:9999913;)
+drop icmp any any -> $HOME_NET any (msg:"Default Ingress ICMP Drop"; flow:to_server; sid:9999914;)
+drop ip any any -> $HOME_NET any (msg:"Default Ingress IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:9999915;)
 ```
 
 ### Use as few Custom Rule Groups as possible
@@ -198,13 +264,17 @@ By default the $HOME_NET variable is set to the CIDR range of the VPC where Netw
 
 However this default behavior might not cover the CIDR ranges of the VPCs you want to protect, like Spoke VPC A and Spoke VPC B in the above example.
 
-You want to make sure that the $HOME_NET CIDR range lines up with all your VPCs that you intend to protect and match traffic against.
+You want to make sure that the $HOME_NET CIDR range lines up with all your VPCs that you intend to protect and match traffic against. Most customers benefit from setting $HOME_NET to all [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) IP address ranges (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16).
 
 This variable can be set at a global firewall policy level or in each rule group. If it’s set at both levels, the rule group setting wins.
 
 The $HOME_NET variable and it’s inverse ($EXTERNAL_NET) are used for matching traffic in AWS managed rules. $EXTERNAL_NET follows $HOME_NET and is always anything outside of $HOME_NET.
 
 When using the managed rules for an east/west use case you will want to decide which VPCs/CIDRs you want to protect and assign only those CIDRs to the $HOME_NET variable. If you assign all VPCs/CIDRs then none of those CIDR ranges will be matched by the $EXTERNAL_NET variable in the managed rules. You can also copy out the rules from the threat signatures and adjust the variables to your liking (even replacing the variables by “any“) if you want them to match any/all CIDRs. The downside of doing this is those rules will be static at that point in time and will not be automatically updated like the AWS managed rules.
+
+Here is an example custom Suricata rule that can help you identify if you have traffic going through the firewall that is not included in $HOME_NET and perhaps should be:
+
+alert tcp !$HOME_NET any -> !$HOME_NET any (flow:to_server,established; msg:"It looks like you might have $HOME_NET traffic that is not a part of the $HOME_NET variable. Please make sure your $HOME_NET variable is set correctly."; sid:39179777;)
 
 ### Use Alert rule before Pass rule to log allowed traffic
 
@@ -240,12 +310,11 @@ See [Troubleshooting rules in Network Firewall](https://docs.aws.amazon.com/netw
 
 Network Firewall leverages the Suricata deep packet inspection engine for all Stateful firewall rules. After a flow has been allowed by a Suricata rule, Suricata places that flow in the state table so that it knows it no longer needs to spend resources running deep packet inspection on that flow. For as long as that flow remains active, any new Stateful firewall rules will not apply to that traffic since a decision was already made on that flow. Sometimes you may want your newly added Stateful firewall rules to apply to all traffic, including already active traffic that has been previously allowed through the firewall. For example, perhaps you began setting up the network firewall and started with an, "allow all traffic" type of rule, but then as you get further along in the deployment  and testing of network firewall you may want to narrow down your ruleset, and ensure that even already allowed traffic must be processed by your new rules.
 
-* How to clear the Network Firewall stateful rules state table
-  * Create a placeholder "Action Order" firewall policy (we'll call this firewall policy "Temp-Action-Order") with a default stateless action of pass (which allows all traffic)
-  * Associate the new placeholder "Temp-Action-Order" to the firewall
-    * This will disassociate existing firewall policy (let's call this policy "Existing-Strict-Policy")
-  * Wait for the firewall status to show "In sync"
-  * Re-Associate the existing firewall policy "Existing-Strict-Policy"
+How to clear the Network Firewall stateful rules state table
+
+* Go into the "Details" page of your firewall policy
+* Edit the "Stream exception policy" to something other than what it is currently set to, and click Save
+* Then edit the "Stream exception policy" and set it back to what you had it set to before. In the majority of cases we recommend: "Stream exception policy: Reject"
 
 Now any and all traffic, even if it is traffic that was previously allowed, will be re-evaluated against the latest stateful firewall rules.
 
@@ -288,11 +357,119 @@ Ensure route tables are sending traffic to the local Network Firewall endpoint a
 
 Use DNS Firewall to keep traffic off of Network Firewall. Basic blocks can be configured at the DNS layer for traffic that would otherwise reach Network Firewall, effectively blocking traffic “closest to the packet source”.
 
-Use Suricata thresholding to limit log entries and logging costs. For example, the below rule will only log once every 5 minutes.
+## Troubleshooting stateless rules for asymmetric forwarding
+
+Certain stateless rule configurations can cause traffic to be inspected by the stateful engine in one direction only, most commonly when a stateless “Pass” or “Forward to stateful rules” is used without a counterpart rule matching the return direction.
+
+To identify stateless rules causing this asymmetric forwarding, use the service’s built-in rule analyzer, and then update your rule group to either remove the asymmetric rule or add a rule that matches the return traffic. You can use AWS Management Console to analyze your stateless rule group, or use the API or CLI by calling DescribeRuleGroup and setting the “AnalyzeRuleGroup” option.
+
+Here’s an example of how you can analyze your rule group using AWS Management Console. Go to your stateless rule group and click “Analyze”
+
+![ANF Rule group analyzer](../../images/ANF-troubleshooting-1.png)
+
+The rule group analyzer identified that stateless rule with priority 2 will lead to asymmetric routing through Network Firewall.
+
+![ANF Analysis results](../../images/ANF-troubleshotting-2.png)
+
+To fix this issue you can click on “Edit” and add another rule to allow return traffic i.e. from 0.0.0.0/0 to 10.2.0.0/24.
+
+![ANF Analysis results edit](../../images/ANF-troubleshotting-3.png)
+
+![ANF Fixed rule group](../../images/ANF-troubleshotting-4.png)
+
+After updating the rules, run the analyzer again to confirm the issue has been resolved.
+
+![ANF Anaylzer rerun](../../images/ANF-troubleshooting-5.png)
+
+Please reach out to AWS Support team if you have any questions.
+
+## Options for Mitigating client side TLS SNI manipulation with AWS Network Firewall
+
+TLS SNI filtering is the industry standard mechanism for network appliances to perform domain filtering to control egress traffic. It’s a straightforward and simple way to monitor and control TLS traffic without the need for resolving domains to IP addresses, which can be unreliable and also opens up a potential vulnerability since CDNs are so commonly used for website hosting, and allowing access to a CDN’s IP allows access to all domains hosted on the CDN, if the client is able to craft forged requests. SNI filtering also has a similar limitation, in that if a client is able to craft forged requests, the request could claim to be going to a legitimate domain, but actually connect to an illegitimate IP address instead. In both of these client side SNI manipulation cases a prerequisite is that the system is already to some extent compromised.
+
+* So how do we address this?
+
+First and foremost, we concentrate on reducing the likelihood that the workload could be compromised to the extent that SNI manipulation could occur. Leveraging AWS Network Firewall’s Managed Rules, is a good place to start since they block well-known high risk threats. Many AWS customers start here, and then also move towards a least privilege security model where only a short list of legitimate domains is allowed, and all others are blocked by default. A domain allow-list reduces the risk surface substantially, again, further reducing the opportunity for a workload to be compromised and able to be used to send forged requests.
+
+* But what if I want to directly block client side SNI manipulation with AWS Network Firewall?
+
+That can be accomplished by enabling [AWS Network Firewall’s TLS decryption feature](https://docs.aws.amazon.com/network-firewall/latest/developerguide/tls-inspection-configurations.html). When TLS decrypt is enabled, client side SNI manipulation is blocked by default and this error message is displayed in the firewall’s TLS log:
 
 ```
-reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egress TCP to_server reject"; threshold: type limit, track by_src, seconds 600, count 1; sid:9822311;)
+{
+    "firewall_name": "NetworkFirewall",
+    "availability_zone": "us-east-1a",
+    "event_timestamp": 1727451885,
+    "event": {
+        "timestamp": "2024-09-27T15:44:45.321222Z",
+        "src_ip": "10.2.1.145",
+        "src_port": "39038",
+        "dest_ip": "44.193.128.70",
+        "dest_port": "443",
+        "sni": "spoofedsni.com",
+        "tls_error": {
+            "error_message": "SNI: spoofedsni.com Match Failed to server certificate names: checkip.us-east-1.prod.check-ip.aws.a2z.com/checkip.us-east-1.prod.check-ip.aws.a2z.com/checkip.amazonaws.com/checkip.check-ip.aws.a2z.com "
+        }
+    }
+}
 ```
+
+* But what other options do I have to block client side SNI manipulation?
+
+It’s possible to add both SNI Domain checks and DNS Domain-to-IP checks so that SNI requests are only allowed out to IP addresses that are associated with the domain in DNS. [This is an example solution](https://aws.amazon.com/blogs/security/how-to-control-non-http-and-non-https-traffic-to-a-dns-domain-with-aws-network-firewall-and-aws-lambda/) that accomplishes this with Network Firewall. Both of these solutions above have downsides in added cost and/or complexity, so we recommend customers first start by moving towards a Domain Allow-List, and then determine if the workload’s security requirements dictate that more controls should be added.
+
+Another capability Network Firewall has in combating TLS SNI spoofing is JA3 filtering. You can think of JA3 as similar to an HTTP User-Agent, but for TLS, and not easily configurable. You can learn more about JA3 [here](https://engineering.salesforce.com/tls-fingerprinting-with-ja3-and-ja3s-247362855967/). Let's look at a couple examples of how we can use tls.sni filtering AND ja3.hash filtering together.
+
+First let's assume my TLS domain allow-list looks like this:
+
+```
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssm.us-east-1.amazonaws.com"; nocase; flow:to_server; sid:11111;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssmmessages.us-east-1.amazonaws.com"; nocase; flow:to_server; sid:22222;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ec2.us-east-1.amazonaws.com"; nocase; flow:to_server; sid:33333;)
+reject tls $HOME_NET any -> any any (msg:"TLS not on domain allow-list blocked"; flow:to_server; sid:44444;)
+```
+
+If I wanted to lock it down further so that these specific domains can only be accessed by the JA3 hash of their client agents, I could convert my domain allow-list to look like this:
+
+```
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssm.us-east-1.amazonaws.com"; nocase; ja3.hash; content:"7a15285d4efc355608b304698cd7f9ab"; sid:11111;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssmmessages.us-east-1.amazonaws.com"; nocase; ja3.hash; content:"1be8360b66649edee1de25f81d98ec27"; sid:22222;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ec2.us-east-1.amazonaws.com"; nocase; ja3.hash; content:"fd75aaca18604d62f2bc8b02b345140f"; sid:33333;)
+reject tls $HOME_NET any -> any any (msg:"TLS not on domain/JA3 allow-list blocked"; flow:to_server; sid:44444;)
+```
+
+With the above ruleset in place, I can no longer curl to a domain on my domain allow-list, because each domain is locked down to only be accessible via the correct JA3. Now in order for SNI spoofing to be successful, not only would the client system need to be compromised to the extent that special commands could be crafted and launched from it, but now the attacker would have to have such deep control of the system that they could even manipulate the specific client agents/processes to make connections out to a domain on the allow-list.
+
+Another option is to not be so strict, but instead allow only the 3 JA3s to access any of the SNIs like this:
+
+```
+alert tls $HOME_NET any -> any any (ja3.hash; content:"7a15285d4efc355608b304698cd7f9ab"; flowbits:set,ja3_allowed; noalert; sid:11111;)
+alert tls $HOME_NET any -> any any (ja3.hash; content:"1be8360b66649edee1de25f81d98ec27"; flowbits:set,ja3_allowed; noalert; sid:22222;)
+alert tls $HOME_NET any -> any any (ja3.hash; content:"fd75aaca18604d62f2bc8b02b345140f"; flowbits:set,ja3_allowed; noalert; sid:33333;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssm.us-east-1.amazonaws.com"; nocase; flowbits:isset,ja3_allowed; sid:44444;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssmmessages.us-east-1.amazonaws.com"; flowbits:isset,ja3_allowed; nocase; sid:55555;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ec2.us-east-1.amazonaws.com"; nocase; flowbits:isset,ja3_allowed; sid:66666;)
+reject tls $HOME_NET any -> any any (msg:"TLS not on domain/JA3 allow-list blocked"; flow:to_server; sid:77777;)
+```
+
+The above two options have drawbacks in that they require that any time there is a client agent upgrade the new JA3 hash be added to the allow-list before it'll work. This is added complexity for added security value.
+
+But how can we allow for a little bit of flexibility to ease the management of the allow-lists while still continuing to reduce the risk surface?
+
+Another option is to track which destination IPs have been contacted by approved JA3 hashes, remember them for a period of time, and then only let our TLS domain allow list work out to those higher trust destination IPs. Here is what that ruleset might look like:
+
+```
+alert tls $HOME_NET any -> any any (ja3.hash; content:"7a15285d4efc355608b304698cd7f9ab"; xbits:set, allowed_ja3_destination_ips, track ip_dst, expire 21600; sid:11111;)
+alert tls $HOME_NET any -> any any (ja3.hash; content:"1be8360b66649edee1de25f81d98ec27"; xbits:set, allowed_ja3_destination_ips, track ip_dst, expire 21600; sid:22222;)
+alert tls $HOME_NET any -> any any (ja3.hash; content:"fd75aaca18604d62f2bc8b02b345140f"; xbits:set, allowed_ja3_destination_ips, track ip_dst, expire 21600; sid:33333;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssm.us-east-1.amazonaws.com"; nocase; xbits:isset, allowed_ja3_destination_ips, track ip_dst; sid:44444;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ssmmessages.us-east-1.amazonaws.com"; xbits:isset, allowed_ja3_destination_ips, track ip_dst; nocase; sid:55555;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"ec2.us-east-1.amazonaws.com"; nocase; xbits:isset, allowed_ja3_destination_ips, track ip_dst; sid:66666;)
+reject tls $HOME_NET any -> any any (msg:"TLS not on domain/A3 allow-list blocked"; flow:to_server; sid:77777;)
+```
+
+The above option will let a new JA3 seen access the TLS domain allow list, but only if the request is going to an IP that an approved JA3 has already been talking to. This can provide some flexibility without providing too much flexibility.
+Each customer will have to determine if their specific application's threat model justifies the added overhead of maintaining a JA3 allow-list. Most AWS Network Firewall customers are satisfied with the significant risk reduction of a domain allow-list, and don't find it necessary to also lock down the domains to an allow-list of JA3 hashes too.
 
 ## Resources
 
@@ -323,3 +500,7 @@ reject tcp $HOME_NET any -> $EXTERNAL_NET any (flow:to_server; msg:"Default egre
 * [Introducing Prefix Lists in AWS Network Firewall Stateful Rule Groups](https://aws.amazon.com/blogs/networking-and-content-delivery/introducing-prefix-lists-in-aws-network-firewall-stateful-rule-groups/)
 * [How to analyze AWS Network Firewall logs using Amazon OpenSearch Service – Part 1](https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-analyze-aws-network-firewall-logs-using-amazon-opensearch-service-part-1/)
 * [How to analyze AWS Network Firewall logs using Amazon OpenSearch Service – Part 2](https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-analyze-aws-network-firewall-logs-using-amazon-opensearch-service-part-2/)
+
+### Sample Code
+* [AWS Network Firewall CloudWatch Dashboard](https://github.com/aws-samples/aws-networkfirewall-cfn-templates/tree/main/cloudwatch_dashboard)
+* [AWS Network Firewall Automation Examples](https://github.com/aws-samples/aws-network-firewall-automation-examples/tree/main)
