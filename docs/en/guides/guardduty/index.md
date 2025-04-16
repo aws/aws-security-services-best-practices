@@ -274,19 +274,22 @@ Extended Threat Detection covers threat scenarios that involve compromise relate
 
 Few Considerations
 
-1. Automatic Activation:
-   * ETD is automatically turned on for all GuardDuty accounts.
-   * No manual activation is required for ETD.
-   * ETD is at no additional cost.
+Automatic Activation:
 
-2. S3 Protection:
-   * Remains a separate feature from ETD.
-   * Must be enabled if desired.
-   * Not automatically activated with ETD.
+1. ETD is automatically turned on for all GuardDuty accounts.
+2. No manual activation is required for ETD.
+3. TD is at no additional cost.
 
-3. Functionality:
-   * ETD enhances GuardDuty's threat detection capabilities automatically.
-   * Works alongside other GuardDuty features, including optional S3 Protection.
+S3 Protection:
+
+1. Remains a separate feature from ETD.
+2. Must be enabled if desired.
+3. Not automatically activated with ETD.
+
+Functionality:
+
+1. ETD enhances GuardDuty's threat detection capabilities automatically.
+2. Works alongside other GuardDuty features, including optional S3 Protection.
 
 Visit the Extended Threat Detection page under Protection plans in the GuardDuty console.
 Make sure that Extended Threat Detection is enabled.
