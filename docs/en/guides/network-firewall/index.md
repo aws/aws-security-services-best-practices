@@ -294,17 +294,32 @@ The SID in the alert rule message can refer the SID of the pass rule and vice-ve
 
 With Suricata, it’s possible to configure conflicting rule sets. When traffic to a destination operates at different layers of the [OSI model](https://en.wikipedia.org/wiki/OSI_model), traffic we want to allow that is operating at a higher level(for example TLS) might get blocked by a rule that is operating at a lower level. For example TCP:
 
-![ANF Flow to Server](../../images/ANF-flow-rule-1.png)
+#### Example of bad ruleset (Strict rule ordering) – DO NOT USE
 
-*Figure 7: Network Firewall TCP example*
+Rule 1 is intended to block http traffic to [baddomain.com](http://baddomain.com/)
+```
+reject http $HOME_NET any → any 80 (http.host; content:"baddomain.com"; sid:1;)
+``` 
+Rule 2 accidentally allows the TCP port 80 traffic before application protocol inspection
+```
+pass tcp $HOME_NET any → any 80 (sid:2;)
+```
 
-Using “flow:to_server” in the rules will make the rules operate at the same level and evaluate the traffic at the same time so that the pass rule has a chance to inspect the traffic before the reject rule blocks the traffic.
-
-![ANF](../../images/ANF-flow-rule-2.png)
-
-*Figure 8: Network Firewall flow:to_server established*
+Using “flow:to_server” in the rules will make them operate at the same level so the traffic can be evaluated at the same time, and the pass rule (sid:2) doesn’t allow the traffic in a way that takes precedence over the reject rule (sid:1) 
+ 
+#### Example of good ruleset (Strict rule ordering) – Ok to use
+Rule 1 will block http traffic to [baddomain.com](http://baddomain.com/)
+```
+reject http $HOME_NET any → any 80 (http.host; content:"baddomain.com"; sid:1;)
+``` 
+Rule 2 will NOT take precedence over rule 1
+```
+pass tcp $HOME_NET any → any 80 (flow:to_server; sid:2;)
+```
 
 See [Troubleshooting rules in Network Firewall](https://docs.aws.amazon.com/network-firewall/latest/developerguide/troubleshooting-rules.html) for more information on troubleshooting firewall rules
+
+
 
 ### How to make sure your new Stateful firewall rules apply to existing flows
 
