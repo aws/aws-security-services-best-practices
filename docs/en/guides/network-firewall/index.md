@@ -296,24 +296,24 @@ With Suricata, it’s possible to configure conflicting rule sets. When traffic 
 
 #### Example of bad ruleset (Strict rule ordering) – DO NOT USE
 
-Rule 1 is intended to block http traffic to [baddomain.com](http://baddomain.com/)
+
 ```
+# Rule 1 is intended to block http traffic to [baddomain.com](http://baddomain.com/)
 reject http $HOME_NET any → any 80 (http.host; content:"baddomain.com"; sid:1;)
-``` 
-Rule 2 accidentally allows the TCP port 80 traffic before application protocol inspection
-```
+
+# Rule 2 allows the TCP port 80 traffic flow before application protocol inspection
 pass tcp $HOME_NET any → any 80 (sid:2;)
 ```
 
 Using “flow:to_server” in the rules will make them operate at the same level so the traffic can be evaluated at the same time, and the pass rule (sid:2) doesn’t allow the traffic in a way that takes precedence over the reject rule (sid:1) 
  
 #### Example of good ruleset (Strict rule ordering) – Ok to use
-Rule 1 will block http traffic to [baddomain.com](http://baddomain.com/)
+
 ```
+# Rule 1 will block http traffic to [baddomain.com](http://baddomain.com/)
 reject http $HOME_NET any → any 80 (http.host; content:"baddomain.com"; sid:1;)
-``` 
-Rule 2 will NOT take precedence over rule 1
-```
+
+# Rule 2 will NOT take precedence over rule 1
 pass tcp $HOME_NET any → any 80 (flow:to_server; sid:2;)
 ```
 
