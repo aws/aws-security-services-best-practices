@@ -364,6 +364,8 @@ Because each Network Firewall endpoint has hourly charges even if it’s not use
 
 Do not send traffic to Network Firewall that does not need to be inspected. To avoid these unnecessary processing charges on Network Firewall, use TGW route tables to segment your network, for example keeping VPC Prod from talking to VPC Dev if these VPCs don’t need to communicate.
 
+Use the [traffic analysis report feature](https://docs.aws.amazon.com/network-firewall/latest/developerguide/reporting.html) to see which domains are most likely driving up network processing charges.
+
 Use the free VPC endpoints for S3 and DynamoDB instead of sending that traffic through Network Firewall.
 
 Leverage PrivateLink endpoints provided by 3rd party services that do not need to be inspected by the firewall.
