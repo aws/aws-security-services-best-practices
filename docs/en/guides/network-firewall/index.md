@@ -13,7 +13,7 @@ This guide is geared towards security practitioners who are responsible for moni
 * [Implementation](#implementation)
 * [Operationalizing](#operationalizing)
   * [Ensure Symmetric Routing](#ensure-symmetric-routing)
-  * [Use “Strict rule ordering with Alert Established and Drop Established” Default actions](#use-strict-rule-ordering-with-alert-established-and-drop-established-default-actions)
+  * [Use “Strict rule ordering with no 'default actions' and custom default block rules](#use-strict-rule-ordering-with-no-default-actions-and-custom-default-block-rules)
   * [Use Stateful rules over Stateless rules](#use-stateful-rules-over-stateless-rules)
   * [Use Custom Suricata rules instead of UI generated rules](#use-custom-suricata-rules-instead-of-ui-generated-rules)
   * [Use as few Custom Rule Groups as possible](#use-as-few-custom-rule-groups-as-possible)
@@ -79,16 +79,15 @@ When using [AWS Transit Gateway (TGW)](https://aws.amazon.com/transit-gateway/) 
 
 If appliance mode is not enabled, the return path traffic could land on an endpoint in a different AZ, which will prevent the Network Firewall from correctly evaluating the traffic against the firewall policy.
 
-### Use “Strict rule ordering with Alert Established and Drop Established” Default actions
+### Use “Strict rule ordering with no 'default actions' and custom default block rules
 
 * In Network Firewall there are two options for how the Suricata engine is going to process rules.
   * The “Strict” option is recommended because it instructs Suricata to process the rules in the order you have defined.
   * The “Action Order” option supports Suricata’s default rule processing which is appropriate for IDS use cases but is not a good fit for typical firewall use cases.
-* When selecting Strict rule-ordering you are also able to select a “Default” action, or actions that are run at the end of your rules and will be applied to any traffic not matching earlier rules. The two most often used are:
-  * “Alert established” is a helpful option to help customers log all traffic flows through the firewall when starting out.  For customers looking to build out an allow-list policy, it also helpful to leave in place and log the traffic that would be blocked once they move to “Drop Established” (i.e. what traffic not explicitly allowed by any preceding firewall rules).
-  * “Drop established” means that you are only allowing the traffic that you explicitly allow via your firewall rules and everything else is denied/dropped.  Customers can use this option once they are confident their policy has rules to only allow intended traffic. This rule will not log what is dropped by the rule unless the previous “Alert established” is also checked.
+* When selecting Strict rule-ordering you are also able to select a “Default” action, or actions that are run at the end of your rules and will be applied to any traffic not matching earlier rules. We don't recommend you select any of these default actions, but instead use your own custom default block rules. Below we will provide you with the most commonly used custom default block rules.
 
-![ANF Stateful Rule evaluation](../../images/ANF-rule-evaluation.png)
+![ANF Stateful Rule evaluation](../../images/no-default-action.png)
+![ANF Stateful Rule evaluation](../../images/no-default-action2.png)
 
 *Figure 3: Network Firewall Stateful Rule evaluation*
 
@@ -134,18 +133,14 @@ The pros of using customer Suricata rules:
 Below we have also included a custom template for an egress security use case to show examples of custom suricata rules.
 
 ```
-# This is a "Strict rule ordering" egress security template meant only for the egress use case. These rules would need to be adjusted to accommodate any other use cases. Use this ruleset with "Strict" rule ordering firewall policy and no default block action, as this template includes custom default block rules at the end. 
-# This template will not work well with the "Drop All" or "Drop Established" default firewall policy actions.
-# Make sure the $HOME_NET variable is set correctly (do this at the firewall policy level so all RGs inherit it)
-
-# Block, but do not log any ingress request traffic from the outside
-# Remove 'noalert' from this rule if you want the ingress traffic to be logged.
-drop ip any any -> $HOME_NET any (noalert; flow:to_server; sid:202501023;)
-
-# Silently allow TCP 3-way handshake to be setup by $HOME_NET clients
-# Do not move this section, it's important that this be at the top of the entire firewall ruleset to reduce rule conflicts
-pass tcp $HOME_NET any -> any any (flow:not_established, to_server; sid:202501021;)
-pass tcp any any -> $HOME_NET any (flow:not_established, to_client; sid:202501022;)
+# Custom default block rules
+# Use these with strict rule ordering and instead of "Drop All" or "Drop Established" default actions
+# Make sure the $HOME_NET variable is set correectly at the firewall policy
+#
+# These two rules go at the very top of the ruleset and allow L7 to be inspected
+pass tcp $HOME_NET any -> any any (flow:not_established, to_server; sid:999990;)
+# Uncomment this rule if the firewall is going to be used for ingress 
+# pass tcp any any -> $HOME_NET any (flow:not_established, to_server; sid:999998;)
 
 
 # Silently allow TCP RST and FIN out
@@ -226,7 +221,7 @@ pass tls $HOME_NET any -> any any (tls.sni; content:"amazon.com"; dotprefix; noc
 # These replace "Drop All" or "Drop Established" default actions
 
 # Egress Default Block Rules
-reject tls $HOME_NET any -> any any (msg:"Default Egress HTTPS Reject"; ssl_state:client_hello; flowbits:set,blocked; flow:to_server; sid:999991;)
+reject tls $HOME_NET any -> any any (msg:"Default Egress HTTPS Reject"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999991;)
 alert tls $HOME_NET any -> any any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:999993;)
 reject http $HOME_NET any -> any any (msg:"Default Egress HTTP Reject"; flowbits:set,blocked; flow:to_server; sid:999992;)
 reject tcp $HOME_NET any -> any any (msg:"Default Egress TCP Reject"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:999994;)
@@ -236,7 +231,7 @@ drop ip $HOME_NET any -> any any (msg:"Default Egress IP Drop"; ip_proto:!TCP; i
 
 
 # Ingress Default Block Rules
-drop tls any any -> $HOME_NET any (msg:"Default Ingress HTTPS Drop"; ssl_state:client_hello; flowbits:set,blocked; flow:to_server; sid:999999;)
+drop tls any any -> $HOME_NET any (msg:"Default Ingress HTTPS Drop"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999999;)
 alert tls any any -> $HOME_NET any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:9999910;)
 drop http any any -> $HOME_NET any (msg:"Default Ingress HTTP Drop"; flowbits:set,blocked; flow:to_server; sid:9999911;)
 drop tcp any any -> $HOME_NET any (msg:"Default Ingress TCP Drop"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:9999912;)
