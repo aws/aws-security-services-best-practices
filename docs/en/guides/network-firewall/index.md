@@ -79,7 +79,7 @@ When using [AWS Transit Gateway (TGW)](https://aws.amazon.com/transit-gateway/) 
 
 If appliance mode is not enabled, the return path traffic could land on an endpoint in a different AZ, which will prevent the Network Firewall from correctly evaluating the traffic against the firewall policy.
 
-### Use “Strict rule ordering with no 'default actions' and custom default block rules
+### Use Strict rule ordering with no 'default actions' and custom default block rules
 
 * In Network Firewall there are two options for how the Suricata engine is going to process rules.
   * The “Strict” option is recommended because it instructs Suricata to process the rules in the order you have defined.
@@ -90,6 +90,43 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 ![ANF Stateful Rule evaluation](../../images/no-default-action2.png)
 
 *Figure 3: Network Firewall Stateful Rule evaluation*
+
+```
+# Custom default block rules
+# Use these with strict rule ordering and instead of "Drop All" or "Drop Established" default actions
+# Make sure the $HOME_NET variable is set correectly at the firewall policy
+#
+# These two rules go at the very top of the ruleset and allow L7 to be inspected
+pass tcp $HOME_NET any -> any any (flow:not_established, to_server; sid:999990;)
+# Uncomment this rule if the firewall is going to be used for ingress 
+# pass tcp any any -> $HOME_NET any (flow:not_established, to_server; sid:999998;)
+
+
+# <customer's rules go here>
+
+
+
+# Egress Default Block Rules
+reject tls $HOME_NET any -> any any (msg:"Default Egress HTTPS Reject"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999991;)
+alert tls $HOME_NET any -> any any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:999993;)
+reject http $HOME_NET any -> any any (msg:"Default Egress HTTP Reject"; flowbits:set,blocked; flow:to_server; sid:999992;)
+reject tcp $HOME_NET any -> any any (msg:"Default Egress TCP Reject"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:999994;)
+drop udp $HOME_NET any -> any any (msg:"Default Egress UDP Drop"; flow:to_server; sid:999995;)
+drop icmp $HOME_NET any -> any any (msg:"Default Egress ICMP Drop"; flow:to_server; sid:999996;)
+drop ip $HOME_NET any -> any any (msg:"Default Egress IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:999997;)
+
+
+# Ingress Default Block Rules
+drop tls any any -> $HOME_NET any (msg:"Default Ingress HTTPS Drop"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999999;)
+alert tls any any -> $HOME_NET any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:9999910;)
+drop http any any -> $HOME_NET any (msg:"Default Ingress HTTP Drop"; flowbits:set,blocked; flow:to_server; sid:9999911;)
+drop tcp any any -> $HOME_NET any (msg:"Default Ingress TCP Drop"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:9999912;)
+drop udp any any -> $HOME_NET any (msg:"Default Ingress UDP Drop"; flow:to_server; sid:9999913;)
+drop icmp any any -> $HOME_NET any (msg:"Default Ingress ICMP Drop"; flow:to_server; sid:9999914;)
+drop ip any any -> $HOME_NET any (msg:"Default Ingress IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:9999915;)
+```
+
+
 
 ### Use Stateful rules over Stateless rules
 
