@@ -93,22 +93,22 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 
 ```
 # Custom default block rules
-# Use these with strict rule ordering and instead of "Drop All" or "Drop Established" default actions
-# Make sure the $HOME_NET variable is set correectly at the firewall policy
+# Use these with strict rule ordering and INSTEAD of "Drop All" or "Drop Established" default actions to support TLS Kyber connections
+# Make sure the $HOME_NET variable is set correctly at the firewall policy
+# Make sure the firewall's stateless default action is set to forward fragmented packets to stateful rules groups
 #
 # These two rules go at the very top of the ruleset and allow L7 to be inspected
 pass tcp $HOME_NET any -> any any (flow:not_established, to_server; sid:999990;)
-# Uncomment this rule if the firewall is going to be used for ingress 
+# Uncomment this rule if the firewall is going to be used for allowing ingress traffic 
 # pass tcp any any -> $HOME_NET any (flow:not_established, to_server; sid:999998;)
 
 
 # <customer's rules go here>
 
 
-
 # Egress Default Block Rules
 reject tls $HOME_NET any -> any any (msg:"Default Egress HTTPS Reject"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999991;)
-alert tls $HOME_NET any -> any any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:999993;)
+alert tls $HOME_NET any -> any any (msg:"Allow TLS Kyber fragement so client_hello can be inspected"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:999993;)
 reject http $HOME_NET any -> any any (msg:"Default Egress HTTP Reject"; flowbits:set,blocked; flow:to_server; sid:999992;)
 reject tcp $HOME_NET any -> any any (msg:"Default Egress TCP Reject"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:999994;)
 drop udp $HOME_NET any -> any any (msg:"Default Egress UDP Drop"; flow:to_server; sid:999995;)
@@ -118,7 +118,7 @@ drop ip $HOME_NET any -> any any (msg:"Default Egress IP Drop"; ip_proto:!TCP; i
 
 # Ingress Default Block Rules
 drop tls any any -> $HOME_NET any (msg:"Default Ingress HTTPS Drop"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999999;)
-alert tls any any -> $HOME_NET any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:9999910;)
+alert tls any any -> $HOME_NET any (msg:"Allow TLS Kyber fragement so client_hello can be inspected"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:9999910;)
 drop http any any -> $HOME_NET any (msg:"Default Ingress HTTP Drop"; flowbits:set,blocked; flow:to_server; sid:9999911;)
 drop tcp any any -> $HOME_NET any (msg:"Default Ingress TCP Drop"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:9999912;)
 drop udp any any -> $HOME_NET any (msg:"Default Ingress UDP Drop"; flow:to_server; sid:9999913;)
@@ -171,12 +171,13 @@ Below we have also included a custom template for an egress security use case to
 
 ```
 # Custom default block rules
-# Use these with strict rule ordering and instead of "Drop All" or "Drop Established" default actions
-# Make sure the $HOME_NET variable is set correectly at the firewall policy
+# Use these with strict rule ordering and INSTEAD of "Drop All" or "Drop Established" default actions to support TLS Kyber connections
+# Make sure the $HOME_NET variable is set correctly at the firewall policy
+# Make sure the firewall's stateless default action is set to forward fragmented packets to stateful rules groups
 #
 # These two rules go at the very top of the ruleset and allow L7 to be inspected
 pass tcp $HOME_NET any -> any any (flow:not_established, to_server; sid:999990;)
-# Uncomment this rule if the firewall is going to be used for ingress 
+# Uncomment this rule if the firewall is going to be used for allowing ingress traffic 
 # pass tcp any any -> $HOME_NET any (flow:not_established, to_server; sid:999998;)
 
 
@@ -259,7 +260,7 @@ pass tls $HOME_NET any -> any any (tls.sni; content:"amazon.com"; dotprefix; noc
 
 # Egress Default Block Rules
 reject tls $HOME_NET any -> any any (msg:"Default Egress HTTPS Reject"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999991;)
-alert tls $HOME_NET any -> any any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:999993;)
+alert tls $HOME_NET any -> any any (msg:"Allow TLS Kyber fragement so client_hello can be inspected"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:999993;)
 reject http $HOME_NET any -> any any (msg:"Default Egress HTTP Reject"; flowbits:set,blocked; flow:to_server; sid:999992;)
 reject tcp $HOME_NET any -> any any (msg:"Default Egress TCP Reject"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:999994;)
 drop udp $HOME_NET any -> any any (msg:"Default Egress UDP Drop"; flow:to_server; sid:999995;)
@@ -269,7 +270,7 @@ drop ip $HOME_NET any -> any any (msg:"Default Egress IP Drop"; ip_proto:!TCP; i
 
 # Ingress Default Block Rules
 drop tls any any -> $HOME_NET any (msg:"Default Ingress HTTPS Drop"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999999;)
-alert tls any any -> $HOME_NET any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:9999910;)
+alert tls any any -> $HOME_NET any (msg:"Allow TLS Kyber fragement so client_hello can be inspected"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:9999910;)
 drop http any any -> $HOME_NET any (msg:"Default Ingress HTTP Drop"; flowbits:set,blocked; flow:to_server; sid:9999911;)
 drop tcp any any -> $HOME_NET any (msg:"Default Ingress TCP Drop"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:9999912;)
 drop udp any any -> $HOME_NET any (msg:"Default Ingress UDP Drop"; flow:to_server; sid:9999913;)
