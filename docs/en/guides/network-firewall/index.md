@@ -170,32 +170,24 @@ The pros of using customer Suricata rules:
 Below we have also included a custom template for an egress security use case to show examples of custom suricata rules.
 
 ```
-# Custom default block rules
-# Use these with strict rule ordering and INSTEAD of "Drop All" or "Drop Established" default actions to support TLS Kyber connections
-# Make sure the $HOME_NET variable is set correctly at the firewall policy
-# Make sure the firewall's stateless default action is set to forward fragmented packets to stateful rules groups
-#
-# These two rules go at the very top of the ruleset and allow L7 to be inspected
-pass tcp $HOME_NET any -> any any (flow:not_established, to_server; sid:999990;)
-# Uncomment this rule if the firewall is going to be used for allowing ingress traffic 
-# pass tcp any any -> $HOME_NET any (flow:not_established, to_server; sid:999998;)
+# This is a "Strict rule ordering" egress security template meant only for the egress use case. These rules would need to be adjusted to accommodate any other use cases. Use this ruleset with "Strict" rule ordering firewall policy and no default block action, as this template includes custom default block rules at the end that block everything not explicently allowed.
+# This template will not work well with the "Drop All" or "Drop Established" default firewall policy actions.
+# Make sure the $HOME_NET variable is set correctly (do this at the firewall policy level so all Rule Groups inherit it)
 
+# Silently allow TCP 3-way handshake to be setup by $HOME_NET clients
+# Do not move this section, it's important that this be at the top of the entire firewall ruleset to reduce rule conflicts
+pass tcp $HOME_NET any -> any any (flow:not_established, to_server; sid:202501021;)
+pass tcp any any -> $HOME_NET any (flow:not_established, to_client; sid:202501022;)
 
-# Silently allow TCP RST and FIN out
-# TCP RST and FIN are trusted so it's safe to allow them out. This rule helps reduce noise in the logs.
-pass tcp $HOME_NET any -> any any (msg:"pass rule do not log"; flags:R,F; flow:to_server; sid:202501054;)
-
-# Silently allow/ignore inspection of bogon traffic
-# This traffic should not normally hit the Network Firewall, but we have seen cases where this is a misconfigruation that causes it to
-pass ip $HOME_NET any -> 169.254.0.0/16 any (flow:to_server; sid:202501067;)
-
-# Turn on JA3/S hash logging for all other tls alert rules (like sid:999991)
+# Silently turn on JA3/S hash logging for all other tls alert rules (like sid:999991)
 alert tls $HOME_NET any -> any any (ja3.hash; content:!"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; noalert; flow:to_server; sid:202501024;)
 alert tls any any -> $HOME_NET any (ja3s.hash; content:!"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; noalert; flow:to_client; sid:202501025;)
 
 # Direct to IP connections
 reject http $HOME_NET any -> any any (http.host; content:"."; pcre:"/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/"; msg:"HTTP direct to IP via http host header (common malware download technique)"; flow:to_server; sid:202501026;)
 reject tls $HOME_NET any -> any any (tls.sni; content:"."; pcre:"/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/"; msg:"TLS direct to IP via TLS SNI (common malware download technique)"; flow:to_server; sid:202501027;)
+# JA4 No SNI Reject
+reject tls $HOME_NET any -> any any (ja4.hash; content:"_"; startswith; content:!"d"; offset:3; depth:1; msg:"JA4 No SNI Reject"; sid:1297713;)
 
 # Block higher risk Geoip
 drop ip $HOME_NET any -> any any (msg:"Egress traffic to RU IP"; geoip:dst,RU; metadata:geo RU; flow:to_server; sid:202501028;)
@@ -206,6 +198,9 @@ reject tls $HOME_NET any -> any any (tls.sni; content:".ru"; nocase; endswith; m
 reject http $HOME_NET any -> any any (http.host; content:".ru"; endswith; msg:"Egress traffic to RU ccTLD"; flow:to_server; sid:202501037;)
 reject tls $HOME_NET any -> any any (tls.sni; content:".cn"; nocase; endswith; msg:"Egress traffic to CN ccTLD"; flow:to_server; sid:202501038;)
 reject http $HOME_NET any -> any any (http.host; content:".cn"; endswith; msg:"Egress traffic to CN ccTLD"; flow:to_server; sid:202501039;)
+
+# Block QUICK traffic
+drop quic $HOME_NET any -> any any (msg:"QUIC traffic blocked"; flow:to_server; sid:3898932;)
 
 # Log higher risk ports
 alert ip $HOME_NET any -> any 53 (msg:"Possible GuardDuty/DNS Firewall bypass!"; flow:to_server; sid:202501055;)
@@ -221,8 +216,8 @@ reject tcp $HOME_NET any -> any 22 (msg:"Egress Port TCP/22 but not SSH"; app-la
 reject ssh $HOME_NET any -> any !22 (msg:"Egress SSH but not port TCP/22"; flow:to_server; sid:202501061;)
 
 # Silently (do not log) allow low risk protocols out to anywhere
-pass ntp $HOME_NET any -> any 123 (msg:"pass rules do not alert/log"; flow:to_server; sid:202501034;)
-pass icmp $HOME_NET any -> any any (msg:"pass rules do not alert/log"; flow:to_server; sid:202501035;)
+pass ntp $HOME_NET any -> any 123 (flow:to_server; sid:202501034;)
+pass icmp $HOME_NET any -> any any (flow:to_server; sid:202501035;)
 
 # Block high risk TLDs
 reject tls $HOME_NET any -> any any (tls.sni; content:".xyz"; nocase; endswith; msg:"High risk TLD .xyz blocked"; flow:to_server; sid:202501040;)
@@ -249,33 +244,40 @@ pass tls $HOME_NET any -> any any (tls.sni; content:"checkip.amazonaws.com"; sta
 pass http $HOME_NET any -> any any (http.host; content:"checkip.amazonaws.com"; startswith; endswith; flow:to_server; sid:202501051;)
 
 # Allow-List of strict FQDNs, but still alert on them
+# This method shows the verdict of "pass"
 alert tls $HOME_NET any -> any any (tls.sni; content:"www.example.com"; startswith; nocase; endswith; msg:"TLS SNI Allowed"; flow:to_server; sid:202501052;)
-pass tls $HOME_NET any -> any any (tls.sni; content:"www.example.com"; startswith; nocase; endswith; msg:"pass rules do not alert/log"; flow:to_server; sid:202501053;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"www.example.com"; startswith; nocase; endswith; flow:to_server; sid:202501053;)
+
+# Allow HTTPS domain and also log it
+# This method shows the verdict of "alert" instead of pass
+pass tls $HOME_NET any -> any any (alert; msg:"www.example2.com allowed"; tls.sni; content:"www.example2.com"; startswith; nocase; endswith; flow:to_server; sid:202506131;)
+
 
 # Allow-List of second level/registered domain and all of its subdomains
-pass tls $HOME_NET any -> any any (tls.sni; content:"amazon.com"; dotprefix; nocase; endswith; msg:"pass rules do not alert/log"; flow:to_server; sid:202501078;)
+pass tls $HOME_NET any -> any any (tls.sni; content:"amazon.com"; dotprefix; nocase; endswith; flow:to_server; sid:202501078;)
 
 # Custom Block Rules
 # These replace "Drop All" or "Drop Established" default actions
 
 # Egress Default Block Rules
 reject tls $HOME_NET any -> any any (msg:"Default Egress HTTPS Reject"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999991;)
-alert tls $HOME_NET any -> any any (msg:"Allow TLS Kyber fragement so client_hello can be inspected"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:999993;)
+alert tls $HOME_NET any -> any any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:999993;)
 reject http $HOME_NET any -> any any (msg:"Default Egress HTTP Reject"; flowbits:set,blocked; flow:to_server; sid:999992;)
 reject tcp $HOME_NET any -> any any (msg:"Default Egress TCP Reject"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:999994;)
 drop udp $HOME_NET any -> any any (msg:"Default Egress UDP Drop"; flow:to_server; sid:999995;)
 drop icmp $HOME_NET any -> any any (msg:"Default Egress ICMP Drop"; flow:to_server; sid:999996;)
-drop ip $HOME_NET any -> any any (msg:"Default Egress IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:999997;)
+drop ip $HOME_NET any -> any any (msg:"Default Egress All Other IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:999997;)
 
 
-# Ingress Default Block Rules
+# Ingress Default Block Rules in case ingress traffic lands on this firewall
+# You may want to silence these rules by putting "noalert" on them to save on logging costs
 drop tls any any -> $HOME_NET any (msg:"Default Ingress HTTPS Drop"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999999;)
-alert tls any any -> $HOME_NET any (msg:"Allow TLS Kyber fragement so client_hello can be inspected"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:9999910;)
+alert tls any any -> $HOME_NET any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:9999910;)
 drop http any any -> $HOME_NET any (msg:"Default Ingress HTTP Drop"; flowbits:set,blocked; flow:to_server; sid:9999911;)
 drop tcp any any -> $HOME_NET any (msg:"Default Ingress TCP Drop"; flowbits:isnotset,blocked; flowbits:isnotset,X25519Kyber768; flow:to_server; sid:9999912;)
 drop udp any any -> $HOME_NET any (msg:"Default Ingress UDP Drop"; flow:to_server; sid:9999913;)
 drop icmp any any -> $HOME_NET any (msg:"Default Ingress ICMP Drop"; flow:to_server; sid:9999914;)
-drop ip any any -> $HOME_NET any (msg:"Default Ingress IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:9999915;)
+drop ip any any -> $HOME_NET any (msg:"Default Ingress All Other IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:9999915;)
 ```
 
 ### Use as few Custom Rule Groups as possible
