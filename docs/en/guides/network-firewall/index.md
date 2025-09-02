@@ -409,6 +409,10 @@ Ensure route tables are sending traffic to the local Network Firewall endpoint a
 
 Use DNS Firewall to keep traffic off of Network Firewall. Basic blocks can be configured at the DNS layer for traffic that would otherwise reach Network Firewall, effectively blocking traffic “closest to the packet source”.
 
+You can add `"threshold: type limit, track by_both, seconds 600, count 1;"` to Suricata rules if you want to suppress their logging output to reduce logging costs. For example, the below rule will only alert one time every ten minutes per source and destination IP pair that triggers the rule.
+
+`alert ssh $HOME_NET any -> any any (msg:"Egress SSH - alert only once every ten minutes"; threshold: type limit, track by_both, seconds 600, count 1; flow:to_server; sid:898233;)`
+
 ## Troubleshooting stateless rules for asymmetric forwarding
 
 Certain stateless rule configurations can cause traffic to be inspected by the stateful engine in one direction only, most commonly when a stateless “Pass” or “Forward to stateful rules” is used without a counterpart rule matching the return direction.
