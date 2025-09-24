@@ -96,6 +96,7 @@ By implementing Route 53 Resolver DNS Firewall, organizations can significantly 
 ## Additional Resources
 
 * [DNS Firewall Overview](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-overview.html)
+* [Automated Allow List Generator Solution](https://github.com/aws-samples/amazon-route-53-resolver-dns-firewall-automation-examples/tree/main/AllowListGenerator)
 * [AWS Security Blog - Protect Against Advanced DNS Threats](https://aws.amazon.com/blogs/security/protect-against-advanced-dns-threats-with-amazon-route-53-resolver-dns-firewall/)
 * [Domain Lists Management Documentation](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-managed-domain-lists.html)
 
