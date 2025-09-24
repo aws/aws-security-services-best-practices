@@ -91,7 +91,7 @@ By implementing Route 53 Resolver DNS Firewall, organizations can significantly 
 
 ## Recommended Rule Group Configuration
 
-* Refer to this link for a recommended DNS Firewall rule group configuration: https://github.com/aws-samples/amazon-route-53-resolver-dns-firewall-automation-examples/blob/main/sample-rule-group/template.yaml 
+* Refer to this link for a recommended DNS Firewall rule group configuration: [Recommended Rule Group Configuration](https://github.com/aws-samples/amazon-route-53-resolver-dns-firewall-automation-examples/blob/main/sample-rule-group/template.yaml) 
 
 ## Additional Resources
 
