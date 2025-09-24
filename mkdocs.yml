@@ -42,6 +42,7 @@ nav:
       - Monitoring WAF Rules: guides/waf/monitoring-waf-rules/docs/index.md
       - Using WAF with other AWS Services: guides/waf/using-waf-with-other-services/docs/index.md
   - AWS Network Firewall Best Practices: guides/network-firewall/index.md
+  - Amazon Route 53 Resolver DNS Firewall Best Practices: guides/dns-firewall/index.md
   - Contributors: contributors.md
 plugins:
     - search
