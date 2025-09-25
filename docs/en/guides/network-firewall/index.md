@@ -325,6 +325,12 @@ You need to use Strict Ordering and the Alert rule needs a higher priority than 
 
 The SID in the alert rule message can refer the SID of the pass rule and vice-versa. It can be helpful to use longer SIDs so that you can quickly search your logs for that SID without the query showing unrealted information that might also contain that identifier.
 
+Alternatively, you can add `alert;` keyword to pass rules, but they will produce a verdict in the alert log of alert instead of a verdict of pass. Example rule:
+```
+# This method shows the verdict of "alert" instead of pass
+pass tls $HOME_NET any -> any any (alert; msg:"www.example2.com allowed"; tls.sni; content:"www.example2.com"; startswith; nocase; endswith; flow:to_server; sid:202506131;)
+```
+
 ### Use “flow:to_server” keyword in stateful rules
 
 With Suricata, it’s possible to configure conflicting rule sets. When traffic to a destination operates at different layers of the [OSI model](https://en.wikipedia.org/wiki/OSI_model), traffic we want to allow that is operating at a higher level(for example TLS) might get blocked by a rule that is operating at a lower level. For example TCP:
