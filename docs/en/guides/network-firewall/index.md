@@ -69,6 +69,9 @@ If you want to encrypt the Network Firewall configuration data at rest with your
 
 For more information on deployment refer to the [getting started with Network Firewall documentation](https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html)
 
+
+If you're implementing AWS Network Firewall into a production environment where you want the least amount of traffic disruption, we recommend you set the [Stream exception policy option](https://docs.aws.amazon.com/network-firewall/latest/developerguide/stream-exception-policy.html) to "Continue" or "Reject" and that you not have any default block actions. The Stream exception policy option of "Drop" can be more disruptive to production traffic since it silently blocks mid stream flows and does not send a TCP Reset.
+
 ## Operationalizing
 
 ### Ensure Symmetric Routing
