@@ -381,26 +381,19 @@ Now any and all traffic, even if it is traffic that was previously allowed, will
 
 Network Firewall supports two log types, Alert logs and Flow logs
 
-* Alert logs
+Alert logs
   * Information from Suricata
   * IPS engine
   * Layer 7 attributes (like domains)
   * Protocol detection
-* Flow logs
+
+Flow logs
   * 5=tuple information that flows across the firewall
   * Include the volume of traffic
-    * Helps identify the top producers and consumers of data
-* It is very helpful to have a CloudWatch Dashboard created with CloudWatch Contributor insights that pulls from both types of logs, AWS support (Todd Pula) provides a [sample dashboard](https://github.com/aws-samples/aws-networkfirewall-cfn-templates/tree/main/cloudwatch_dashboard) with a cloudformation template. For example, you may want to see top domains allowed (alert logs) alongside top IPs sending data (Flow logs) so that you can hover over any data point in the dashboard and see what the corresponding information is across both data sources:
+  * Helps identify the top producers and consumers of data
 
-* Alert logs
-  * Top protocols used
-  * Top domains allowed/blocked
-  * Top ports allowed/blocked
-  * Top source IPs (workloads) in the VPC being allowed/blocked
-* Flow logs
-  * Destination IPs with most used bandwidth
-  * Source IPs with most used bandwidth
-  * Port/protocol with most used bandwidth
+The native [firewall monitoring dashboard](https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-using-dashboard.html) provides multiple options for viewing key metrics about your firewall. You can view all the metrics available as part of the dashboard [here](https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-detailed-monitoring-metrics.html). 
+
 
 ## Cost considerations
 
