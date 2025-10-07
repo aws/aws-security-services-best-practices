@@ -13,7 +13,7 @@ This guide is geared towards security practitioners who are responsible for moni
 * [Implementation](#implementation)
 * [Operationalizing](#operationalizing)
   * [Ensure Symmetric Routing](#ensure-symmetric-routing)
-  * [Use Strict rule ordering and 'Application drop established' and 'Application alert established' default firewall policy actions](#use-strict-rule-ordering-and-application-drop-established-and-application-alert-established-default-firewall-policy-action)
+  * [Use Strict rule ordering and 'Application drop established' and 'Application alert established' default firewall policy actions](#use-strict-rule-ordering-and-application-drop-established-and-application-alert-established-default-firewall-policy-actions)
   * [Use Stateful rules over Stateless rules](#use-stateful-rules-over-stateless-rules)
   * [Use Custom Suricata rules instead of UI generated rules](#use-custom-suricata-rules-instead-of-ui-generated-rules)
   * [Use as few Custom Rule Groups as possible](#use-as-few-custom-rule-groups-as-possible)
