@@ -89,7 +89,7 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
   * The “Action Order” option supports Suricata’s default rule processing which is appropriate for IDS use cases but is not a good fit for typical firewall use cases.
 * When selecting Strict rule-ordering you are also able to select a “Default” action, or actions that are run at the end of your rules and will be applied to any traffic not matching earlier rules.
 
-![ANF Stateful Rule evaluation](/images/nfw-default-actions.png)
+![ANF Stateful Rule evaluation](../../images/nfw-default-actions.png)
 
 *Figure 3: Network Firewall Stateful Rule evaluation*
 
