@@ -220,7 +220,7 @@ pass tls $HOME_NET any -> any any (alert; msg:"www.example2.com allowed"; tls.sn
 
 
 # Allow-List of second level/registered domain and all of its subdomains
-pass tls $HOME_NET any -> any any (tls.sni; dotprefix; content:"amazon.com"; nocase; endswith; flow:to_server; sid:202501078;)
+pass tls $HOME_NET any -> any any (tls.sni; dotprefix; content:".amazon.com"; nocase; endswith; flow:to_server; sid:202501078;)
 
 # Custom Block Rules
 # These replace "Drop All" or "Drop Established" default actions
