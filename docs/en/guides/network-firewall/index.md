@@ -220,6 +220,7 @@ pass tls $HOME_NET any -> any any (alert; msg:"www.example2.com allowed"; tls.sn
 
 
 # Allow-List of second level/registered domain and all of its subdomains
+# When using 'dotprefix': Always place it before 'content' and always include the leading dot in the domain name (.amazon.com in the following example)
 pass tls $HOME_NET any -> any any (tls.sni; dotprefix; content:".amazon.com"; nocase; endswith; flow:to_server; sid:202501078;)
 
 # Custom Block Rules
