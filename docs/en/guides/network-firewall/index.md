@@ -361,7 +361,7 @@ The native [firewall monitoring dashboard](https://docs.aws.amazon.com/network-f
 
 ## Cost considerations
 
-Because each Network Firewall endpoint has hourly charges even if it’s not used, reduce the number of endpoints by leveraging a centralized inspection design and Transit Gateway (TGW).
+Because each Network Firewall endpoint has hourly charges even if it’s not used, reduce the number of endpoints by leveraging a centralized inspection design with [Network Firewall's Native Transit Gateway Support.](https://aws.amazon.com/about-aws/whats-new/2025/07/aws-network-firewall-native-transit-gateway-support/) If you choose not to use TGW, but you want to share a firewall with multiple AWS accounts and/or VPCs, you can leverage Network Firewall's [multi-endpoint support](https://aws.amazon.com/about-aws/whats-new/2025/05/aws-network-firewall-multiple-vpc-endpoints/) which give you reduced cost for secondary endpoints.
 
 Do not send traffic to Network Firewall that does not need to be inspected. To avoid these unnecessary processing charges on Network Firewall, use TGW route tables to segment your network, for example keeping VPC Prod from talking to VPC Dev if these VPCs don’t need to communicate.
 
@@ -369,7 +369,7 @@ Use the [traffic analysis report feature](https://docs.aws.amazon.com/network-fi
 
 Use the free VPC endpoints for S3 and DynamoDB instead of sending that traffic through Network Firewall.
 
-Leverage PrivateLink endpoints provided by 3rd party services that do not need to be inspected by the firewall.
+Leverage PrivateLink endpoints provided by 3rd party services that do not need to be inspected by the firewall. If your workloads need to reach resources in a common "shared services" type of VPC, it may make sense to have those VPCs leverage VPC peering to access the "shared services VPC" instead of accessing the "shared services VPC" via the Network Firewall, in order to save on Network Firewall data processing charges.
 
 Ensure route tables are sending traffic to the local Network Firewall endpoint and not to another AZ’s endpoint. This design will avoid incurring cross-AZ data transfer charges.
 
