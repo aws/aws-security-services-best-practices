@@ -18,6 +18,10 @@ on:
     #paths:
       #- '**/*.md'
 
+permissions:
+  contents: write
+  pages: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
