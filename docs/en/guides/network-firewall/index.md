@@ -358,11 +358,25 @@ Flow logs
 
 The native [firewall monitoring dashboard](https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-using-dashboard.html) provides multiple options for viewing key metrics about your firewall. You can view all the metrics available as part of the dashboard [here](https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-detailed-monitoring-metrics.html). 
 
+Use CloudWatch Logs Insights to analyze Network Firewall logs for security and operational insights. This query analyzes both flow logs (for traffic volume data) and alert logs (for TLS SNI information) by correlating them using flow_id:
+
+```
+fields @timestamp, event.flow_id, event.netflow.bytes, event.tls.sni
+| stats sum(event.netflow.bytes) as flowBytes, latest(event.tls.sni) as sni by event.flow_id
+| stats sum(flowBytes) as totalBytes, count(*) as flowCount by sni
+| sort totalBytes desc
+| limit 20
+```
+
+The query uses two-stage aggregation to correlate SNI with byte counts. First, it aggregates by flow_id to combine bytes from flow logs with SNI from alert logs. Then it sums all bytes by domain to show which external services your environment communicates with most and where the bulk of your traffic is going.
+
+![Custom query](../../images/custom-nfw-query.png)
+
 
 ## Cost considerations
 
 Because each Network Firewall endpoint has hourly charges even if it’s not used, reduce the number of endpoints by leveraging a centralized inspection design with [Network Firewall's Native Transit Gateway Support.](https://aws.amazon.com/about-aws/whats-new/2025/07/aws-network-firewall-native-transit-gateway-support/) If you choose not to use TGW, but you want to share a firewall with multiple AWS accounts and/or VPCs, you can leverage Network Firewall's [multi-endpoint support](https://aws.amazon.com/about-aws/whats-new/2025/05/aws-network-firewall-multiple-vpc-endpoints/) which give you reduced cost for secondary endpoints.
-
+For organizations with multiple accounts or business units using a centralized Network Firewall through Transit Gateway, leverage [Flexible Cost Allocation for Transit Gateway](https://docs.aws.amazon.com/vpc/latest/tgw/metering-policy.html) to allocate and track costs based on traffic usage patterns, enabling better cost visibility and chargeback across different organizational units.
 Do not send traffic to Network Firewall that does not need to be inspected. To avoid these unnecessary processing charges on Network Firewall, use TGW route tables to segment your network, for example keeping VPC Prod from talking to VPC Dev if these VPCs don’t need to communicate.
 
 Use the [traffic analysis report feature](https://docs.aws.amazon.com/network-firewall/latest/developerguide/reporting.html) to see which domains are most likely driving up network processing charges.
