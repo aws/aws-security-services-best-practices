@@ -133,6 +133,8 @@ The pros of using customer Suricata rules:
 * Easy to switch rule(s) from one rule group to another (blue-green testing for example)
 * Allow for adding the very important keyword: “flow:to_server” to rules easily
 
+To assist customers in writing their custom Suricata rules, we created the Suricata Rule Generator for AWS Network Firewall Open Source application: https://github.com/aws-samples/sample-suricata-generator
+
 Below we have also included a custom template for an egress security use case to show examples of custom suricata rules.
 
 ```
