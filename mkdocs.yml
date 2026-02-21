@@ -45,4 +45,20 @@ nav:
   - Amazon Route 53 Resolver DNS Firewall Best Practices: guides/dns-firewall/index.md
   - Contributors: contributors.md
 plugins:
+    - i18n:
+        docs_structure: suffix
+        fallback_to_default: true
+        reconfigure_material: true
+        reconfigure_search: true
+        languages:
+          - locale: en
+            default: true
+            name: English
+            build: true
+          - locale: ko
+            name: 한국어
+            build: true
+            nav:
+              - 홈: index.md
+              - AWS Network Firewall 모범 사례: guides/network-firewall/index.md
     - search
