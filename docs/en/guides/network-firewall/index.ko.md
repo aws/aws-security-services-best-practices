@@ -13,7 +13,7 @@ AWS Network Firewall 모범 사례 가이드에 오신 것을 환영합니다. �
 * [구현](#구현)
 * [운영화](#운영화)
   * [대칭 라우팅 보장](#대칭-라우팅-보장)
-  * [엄격한 규칙 순서 및 'Application drop established'와 'Application alert established' 기본 방화벽 정책 작업 사용](#엄격한-규칙-순서-및-application-drop-established와-application-alert-established-기본-방화벽-정책-작업-사용)
+  * [엄격한 규칙 순서 및 'Drop established' 또는 'Application drop established'와 해당 'Alert' 기본 작업 사용](#엄격한-규칙-순서-및-drop-established-또는-application-drop-established와-해당-alert-기본-작업-사용)
   * [Stateless 규칙보다 Stateful 규칙 사용](#stateless-규칙보다-stateful-규칙-사용)
   * [UI 생성 규칙 대신 사용자 지정 Suricata 규칙 사용](#ui-생성-규칙-대신-사용자-지정-suricata-규칙-사용)
   * [가능한 한 적은 수의 사용자 지정 규칙 그룹 사용](#가능한-한-적은-수의-사용자-지정-규칙-그룹-사용)
@@ -81,18 +81,37 @@ Network Firewall은 비대칭 라우팅을 지원하지 않으므로 VPC에서 �
 
 어플라이언스 모드가 활성화되지 않으면 반환 경로 트래픽이 다른 AZ의 엔드포인트에 도달할 수 있으며, 이는 Network Firewall이 방화벽 정책에 대해 트래픽을 올바르게 평가하는 것을 방해합니다.
 
-### 엄격한 규칙 순서 및 'Application drop established'와 'Application alert established' 기본 방화벽 정책 작업 사용
+### 엄격한 규칙 순서 및 'Drop established' 또는 'Application drop established'와 해당 'Alert' 기본 작업 사용
 
 * Network Firewall에는 Suricata 엔진이 규칙을 처리하는 방법에 대한 두 가지 옵션이 있습니다.
   * "Strict" 옵션은 정의한 순서대로 규칙을 처리하도록 Suricata에 지시하므로 권장됩니다.
   * "Action Order" 옵션은 IDS 사용 사례에 적합하지만 일반적인 방화벽 사용 사례에는 적합하지 않은 Suricata의 기본 규칙 처리를 지원합니다.
-* Strict 규칙 순서를 선택하면 규칙 끝에 실행되고 이전 규칙과 일치하지 않는 모든 트래픽에 적용되는 "Default" 작업을 선택할 수도 있습니다.
+* Strict 규칙 순서를 선택하면 규칙 끝에 실행되고 이전 규칙과 일치하지 않는 모든 트래픽에 적용되는 "Default" 작업을 선택할 수도 있습니다. 두 가지 주요 접근 방식이 있습니다:
 
-![ANF Stateful Rule evaluation](../../images/nfw-default-actions.png)
+#### 'Drop all'보다 'Drop established'를 사용하는 이유
 
-*그림 3: Network Firewall Stateful 규칙 평가*
+"Drop established"는 "Drop all"보다 권장됩니다. Suricata 엔진이 드롭 결정을 내리기 전에 레이어 7 검사를 수행할 수 있기 때문입니다. 이는 TLS SNI 및 HTTP 호스트 헤더 필드의 도메인 정보를 기반으로 하는 pass 규칙에 매우 중요합니다. "Drop all"을 사용하면 Suricata가 이러한 애플리케이션 계층 속성을 검사하기 전에 트래픽이 차단됩니다.
 
-### Stateless 규칙보다 Stateful 규칙 사용
+#### Drop established
+
+"Drop established"는 더 간단한 옵션이며 대부분의 배포에 좋은 시작점입니다. 이전 규칙과 일치하지 않는 설정된 연결 트래픽을 차단하면서도 도메인 기반 필터링에 필요한 레이어 7 검사를 허용합니다. 반드시 해당하는 "Alert established" 작업도 선택하십시오. 이를 선택하지 않으면 기본 작업에 의해 차단된 트래픽이 로깅되지 않습니다. "Alert established"는 드롭 작업 없이 단독으로 선택할 수도 있으며, 이는 규칙을 적용하기 전에 어떤 트래픽이 차단될지 확인하는 데 유용합니다.
+
+![Network Firewall Drop Established 기본 작업](../../images/nfw-drop-established.png)
+
+*그림 3a: Network Firewall Drop Established 기본 작업*
+
+#### Application drop established
+
+"Application drop established"는 TLS Client Hello 메시지가 여러 패킷에 걸쳐 분할될 수 있는 환경을 위해 설계되었습니다. 이는 포스트 양자 하이브리드 암호 키 교환에서 점점 더 일반적입니다. TCP 핸드셰이크 직후에 트래픽을 차단하는 대신, 드롭 결정을 내리기 전에 충분한 애플리케이션 계층 데이터(예: TLS SNI 필드)를 확인할 때까지 기다립니다.
+
+![Network Firewall Application Drop Established 기본 작업](../../images/nfw-app-drop-established.png)
+
+*그림 3b: Network Firewall Application Drop Established 기본 작업*
+
+"Application drop established"를 사용하는 경우, TCP 핸드셰이크 이후 pass 규칙이 적용되기 전에 발생하는 TCP 흐름 제어 패킷(윈도우 업데이트, 킵얼라이브, 리셋 등)이 차단될 수 있습니다. 이러한 패킷을 허용하기 위한 사용자 지정 규칙이 필요할 수 있습니다. 자세한 내용은 [Stateful 규칙 그룹의 평가 순서](https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-rule-evaluation-order.html) 문서를 참조하십시오.
+
+또는 이 가이드에 포함된 [사용자 지정 Suricata 규칙 템플릿](#ui-생성-규칙-대신-사용자-지정-suricata-규칙-사용)의 이그레스 기본 차단 규칙은 TCP 흐름 제어 패킷에 대한 별도의 규칙 없이 동일한 애플리케이션 계층 인식 드롭 전략을 사용자 지정 규칙으로 적용합니다.
+
 
 * Stateless 규칙은 비대칭 플로우 전달 문제(방화벽의 상태 저장 검사 엔진이 플로우의 한쪽만 보는 경우)를 쉽게 일으킬 수 있고 전체 방화벽 규칙 세트를 이해하고 문제를 해결하기 더 복잡하게 만들기 때문에 매우 제한적으로 사용해야 합니다. 대부분의 사용 사례에서 stateless 엔진의 기본 작업을 "Forward to stateful rule groups"로 설정하고 stateful 규칙보다 우선하는 stateless 규칙을 구성하지 않는 것이 좋습니다.
 * Stateless 규칙을 사용하려는 경우 Network Firewall의 Stateless Rule Group Analyzer를 사용하여 비대칭 플로우 문제를 해결하는 방법을 이해하는 것이 중요합니다. "비대칭 전달을 위한 Stateless 규칙 문제 해결"을 참조하십시오.
