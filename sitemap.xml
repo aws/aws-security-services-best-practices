@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/contributors/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/contributors/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/contributors/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/certificate-services/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/certificate-services/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/certificate-services/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/detective/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/detective/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/detective/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/dns-firewall/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/dns-firewall/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/dns-firewall/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/guardduty/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/guardduty/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/guardduty/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/inspector/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/inspector/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/inspector/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/macie/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/macie/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/macie/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/network-firewall/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/network-firewall/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/network-firewall/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/security-hub/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/security-hub/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/security-hub/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/security-lake/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/security-lake/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/security-lake/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/waf/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/waf/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/waf/configuring-waf-rules/docs/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/waf/configuring-waf-rules/docs/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/configuring-waf-rules/docs/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/waf/monitoring-waf-rules/docs/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/waf/monitoring-waf-rules/docs/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/monitoring-waf-rules/docs/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/waf/prerequisites/docs/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/waf/prerequisites/docs/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/prerequisites/docs/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/guides/waf/using-waf-with-other-services/docs/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/waf/using-waf-with-other-services/docs/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/using-waf-with-other-services/docs/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/contributors/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/contributors/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/contributors/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/certificate-services/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/certificate-services/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/certificate-services/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/detective/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/detective/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/detective/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/dns-firewall/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/dns-firewall/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/dns-firewall/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/guardduty/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/guardduty/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/guardduty/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/inspector/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/inspector/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/inspector/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/macie/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/macie/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/macie/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/network-firewall/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/network-firewall/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/network-firewall/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/security-hub/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/security-hub/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/security-hub/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/security-lake/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/security-lake/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/security-lake/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/waf/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/configuring-waf-rules/docs/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/configuring-waf-rules/docs/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/waf/configuring-waf-rules/docs/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/monitoring-waf-rules/docs/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/monitoring-waf-rules/docs/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/waf/monitoring-waf-rules/docs/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/prerequisites/docs/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/prerequisites/docs/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/waf/prerequisites/docs/"/>
+    </url>
+    <url>
+        <loc>https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/using-waf-with-other-services/docs/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/using-waf-with-other-services/docs/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aws.github.io/aws-security-services-best-practices/guides/waf/using-waf-with-other-services/docs/"/>
+    </url>
+</urlset>

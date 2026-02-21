@@ -1,0 +1,2650 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/guides/certificate-services/">
+      
+      
+        <link rel="prev" href="../..">
+      
+      
+        <link rel="next" href="../detective/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../ko/guides/certificate-services/" hreflang="ko">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>Amazon Certificate Services Best Practices - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#certificate-services" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Amazon Certificate Services Best Practices
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../ko/guides/certificate-services/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Certificate Services Best Practices
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Certificate Services Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Introduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use this guide
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-aws-certificate-manager-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is AWS Certificate Manager (ACM)?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-the-benefits-of-using-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What are the benefits of using ACM?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-with-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting started with ACM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started with ACM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#certificate-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-protection-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data protection considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data protection considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-cloudformation-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS CloudFormation considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#turn-on-aws-cloudtrail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Turn on AWS CloudTrail
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementing-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementing ACM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementing ACM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deployment-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-validation-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain validation considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-name-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain name considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controlling-access-to-acm-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controlling access to ACM certificates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#certificate-pinning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate pinning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opting-out-of-certificate-transparency-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opting out of certificate transparency logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operationalizing-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operationalizing ACM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operationalizing ACM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-automated-notifications-for-expiring-certificates-with-amazon-eventbridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting up automated notifications for expiring certificates with Amazon EventBridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-automated-notifications-for-expiring-certificates-with-cloudwatch-alarms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting up automated notifications for expiring certificates with CloudWatch alarms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#certificate-inventory-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate inventory management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compliance-and-auditing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compliance and Auditing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managed-renewal-for-imported-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managed renewal for imported certificates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#renewal-status-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Renewal status tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-aws-private-certificate-authority-aws-private-ca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is AWS Private Certificate Authority (AWS Private CA)?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-the-benefits-of-using-aws-private-ca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What are the benefits of using AWS Private CA?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What are the benefits of using AWS Private CA?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#improve-availability-and-scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Improve availability and scalability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enhance-security-posture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enhance security posture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplify-certificate-lifecycle-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simplify certificate lifecycle management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accelerate-compliance-and-regulatory-adherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accelerate compliance and regulatory adherence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-with-aws-private-ca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting started with AWS Private CA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started with AWS Private CA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#certificate-considerations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-protection-considerations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data protection considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-name-considerations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain name considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-considerations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minimize-use-of-the-root-ca-if-possible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimize use of the Root CA if possible
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementing-aws-private-ca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementing AWS Private CA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementing AWS Private CA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#certificate-authority-hierarchy-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate authority hierarchy design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-algorithm-and-length-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key algorithm and length selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#certificate-template-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate template configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ca-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CA Sharing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-aws-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration with AWS Services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-control-and-iam-policies-secure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access control and IAM policies secure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managed-revocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managed revocation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connector-for-kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector for Kubernetes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connector for Kubernetes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connector-for-scep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector for SCEP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connector-for-active-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector for Active Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-account-ca-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross account CA sharing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-difference-between-acm-and-private-ca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is the difference between ACM and Private CA?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cost-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-private-ca-best-practices-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS Private CA best practices checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workshops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workshops
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#videos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Videos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blogs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blogs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../detective/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Detective Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guardduty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon GuardDuty Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inspector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Inspector Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../macie/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Macie Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-hub/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Security Hub Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-lake/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Security Lake Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS WAF Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AWS WAF Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/prerequisites/docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WAF Prerequisites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/configuring-waf-rules/docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring WAF Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/monitoring-waf-rules/docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring WAF Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waf/using-waf-with-other-services/docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Using WAF with other AWS Services
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dns-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Route 53 Resolver DNS Firewall Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Introduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use this guide
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-aws-certificate-manager-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is AWS Certificate Manager (ACM)?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-the-benefits-of-using-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What are the benefits of using ACM?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-with-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting started with ACM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started with ACM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#certificate-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-protection-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data protection considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data protection considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-cloudformation-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS CloudFormation considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#turn-on-aws-cloudtrail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Turn on AWS CloudTrail
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementing-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementing ACM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementing ACM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deployment-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-validation-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain validation considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-name-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain name considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controlling-access-to-acm-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controlling access to ACM certificates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#certificate-pinning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate pinning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opting-out-of-certificate-transparency-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opting out of certificate transparency logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operationalizing-acm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operationalizing ACM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operationalizing ACM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-automated-notifications-for-expiring-certificates-with-amazon-eventbridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting up automated notifications for expiring certificates with Amazon EventBridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-automated-notifications-for-expiring-certificates-with-cloudwatch-alarms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting up automated notifications for expiring certificates with CloudWatch alarms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#certificate-inventory-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate inventory management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compliance-and-auditing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compliance and Auditing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managed-renewal-for-imported-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managed renewal for imported certificates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#renewal-status-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Renewal status tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-aws-private-certificate-authority-aws-private-ca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is AWS Private Certificate Authority (AWS Private CA)?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-the-benefits-of-using-aws-private-ca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What are the benefits of using AWS Private CA?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What are the benefits of using AWS Private CA?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#improve-availability-and-scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Improve availability and scalability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enhance-security-posture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enhance security posture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simplify-certificate-lifecycle-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simplify certificate lifecycle management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accelerate-compliance-and-regulatory-adherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accelerate compliance and regulatory adherence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-with-aws-private-ca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting started with AWS Private CA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started with AWS Private CA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#certificate-considerations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-protection-considerations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data protection considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-name-considerations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain name considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment-considerations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minimize-use-of-the-root-ca-if-possible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimize use of the Root CA if possible
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementing-aws-private-ca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementing AWS Private CA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementing AWS Private CA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#certificate-authority-hierarchy-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate authority hierarchy design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-algorithm-and-length-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key algorithm and length selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#certificate-template-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate template configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ca-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CA Sharing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-aws-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration with AWS Services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-control-and-iam-policies-secure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access control and IAM policies secure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managed-revocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managed revocation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connector-for-kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector for Kubernetes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connector for Kubernetes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connector-for-scep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector for SCEP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connector-for-active-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector for Active Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-account-ca-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross account CA sharing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-the-difference-between-acm-and-private-ca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is the difference between ACM and Private CA?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cost-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-private-ca-best-practices-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS Private CA best practices checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workshops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workshops
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#videos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Videos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blogs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blogs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="certificate-services">Certificate Services</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Welcome to the AWS Certificate Manager (ACM) and AWS Private CA Guide. The purpose of this guide is to provide prescriptive guidance for leveraging AWS Certificate Manager (ACM) and AWS Private Certificate Authority (AWS Private CA) for creating and controlling the certificates that are used for maintaining a secure and effective Public Key Infrastructure (PKI). Publishing this guidance via GitHub will allow for quick iterations to enable timely recommendations that include service enhancements, as well as, the feedback of the user community. This guide is designed to provide value whether you are deploying a certificate system for the first time in a single account, or looking for ways to optimize your infrastructure in an existing multi-account infrastructure.</p>
+<h2 id="how-to-use-this-guide">How to use this guide</h2>
+<p>This guide is geared towards security practitioners who are responsible for working with certificates within AWS accounts (and resources). The best practices are organized into different categories for easier consumption. Each category includes a set of corresponding best practices that begin with a brief overview, followed by detailed steps for implementing the guidance. The topics do not need to be read in a particular order:</p>
+<ul>
+<li><a href="#what-is-aws-certificate-manager-acm">What is AWS Certificate Manager (ACM)?</a></li>
+<li><a href="#what-are-the-benefits-of-using-acm">What are the benefits of using ACM?</a></li>
+<li><a href="#getting-started-with-acm">Getting started with ACM</a><ul>
+<li><a href="#certificate-considerations">Certificate considerations</a></li>
+<li><a href="#data-protection-considerations">Data protection considerations</a></li>
+<li><a href="#aws-cloudformation-considerations">AWS CloudFormation considerations</a></li>
+<li><a href="#turn-on-aws-cloudtrail">Turn on AWS CloudTrail</a></li>
+</ul>
+</li>
+<li><a href="#implementing-acm">Implementing ACM</a><ul>
+<li><a href="#deployment-considerations">Deployment considerations</a></li>
+<li><a href="#domain-name-considerations">Domain name considerations</a></li>
+<li><a href="#controlling-access-to-acm-certificates">Controlling access to ACM certificates</a></li>
+<li><a href="#certificate-pinning">Certificate pinning</a></li>
+<li><a href="#opting-out-of-certificate-transparency-logging">Opting out of certificate transparency logging</a></li>
+</ul>
+</li>
+<li><a href="#operationalizing-acm">Operationalizing ACM</a><ul>
+<li><a href="#setting-up-automated-notifications-for-expiring-certificates-with-amazon-eventbridge">Setting up automated notifications for expiring certificates with Amazon Eventbridge</a></li>
+<li><a href="#setting-up-automated-notifications-for-expiring-certificates-with-cloudwatch-alarms">Setting up automated notifications for expiring certificates with CloudWatch alarms</a></li>
+<li><a href="#certificate-inventory-management">Certificate inventory management</a></li>
+<li><a href="#compliance-and-auditing">Compliance and auditing</a></li>
+<li><a href="#managed-renewal-for-imported-certificates">Managed renewal for imported certificates</a></li>
+<li><a href="#renewal-status-tracking">Renewal status tracking</a></li>
+</ul>
+</li>
+<li><a href="#what-is-aws-private-certificate-authority-aws-private-ca">What is AWS Private Certificate Authority (AWS Private CA)?</a></li>
+<li><a href="#what-are-the-benefits-of-using-aws-private-ca">What are the benefits of using AWS Private CA?</a></li>
+<li><a href="#getting-started-with-aws-private-ca">Getting started with AWS Private CA</a><ul>
+<li><a href="#certificate-considerations-1">Certificate considerations</a></li>
+<li><a href="#data-protection-considerations-1">Data protection considerations</a></li>
+<li><a href="#validation-considerations">Validation considerations</a></li>
+<li><a href="#domain-name-considerations-1">Domain name considerations</a></li>
+<li><a href="#deployment-considerations-1">Deployment considerations</a></li>
+<li><a href="#minimize-use-of-the-root-ca-if-possible">Minimize use of the Root CA if possible</a></li>
+</ul>
+</li>
+<li><a href="#implementing-aws-private-ca">Implementing AWS Private CA</a><ul>
+<li><a href="#certificate-authority-hierarchy-design">Certificate authority hierarchy design</a></li>
+<li><a href="#key-algorithm-and-length-selection">Key algorithm and length selection</a></li>
+<li><a href="#certificate-considerations-1">Certificate template configuration</a></li>
+<li><a href="#ca-sharing">CA Sharing</a></li>
+<li><a href="#integration-with-aws-services">Integration with AWS Services</a></li>
+<li><a href="#access-control-and-iam-policies-secure">Access control and IAM policies secure</a></li>
+<li><a href="#managed-revocation">Managed revocation</a></li>
+</ul>
+</li>
+<li><a href="#connector-for-kubernetes">Connector for Kubernetes</a></li>
+<li><a href="#connector-for-scep">Connector for SCEP</a></li>
+<li><a href="#connector-for-active-directory">Connector for Active Directory</a></li>
+<li><a href="#cross-account-ca-sharing">Cross-account CA sharing</a></li>
+<li><a href="#what-is-the-difference-between-acm-and-private-ca">What is the difference between ACM and AWS Private CA?</a></li>
+<li><a href="#cost-considerations">Cost Considerations</a></li>
+<li><a href="#aws-private-ca-best-practices-checklist">AWS Private CA Best Practices Checklist</a></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+<h2 id="what-is-aws-certificate-manager-acm">What is AWS Certificate Manager (ACM)?</h2>
+<p>ACM is an AWS service that simplifies the management of provisioning, storing, and renewing public and private SSL/TLS X.509 certificates for use with AWS services. </p>
+<p>TLS plays an important role in encrypting data in transit. The security of TLS is built on cryptography and digital signatures where a certificate authority signs a document attesting to the identity of a machine, which is then digitally verified by a client initiating the TLS connection. Certificate-based signatures use digital certificates issued by a certificate authority (CA) to link a signature to a specific identity, validating the identity of the signer. ACM issues certificates through two paths: public certificates from Amazon's public certificate authority for internet domains, and private certificates via AWS Private CA for internal resources. </p>
+<p><img alt="ACM Overview" src="../../images/ACM-overview.png" />
+<em>Figure 1: An overview of ACM</em></p>
+<p>ACM simplifies the cryptographic complexity involved in managing certificates and their associated keys. Through ACM, you can centrally manage certificates, seamlessly integrate with native AWS services, and automate the lifecycle of certificates.</p>
+<h2 id="what-are-the-benefits-of-using-acm">What are the benefits of using ACM?</h2>
+<p>ACM simplifies the management and deployment of public and private SSL/TLS certificates by enabling centralized control through the AWS Management Console, AWS CLI, or APIs. Certificate usage can be monitored through AWS CloudTrail Logs for auditing and governance purposes.</p>
+<p>These TLS certificates can be issued at no additional cost for use with various AWS services including Elastic Load Balancers, Amazon CloudFront distributions, and APIs on Amazon API Gateway. Additionally, you can also import SSL/TLS certificates from third-party CAs.</p>
+<p>ACM provides managed renewals for all SSL/TLS certificates issued by Amazon. Certificates using DNS validation will be automatically renewed. For private certificates issued by the Private CA IssueCertificate API or imported certificates, users should implement automated expiration notifications.</p>
+<h2 id="getting-started-with-acm">Getting started with ACM</h2>
+<h3 id="certificate-considerations">Certificate considerations</h3>
+<p>ACM manages three types of SSL/TLS certificates: public (domain or email-validated), private, and imported. Users can request a publicly trusted certificate, import a third-party certificate, or or request a private certificate, issued by a customer-owned CA hosted in AWS Private CA. ACM certificates are exclusively compatible with integrated AWS services such as Elastic Load Balancing, CloudFront, and API Gateway. For a full list, see <a href="https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html">Services Integrated with ACM</a>.</p>
+<p>The validity period for certificates requested from ACM is fixed at 13 months and cannot be modified for either public or private certificates. If organizations require different validity periods, they should consider importing a certificate from a third-party CA vendor.</p>
+<h2 id="data-protection-considerations">Data protection considerations</h2>
+<p>When requesting a public certificate from ACM, the service generates a public/private key pair on your behalf. The public key becomes part of the certificate, while ACM uses KMS to encrypt the private key with an encryption context. ACM then stores the certificate and its corresponding encrypted private key. AWS uses the same KMS key to encrypt private keys for all certificates in a specific AWS account and region, with all KMS calls handled internally by ACM.</p>
+<p>KMS cryptographic operations with symmetric encryption keys accept an encryption context—an optional set of non-secret key-value pairs containing additional contextual information about the data. This context can be inserted into KMS Encrypt operations to enhance the audibility of API decryption calls. ACM automatically sets the context with values including the certificate ARN of the private key being encrypted, the AWS Region, and the Account ID, which are then cryptographically bound to the ciphertext. The unique encryption context for every ACM certificate creates a logical isolation between certificates.</p>
+<p>Important considerations for ACM public certificates include:</p>
+<ul>
+<li>They cannot directly access KMS operations</li>
+<li>You cannot modify how ACM calls KMS</li>
+<li>You are unable to modify the encryption context</li>
+<li>You are prohibited from exporting the private key of a public certificate</li>
+</ul>
+<h3 id="aws-cloudformation-considerations">AWS CloudFormation considerations</h3>
+<p>With AWS CloudFormation you can create a template that describes the AWS resources that you want to use. AWS CloudFormation then provisions and configures those resources for you. AWS CloudFormation can provision resources that are supported by ACM such as Elastic Load Balancing, Amazon CloudFront, and Amazon API Gateway. </p>
+<p>Fast development cycles often require rapid iteration. If you use AWS CloudFormation to quickly create and delete multiple test environments, we recommend that you do not create a separate ACM certificate for each environment. Doing so could exhaust your certificate quota. Instead, create a wildcard certificate that covers all of the domain names that you are using for testing. For example, if you repeatedly create ACM certificates for domain names that vary by only a version number, such as \<version>.service.example.com, create instead a single wildcard certificate for &lt;*&gt;.service.example.com. Include the wildcard certificate in the template that AWS CloudFormation uses to create your test environment.</p>
+<p>When using AWS CloudFormation to request a certificate, domain validation is only handled under specific conditions: the domain must be hosted in Amazon Route 53, reside in your AWS account, and use DNS validation. If these conditions are not met, the CloudFormation stack will remain in the CREATE_IN_PROGRESS state, delaying further stack operations.</p>
+<h3 id="turn-on-aws-cloudtrail">Turn on AWS CloudTrail</h3>
+<p>Turn on CloudTrail logging before you begin using ACM. CloudTrail enables you to monitor your AWS deployments by retrieving a history of AWS API calls for your account, including API calls made via the AWS Management Console, the AWS SDKs, the AWS Command Line Interface, and higher-level Amazon Web Services. You can also identify which users and accounts called the ACM APIs, the source IP address the calls were made from, and when the calls occurred. You can integrate CloudTrail into applications using the API, automate trail creation for your organization, check the status of your trails, and control how administrators turn CloudTrail logging on and off. CloudTrail also simplifies certificate lifecycle management by <a href="https://aws.amazon.com/blogs/security/how-to-manage-certificate-lifecycles-using-acm-event-driven-workflows/">enabling event-driven workflows to notify or take action on expiring TLS certificates in your organization</a>. </p>
+<p>For more information, see <a href="https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html">Creating a Trail</a>. You can also go to <a href="https://docs.aws.amazon.com/acm/latest/userguide/cloudtrail.html">Using CloudTrail with AWS Certificate Manager</a> to see example trails for ACM actions.</p>
+<h2 id="implementing-acm">Implementing ACM</h2>
+<h3 id="deployment-considerations">Deployment considerations</h3>
+<p>ACM is a regional service, which means ACM certificates must be issued in the same Region as the AWS resources where they will be used and cannot be shared across AWS accounts. A critical exception exists for Amazon CloudFront: all ACM certificates for CloudFront must be issued in the US East (N. Virginia) Region (us-east-1). Once associated with a CloudFront distribution, these certificates are then distributed to all configured geographic locations. </p>
+<h3 id="domain-validation-considerations">Domain validation considerations</h3>
+<p>Before a CA can issue a certificate for your site, ACM must verify that you own or control all the domains that you specified in your request. You can perform verification using either email or DNS. </p>
+<p><img alt="ACM Domain Validation" src="../../images/ACM-validation-1.png" />
+<em>Figure 2: ACM domain validation</em></p>
+<p>Amazon recommends using DNS validation over email validation. DNS validation offers several key advantages:</p>
+<ul>
+<li>Direct integration with Route 53 allows you to update records through ACM</li>
+<li>ACM automatically renews DNS-validated certificates as long as the DNS record remains in place and the certificate is actively used</li>
+<li>No manual intervention is required for renewal</li>
+</ul>
+<p>Email-validated certificates require a different approach. Renewal notices are sent to five common system addresses for the requested domain  (e.g., admin or postmaster) starting 45 days before expiration. These certificates require manual approval from the domain owner. All listed domains must be validated for a renewed certificate with the same ARN to be issued, which can introduce potential errors or delays if email configurations are incorrect.</p>
+<h3 id="domain-name-considerations">Domain name considerations</h3>
+<p>ACM certificates can secure singular domain names, multiple specific domain names, wildcard domains (protecting an unlimited number of subdomains), or any combination of these. Once created, certificates cannot be modified by adding or removing domain names. To make changes, you must request a new certificate with the entire revised list of domain names, validating ownership of all domains, including previously validated names.</p>
+<p>You cannot add or remove domain names from an existing ACM certificate. Instead you must request a new certificate with the revised list of domain names. For example, if your certificate has five domain names and you want to add four more, you must request a new certificate with all nine domain names. As with any new certificate, you must validate ownership of all the domain names in the request, including the names that you previously validated for the original certificate.</p>
+<p>If you use email validation, you receive up to 8 validation email messages for each domain, at least 1 of which must be acted upon within 72 hours. For example, when you request a certificate with five domain names, you receive up to 40 validation messages, at least 5 of which must be acted upon within 72 hours. As the number of domain names in the certificate request increases, so does the work required to use email to validate domain ownership.</p>
+<p>If you use DNS validation instead, you must write one new DNS record to the database for the FQDN you want to validate. ACM sends you the record to create and later queries the database to determine whether the record has been added. Adding the record asserts that you own or control the domain. In the preceding example, if you request a certificate with five domain names, you must create five DNS records. We recommend that you use DNS validation when possible.</p>
+<h3 id="controlling-access-to-acm-certificates">Controlling access to ACM certificates</h3>
+<p>Unlike other data protection services like KMS or Secrets Manager, ACM does not support resource policies or resource control policies (RCPs). Instead, access to ACM certificates can be controlled through either identity-based IAM policies, or service control policies (SCPs) if using AWS Organizations.</p>
+<p>Use account-level separation in your policies to control who can access certificates at an account level. Keep your production certificates in separate accounts than your testing and development certificates. If you can't use account-level separation, you can restrict access to specific roles by denying the kms:CreateGrant action  in your policies for the KMS key that protects the certificate private key. This limits which roles in an account can sign or use certificates at a high level. For information about grants, including grant terminology, see <a href="https://docs.aws.amazon.com/kms/latest/developerguide/grants.html">Grants in AWS KMS</a> in the <em>AWS Key Management Service Developer Guide</em>.</p>
+<p>If you want more granular control than restricting the use of <code>kms:CreateGrant</code> by account, you can limit <code>kms:CreateGrant</code> to specific certificates using <code>kms:EncryptionContext</code> condition keys. Specify <code>arn:aws:acm</code> as the key, and the value of the ARN to restrict. The following example policy prevents the use of a specific certificate, but allow others.</p>
+<pre><code>{
+   &quot;Version&quot;: &quot;2012-10-17&quot;,
+   &quot;Statement&quot;: [
+       {
+           &quot;Sid&quot;: &quot;VisualEditor0&quot;,
+           &quot;Effect&quot;: &quot;Deny&quot;,
+           &quot;Action&quot;: &quot;kms:CreateGrant&quot;,
+           &quot;Resource&quot;: &quot;*&quot;,
+           &quot;Condition&quot;: {
+               &quot;StringEquals&quot;: {
+                   &quot;kms:EncryptionContext:aws:acm:arn&quot;: &quot;arn:aws:acm:us-east-1:111122223333:certificate/[certificate-id-here]&quot;
+               }
+           }
+       }
+   ]
+}
+</code></pre>
+<h3 id="certificate-pinning">Certificate pinning</h3>
+<p>Certificate pinning (or SSL pinning) is a process that you can use in your application to validate a remote host by associating that host directly with its X.509 certificate or public key instead of with a certificate hierarchy, bypassing SSL/TLS certificate chain validation.  Instead of verifying the entire certificate chain from root CA downward, the application only trusts a pre-defined certificate or key for that host. This trusted certificate can be embedded during development or captured during the first connection to the host.</p>
+<p>We recommend that your application not pin an ACM certificate. ACM performs <a href="https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html">managed certificate renewal</a> in AWS Certificate Manager to automatically renew your Amazon-issued SSL/TLS certificates before they expire. To renew a certificate, ACM generates a new public-private key pair. If your application pins the ACM certificate and the certificate is successfully renewed with a new public key, the application might be unable to connect to your domain.</p>
+<p>If you decide to pin a certificate, the following options will not hinder your application from connecting to your domain:</p>
+<ul>
+<li><a href="https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html">Import your own certificate</a> into ACM and then pin your application to the imported certificate. ACM doesn't try to automatically renew imported certificates.</li>
+<li>If you're using a public certificate, pin your application to all available <a href="https://www.amazontrust.com/repository/">Amazon root certificates</a>. If you're using a private certificate, pin your application to the CA's root certificate.</li>
+</ul>
+<h3 id="opting-out-of-certificate-transparency-logging">Opting out of certificate transparency logging</h3>
+<p>As of April 30 2018, Google Chrome no longer trusts public SSL/TLS certificates that are not recorded in a certificate transparency log. Therefore, beginning April 24, 2018, the Amazon CA began publishing all new certificates and renewals to at least two public logs. Once a certificate has been logged, it cannot be removed.</p>
+<p>Logging is performed automatically when you request a certificate or when a certificate is renewed, but you can choose to opt out. Common reasons for doing so include concerns about security and privacy. For example, logging internal host domain names gives potential attackers information about internal networks that would otherwise not be public. In addition, logging could leak the names of new or unreleased products and websites.</p>
+<p>To opt out of transparency logging when you are requesting a certificate, use the options parameter of the <a href="https://docs.aws.amazon.com/cli/latest/reference/acm/request-certificate.html">request-certificate</a> AWS CLI command or the <a href="https://docs.aws.amazon.com/acm/latest/APIReference/API_RequestCertificate.html">RequestCertificate</a> API operation. If your certificate was issued before April 24, 2018, and you want to make sure that it is not logged during renewal, you can use the <a href="https://docs.aws.amazon.com/cli/latest/reference/acm/update-certificate-options.html">update-certificate-options</a> command or the <a href="https://docs.aws.amazon.com/acm/latest/APIReference/API_UpdateCertificateOptions.html">UpdateCertificateOptions</a> API operation to opt out.</p>
+<p><strong>Limitations</strong></p>
+<ul>
+<li>You cannot use the console to enable or disable transparency logging.</li>
+<li>You cannot change logging status after a certificate enters its renewal period, typically 60 days before certificate expiry. No error message is generated if a status change fails.</li>
+</ul>
+<p>Once a certificate has been logged, it cannot be removed from the log. Opting out at that point will have no effect. If you opt out of logging when you request a certificate and then choose later to opt back in, your certificate will not be logged until it is renewed. If you want the certificate to be logged immediately, we recommend that you issue a new one.</p>
+<p>The following example shows you how to use the <a href="https://docs.aws.amazon.com/cli/latest/reference/acm/request-certificate.html">request-certificate</a> command to disable certificate transparency when you request a new certificate.</p>
+<pre><code>aws acm request-certificate \
+--domain-name www.example.com \
+--validation-method DNS \
+--options CertificateTransparencyLoggingPreference=DISABLED \
+</code></pre>
+<p>The preceding command outputs the ARN of your new certificate.</p>
+<pre><code>{ 
+    &quot;CertificateArn&quot;: &quot;arn:aws:acm:region:account:certificate/certificate_ID&quot; 
+}
+</code></pre>
+<p>If you already have a certificate, and you don't want it to be logged when it is renewed, use the <a href="https://docs.aws.amazon.com/cli/latest/reference/acm/update-certificate-options.html">update-certificate-options</a> command. This command does not return a value.</p>
+<pre><code>aws acm update-certificate-options \
+--certificate-arn arn:aws:acm:region:account:\
+certificate/certificate_ID \
+--options CertificateTransparencyLoggingPreference=DISABLED
+</code></pre>
+<h2 id="operationalizing-acm">Operationalizing ACM</h2>
+<h3 id="setting-up-automated-notifications-for-expiring-certificates-with-amazon-eventbridge">Setting up automated notifications for expiring certificates with Amazon EventBridge</h3>
+<p>ACM does not manage renewal or send expiry notices for certificates issued using the Private CA Issue Certificates API or imported certificates. Instead, you can take advantage of the ACM Certificate Approaching Expiration event to notify you of expiry events. </p>
+<ol>
+<li>Create a relevant standard <strong>SNS</strong> topic.</li>
+<li>Open the <strong>EventBridge</strong> console. In the navigation pane, choose <strong>Buses</strong>, and then <strong>Rules</strong>.</li>
+<li>Click <strong>Create Rule</strong>.</li>
+<li>Fill in the name of your rule. Leave all other settings default.</li>
+</ol>
+<p><img alt="EventBridge Rule Detail" src="../../images/ACM-eventbridge-1.png" />
+<em>Figure 3: Defining the Eventbridge rule detail</em></p>
+<ol>
+<li>Scroll down to <strong>Event Pattern</strong>. Under <strong>AWS Service</strong>, choose <strong>Certificate Manager</strong>. </li>
+<li>For <strong>Event Type</strong>, choose <strong>ACM Certificate Approaching Expiration</strong>.</li>
+</ol>
+<p><img alt="EventBridge Event Pattern" src="../../images/ACM-eventbridge-2.png" />
+<em>Figure 4: Defining the Eventbridge event pattern</em></p>
+<ol>
+<li>Click <strong>Next</strong>.</li>
+<li>Select the SNS topic created in Step 1.</li>
+</ol>
+<p><img alt="Eventbridge Target" src="../../images/ACM-eventbridge-3.png" />
+<em>Figure 5: Specifying the Eventbridge target</em></p>
+<ol>
+<li>Click <strong>Next</strong>, then skip ahead to Step 5.</li>
+<li>Review your selections, then click <strong>Create rule</strong>.</li>
+</ol>
+<p>Your rule will now notify you via SNS topic when your certificate approaches expiry. ACM will send daily expiration events for all active certificates (public, private and imported) starting 45 days prior to expiration. To change the timing of the expiration notification, use the <code>PutAccountConfiguration</code> action of the ACM API to select a value between 1-45 days for <strong>DaysBeforeExpiry</strong>.</p>
+<p>The EventBridge rule will notify you regardless if your certificate is imported, private, or issued by ACM. You may want to have more granular notifications that only notify you for certain certificates, for instance.</p>
+<h3 id="setting-up-automated-notifications-for-expiring-certificates-with-cloudwatch-alarms">Setting up automated notifications for expiring certificates with CloudWatch alarms</h3>
+<p><a href="https://docs.aws.amazon.com/acm/latest/userguide/cloudwatch-metrics.html">CloudWatch Alarms</a> monitor certificate expiration in AWS environments and prevent service disruptions through automated notifications. The service sends alerts via email, SMS, or incident management systems when certificates approach their expiration threshold.</p>
+<p>The AWS console has one specific limitation: CloudWatch Alarms can monitor only one certificate metric per alarm configuration. For environments with multiple certificates, use the AWS CLI or Infrastructure as Code (IaC) tools to create and manage alarms programmatically.</p>
+<p>Two solutions exist for scalable certificate monitoring:</p>
+<ol>
+<li>AWS Lambda functions that execute certificate expiration checks on a defined schedule.</li>
+<li><a href="https://repost.aws/knowledge-center/acm-certificate-expiration">AWS Config rules that track certificate lifecycles across AWS accounts</a>.</li>
+</ol>
+<h3 id="certificate-inventory-management">Certificate inventory management</h3>
+<p>Organizations can implement <a href="https://github.com/aws-samples/ACM-flag-CA-issuer">AWS Config rules</a> to actively track certificate usage and deployment patterns across their infrastructure. A structured resource tagging strategy assigns specific ownership and purpose metadata to each certificate, enabling clear accountability and tracking. Organizations typically generate automated inventory reports using AWS Organizations and AWS Config, providing comprehensive visibility across certificate deployments. Regular audits of certificate-to-resource mappings ensure accuracy and help identify potential gaps in certificate management. </p>
+<h3 id="compliance-and-auditing">Compliance and Auditing</h3>
+<p>Compliance and auditing processes focus on maintaining detailed records through AWS CloudTrail logs of all certificate operations. These logs enable automated reporting systems to identify unused certificates and track approaching expirations, supporting proactive certificate management. Organizations implement compliance validation scripts to verify certificate configurations against internal policies and regulatory requirements. Regular security reviews assess certificate policies and deployments, ensuring continuous alignment with security standards and compliance mandates.</p>
+<h3 id="managed-renewal-for-imported-certificates">Managed renewal for imported certificates</h3>
+<p>AWS Config automates renewal of imported certificates in ACM using resource tags and remediation rules. Unlike AWS-issued certificates which renew automatically, imported certificates require this specific automation for renewal. The automation process follows a fixed sequence: An AWS Config rule identifies expiring imported certificates, triggers a Lambda function, which then uses certificate metadata from resource tags to execute renewal. The function retrieves the new certificate, imports it to ACM, and updates associated AWS resources automatically. The solution eliminates manual renewals, prevents certificate-related outages, and standardizes management across all certificate types. Implementation requires precise configuration of AWS Config rules, Lambda functions, and resource tags.</p>
+<h3 id="renewal-status-tracking">Renewal status tracking</h3>
+<p>AWS Config monitors imported certificate renewals in ACM using defined rules and metadata tags. Each certificate maintains one of four status tags: pending renewal, renewal in progress, renewal complete, or renewal failed. Config rules trigger EventBridge notifications upon status changes, ensuring timely alerts for renewal activities.</p>
+<p>Organizations can track renewal status through AWS Config dashboards and aggregator reports, while the system logs all renewal actions for audit purposes. This automation ensures continuous monitoring of certificate lifecycles and prevents renewal-related outages.</p>
+<h2 id="what-is-aws-private-certificate-authority-aws-private-ca">What is AWS Private Certificate Authority (AWS Private CA)?</h2>
+<p>AWS Private CA is a highly available, managed service designed to create and maintain an internal public key infrastructure (PKI) for organizations. This service eliminates the upfront investment and ongoing maintenance costs associated with operating a private certificate authority while simplifying certificate lifecycle management.</p>
+<h2 id="what-are-the-benefits-of-using-aws-private-ca">What are the benefits of using AWS Private CA?</h2>
+<h3 id="improve-availability-and-scalability">Improve availability and scalability</h3>
+<p>AWS Private CA’s fundamental benefits of availability and scalability offer a robust 99.9% availability guarantee through a <a href="https://aws.amazon.com/private-ca/sla/">service level agreement (SLA)</a>. Private CA eliminates the complexity and overhead associated with managing on-premises PKI infrastructure. The service's flexible architecture supports seamless scaling as business demands grow, while providing versatile deployment options through multiple connector types - including Active Directory, Kubernetes, and SCEP for Mobile Device Management (MDM). Organizations can leverage various certificate modes (short-lived and general-purpose) to align with their specific security requirements, enabling a tailored approach to certificate issuance and management. </p>
+<h3 id="enhance-security-posture">Enhance security posture</h3>
+<p>Security is enhanced through multiple layers of protection. AWS Private CA employs FIPS 140-3 validated hardware security modules (HSMs) to safeguard CA keys, providing enterprise-grade security for critical PKI components. The integration with AWS Identity and Access Management (IAM) enables granular access control and permissions management for Certificate Authorities. Security response capabilities are strengthened through efficient certificate revocation mechanisms, including Online Certificate Status Protocol (OCSP) and Certificate Revocation Lists (CRLs), allowing organizations to quickly address potential certificate compromises and maintain a robust security posture. </p>
+<h3 id="simplify-certificate-lifecycle-management">Simplify certificate lifecycle management</h3>
+<p>Certificate lifecycle management is streamlined through automation and integration. AWS Private CA works seamlessly with AWS Certificate Manager to automate crucial tasks such as certificate issuance, renewal, and revocation for both AWS and non-AWS resources. This automation eliminates the manual overhead traditionally associated with PKI management, reducing the operational burden on IT teams. </p>
+<p>By automating routine PKI management tasks, organizations can redirect their resources toward strategic security initiatives while maintaining efficient certificate operations. </p>
+<h3 id="accelerate-compliance-and-regulatory-adherence">Accelerate compliance and regulatory adherence</h3>
+<p>The service accelerates compliance and regulatory adherence through centralized management and comprehensive auditing capabilities. Integration with AWS CloudTrail and Amazon CloudWatch provides unified visibility and detailed audit trails, simplifying compliance with industry regulations and standards. AWS Private CA enables organizations to easily share CAs across multiple AWS accounts while maintaining strict access controls and security best practices. The platform's customizable certificate templates support organization-specific identity and data protection policies, accommodating diverse use cases from web services to IoT devices, all while optimizing costs and maintaining security standards. </p>
+<h2 id="getting-started-with-aws-private-ca">Getting started with AWS Private CA</h2>
+<h3 id="certificate-considerations_1">Certificate considerations</h3>
+<p>AWS Private CA enables you to create and operate private CAs on AWS. Unlike ACM's public certificates, Private CA lets you establish your own PKI hierarchy with root and subordinate CAs for issuing private certificates. These certificates can be used with both AWS services and on-premises applications.</p>
+<p>Types of certificates:</p>
+<ul>
+<li>Root CA - The top-level authority in your PKI hierarchy</li>
+<li>Subordinate CA - Issues certificates under the  authority of a root CA</li>
+</ul>
+<p><img alt="Certificate Types" src="../../images/PCA-hierarchy.png" />
+<em>Figure 6: A simple, three-level CA hierarchy</em></p>
+<p>ACM offers fixed 13-month validity periods for certificates, while Private CA offers flexible configuration for CAs as well as issued certificates:</p>
+<ul>
+<li>There is no limit for Root CA validity. The Private CA default for root certificates is ten years.</li>
+<li>Subordinate CAs can have custom validity periods. The Private CA default validity period for a subordinate CA certificate is three years.</li>
+</ul>
+<p>A certificate managed by Private CA must have a validity period shorter than or equal to the validity period of the CA that issued it.</p>
+<h3 id="data-protection-considerations_1">Data protection considerations</h3>
+<p>When you create a private certificate authority using AWS Private CA, the service generates a private/public key pair for the root or subordinate CA. You can use CloudTrail to monitor and audit all cryptographic operations associated with your CA.</p>
+<h3 id="validation-considerations">Validation Considerations</h3>
+<p>Since AWS Private CA is designed for internal certificates, you control the issuance policies and validation methods rather than relying on public domain validation. You define the certificate subjects and any associated extensions or constraints in your CA’s configuration. You can implement your own validation processes that relies on certificate templates that define allowed configurations, custom validation rules, and access controls implemented through IAM policies. Organizations can define their own validation criteria, including custom certificate extensions, key usage restrictions, and naming conventions. Trust is established through:</p>
+<ul>
+<li><strong>IAM Policies</strong>: Controlling who can issue, revoke, or manage certificates. You can also use <a href="https://aws.amazon.com/blogs/security/how-to-use-aws-certificate-manager-to-enforce-certificate-issuance-controls/">IAM condition context keys to allow or deny authorized accounts and users to request certificates for specific domains</a>.</li>
+<li><strong>Certificate Templates</strong>: Predefined or custom templates that enforce certificate  parameters (e.g., key usage, extended key usage).</li>
+<li><strong>Revocation</strong>: Revoking certificates via API/console and either publishing Certificate Revocation Lists (CRLs) to an S3 bucket or enabling OCSP.</li>
+<li><strong>Name Constraints</strong>: DNS name constraints that establish guardrails to mitigate certificate misuse. For example, you can set a <a href="https://aws.amazon.com/blogs/security/how-to-enforce-dns-name-constraints-in-aws-private-ca/">DNS name constraint that restricts the CA from issuing certificates to a resource using a specific domain name</a>.</li>
+</ul>
+<p>Please note for cross-account certificate issuance that explicit IAM permissions must be configured to validate and authorize requests. </p>
+<h3 id="domain-name-considerations_1">Domain name considerations</h3>
+<p>AWS Private CA offers flexible domain name considerations, allowing you to issue certificates for both internal and external domain names without the public domain validation requirements of ACM. You can use any valid domain naming convention, including non-public domains (like .internal, .local, .corp), private IP addresses, and custom internal naming schemes. The certificates can include Subject Distinguished Name (DN) components (such as Common Name, Organization, Country, etc.) and multiple Subject Alternative Names (SANs) that support DNS names, IP addresses, internal hostnames, and wildcard domains. </p>
+<h3 id="deployment-considerations_1">Deployment considerations</h3>
+<p>AWS Private CA is  a regional service. You must create your private CA in the same AWS Region  where your resources are deployed, or where you plan to use the  certificates. However, certificates are not Region bound and you can issue certificates for resources located in  different regions. You can use AWS Private CA with AWS Certificate Manager (ACM) to deploy certificates to AWS services like Elastic Load Balancing, API Gateway, and CloudFront.</p>
+<h3 id="minimize-use-of-the-root-ca-if-possible">Minimize use of the Root CA if possible</h3>
+<p>Customers should avoid sharing Root CA between accounts and keep it as restricted as possible. The Root CA should be placed in an isolated account with MFA enabled, with no cross-account access other than to sign subordinate CAs.</p>
+<p>A root CA should in general only be used to issue certificates for intermediate CAs. This allows the root CA to be stored out of harm's way in its own account while the intermediate CAs perform the daily task of issuing end-entity certificates.</p>
+<p><img alt="PCA Hierarchy" src="../../images/PCA-hierarchy-2.png" />
+<em>Figure 7: A Best Practice CA Hierarchy with minimal Root usage</em></p>
+<h2 id="implementing-aws-private-ca">Implementing AWS Private CA</h2>
+<h3 id="certificate-authority-hierarchy-design">Certificate authority hierarchy design</h3>
+<p>The root and subordinate CA hierarchy should be carefully designed with consideration of geographic distribution, business unit separation, and specific use case requirements. A hierarchy design establishes the framework for all certificate operations and directly impacts a PKI infrastructure's security and manageability. A well-designed CA hierarchy offers granular security controls appropriate to each CA, the division of administrative tasks for better load balancing and security, the use of CAs with limited, revocable trust for daily operations, and validity periods and certificate path limits.</p>
+<p>In AWS Private CA, you can create a hierarchy of certificates with up to five levels. A root CA can have any number of branches, with as many as four levels of subordinate CAs per branch. It is also possible to create multiple hierarchies, each with its own root.</p>
+<p>A CA hierarchy should have strongest security at the top of the tree, protecting the root CA and its private key, as a compromised root could destroy trust in the entire PKI. As a result, root and high-level subordinate CAs should only be used infrequently (e.g. to sign other CA certificates, or when a CRL or OCSP responder needs to be configured) and be tightly controlled and audited. More routine administrative tasks should be given to lower-level CAs in the hierarchy.</p>
+<h3 id="key-algorithm-and-length-selection">Key algorithm and length selection</h3>
+<p>Private CA supports <a href="https://docs.aws.amazon.com/privateca/latest/userguide/PcaWelcome.html#supported-algorithms">the following RSA and Elliptic Curve algorithms</a>. Cryptographic algorithms and key lengths (RSA 2048 or 4096 bits) should be selected to balance security and performance requirements, as a choice impacts certificate processing overhead, compatibility requirements, and long-term security posture. Regular evaluation of these choices should be implemented within an organization to ensure continued alignment with evolving cryptographic standards and emerging security threats.</p>
+<h3 id="certificate-template-configuration">Certificate template configuration</h3>
+<p>Private CA uses configuration templates to issue CA certificates and end-entity certificates. Four varieties of templates are supported:</p>
+<ul>
+<li>Base templates - Pre-defined templates in which no passthrough parameters are allowed</li>
+<li>CSRPassthrough templates - Templates that extend a corresponding base template version by allowing CSR passthrough, e.g. extension values in the certificate signing request that are copied over to the issued certificate. (Note: if a CSR contains extension values that conflict with the template definition, a template definition will have higher priority).</li>
+<li>APIPassthrough templates - Templates that extend a corresponding base template version by allowing API passthrough, or dynamic values, e.g. dynamic values that are known to the admin or intermediate systems that may not be known by the entity that requested the certificate, are impossible to define in a template, or may not be available in a CSR (Note: if a APIPassthrough parameter contains extension values that conflict with the template definition, a template definition will have higher priority).</li>
+<li>APICSRPassthrough templates - Templates that extend a corresponding base template version by allowing both API and CSR passthrough. (Note: if a template definition, API passthrough values, or CSR passthrough extensions conflict, the priority will be template definition, APIPassthrough, and then CSR passthrough extensions).</li>
+</ul>
+<p>Certificate templates standardize and streamline the certificate issuance process. Organizations must define templates with appropriate validity periods, extensions, and constraints that align with different use cases and security requirements. Well-designed templates enforce organizational policies while maintaining operational flexibility. This standardization reduces human error, ensures consistency in certificate issuance, and simplifies certificate lifecycle management across the organization.</p>
+<h3 id="ca-sharing">CA Sharing</h3>
+<p>AWS Private CA offers cross-account sharing, or the ability to grant permissions for other accounts to use a centralized CA to issue end-entity certificates or subordinate CA certificates. This can be done using AWS Resource Access Manager (RAM) to manage permissions or by using the Private CA API or CLI to attach a resource-based policy to a CA. </p>
+<p>If <a href="https://repost.aws/knowledge-center/acm-share-pca-with-another-account">using RAM to share Private CA</a>, keep in mind that RAM is a Regional service and that resource share is Regional. ACM PCA resource shares with principals in another AWS account must only access resources from the same AWS Region as the resource share (and any supported global resources created in us-east-1). </p>
+<h3 id="integration-with-aws-services">Integration with AWS Services</h3>
+<p>Integration planning consists of connecting AWS Private CA with essential AWS services, particularly ACM for automated lifecycle management. You should evaluate your existing AWS infrastructure to identify integration points with services like IoT and Direct Connect. The integration strategy should emphasize automation, scalability, and efficient certificate deployment while leveraging the full capabilities of the AWS ecosystem.</p>
+<h3 id="access-control-and-iam-policies-secure">Access control and IAM policies secure</h3>
+<p>AWS Private CA operations require implementing precise access controls through AWS IAM. Organizations must create roles and policies that enforce the principle of least privilege, defining specific permissions for certificate issuance, revocation, and CA management. An effective way to have control over CA management is through separation of permissions; i.e., having User A only be able to change the state of the CA, while User B can only install and issue certificates through the CA. Both users are thus required to create and activate a new CA. This separation of permissions should also be implemented between roles that disable CAs, and roles that can delete them.</p>
+<p>Regular policy reviews ensure continued alignment with security requirements while maintaining operational efficiency. This structured approach to access control prevents unauthorized access and supports compliance requirements.</p>
+<h3 id="managed-revocation">Managed revocation</h3>
+<p>The RevokeCertificate API revokes a AWS Private CA certificate before its scheduled expiration in the event of a key being compromised, the associate domain becomes invalid, etc. AWS provides two fully managed mechanisms for the client using the certificate to check the revocation status: OCSP and certificate revocation lists (CRLs).</p>
+<p><img alt="Revocation Chart" src="../../images/PCA-revocation.png" />
+<em>Figure 8: A comparison of AWS fully managed revocation mechanisms</em></p>
+<p><strong>OCSP</strong></p>
+<p>AWS Private CA provides a fully managed OCSP solution to notify endpoints that certificates have been revoked. Customers can enable OCSP on CAs through the Private CA console, the API, the CLI, or CloudFormation. With OCSPs, the client queries an authoritative revocation database that returns a synchronous status. When OCSP is enabled, Private CA will include the URL of the OCSP responder in the Authority Information Access (AIA) extension of the new certificate.</p>
+<p>Some considerations for OCSP:</p>
+<ul>
+<li>OCSP responses may take up to 60 minutes to reflect a revoked certificate’s new status</li>
+<li>APIPassthrough and CSRPassthrough certificate templates do not work with AIA if the OCSP responder is enabled</li>
+<li>The endpoint of the managed OCSP service is available on the public internet. Customers who want OCSP but prefer not to have a public endpoint will have to operate an alternative infrastructure.</li>
+<li>OCSPs are priced on-demand.</li>
+</ul>
+<p><strong>CRL</strong></p>
+<p>A CRL is a file that includes a list of all revoked certificates, as well as relevant information including reason for revocation. When you configure a CA, you can choose whether or not AWS Private CA creates a complete or partitioned CRL (where a CRL is partitioned into several smaller CRLs). As each CRL can only revoke 50,000 certificates, the more partitioned CRLs you have, the more certificates that you can revoke, up to a 1,000,000 limit for each supported region.</p>
+<p>Some considerations for CRL:</p>
+<ul>
+<li>CRLs are updated approximately 30 minutes after a certificate is revoked. If a CRL update fails, Private CA will continue to make further attempts every 15 minutes</li>
+<li>Because of the download and processing requirements, CRLs require more memory than OCSP. Consider caching revocation lists or partitioned CRLs.</li>
+<li>If you update your CRL from complete to partitioned, AWS Private CA creates new partitions as needed and adds the IDP extension to all CRLs, including the original. </li>
+<li>Partitioned CRLs dramatically increase the number of certiﬁcates your private CA can issue, and saves you from frequently rotating your CAs.</li>
+</ul>
+<h2 id="connector-for-kubernetes">Connector for Kubernetes</h2>
+<p>AWS Private CA introduced a powerful integration with Kubernetes through its open-source cert-manager plugin, aws-privateca-issuer. This solution enables organizations to manage certificates for their Kubernetes workloads while maintaining strict security controls and compliance requirements. The plugin eliminates the need to store sensitive private keys within the cluster, significantly reducing security risks and simplifying certificate lifecycle management.</p>
+<p>The aws-privateca-issuer plugin offers flexibility, supporting deployments across Amazon EKS, self-managed Kubernetes on AWS, and on-premises Kubernetes environments. Organizations can leverage this solution regardless of their infrastructure choices, including both x86 and ARM architectures. This integration is particularly valuable for enterprises with stringent regulatory requirements, as it provides enhanced auditability and control over certificate operations. Security teams can maintain centralized oversight of certificate issuance while allowing development teams to efficiently manage their certificate needs through familiar Kubernetes workflows. </p>
+<p><img alt="Connector for Kubernetes" src="../../images/PCA-kubernetes.png" />
+<em>Figure 9: AWS Private CA Connector for Kubernetes</em></p>
+<p>This architecture shows you how to set up end-to-end encryption on Amazon Elastic Kubernetes Service (Amazon EKS) with AWS Private CA. . For this example of end-to-end encryption, traffic originates from your client and terminates at an Ingress controller server running inside a sample app. </p>
+<h3 id="connector-for-scep">Connector for SCEP</h3>
+<p><a href="https://www.youtube.com/watch?v=sqlyaQqyUnw">AWS Private Certificate Authority (AWS Private CA) Connector for SCEP</a> (Simple Certificate Enrollment Protocol) offers a streamlined solution for mobile device certificate management. This preview feature integrates seamlessly with popular Mobile Device Management (MDM) solutions to enhance security and simplify certificate deployment for mobile devices.</p>
+<p>The connector provides several key benefits for organizations managing mobile device certificates. It significantly reduces operational costs and complexity by simplifying the process of securing mobile devices with private certificates. Organizations can leverage a single Certificate Authority with the AWS Private CA connector, eliminating the need for multiple CAs across different use cases, which streamlines certificate management and reduces infrastructure complexity.</p>
+<p>A major advantage of this solution is its cost-effectiveness and efficiency in PKI operations. By utilizing a managed private CA with a managed SCEP service, organizations can save both time and money on their PKI infrastructure. Furthermore, the solution enables automatic enrollment of mobile devices through AWS Private CA, working in conjunction with commercially available MDM solutions, which simplifies device onboarding and certificate deployment processes.</p>
+<p><img alt="Connector for SCEP" src="../../images/PCA-SCEP.png" />
+<em>Figure 10: AWS Private CA Connector for SCEP</em></p>
+<p>The architecture, as illustrated in the diagram, shows a straightforward flow where the MDM solution communicates with mobile devices through the AWS Private CA Connector for SCEP, which then interfaces with AWS Private CA for certificate management. This integrated approach provides a secure and efficient method for managing device certificates at scale.</p>
+<h3 id="connector-for-active-directory">Connector for Active Directory</h3>
+<p>AWS Private CA Connector for Active Directory can help you provision certificates for users and machines within your Microsoft Active Directory (AD) environment. By combining AWS Private CA with AD, you can leverage managed private CA while using your existing AD infrastructure to handle certificate enrollment, distribution, and trust. Using the AWS Private CA Connector for Active Directory, you can replace on-premises enterprise or other third-party CAs with a managed private CA that you own, providing certificate enrollment to users, groups, and machines that are managed by your AD. </p>
+<p>To integrate AWS Private CA with Active Directory, you can use the AWS Directory Service, which provides a managed Microsoft Active Directory in the AWS Cloud. By creating a directory using AWS Directory Service, you can then configure AWS Private CA to trust the directory and issue certificates to users and devices that are authenticated against the Active Directory. The Connector for AD can be used to issue certificates to domain-joined devices for both on-premise AD environments (using the <a href="https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_ad_connector.html">Active Directory Connector</a> provided by AWS Directory Services) and AD environments hosted in <a href="https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_microsoft_ad.html">AWS Managed Microsoft AD</a>.</p>
+<p><img alt="Connector for AD" src="../../images/PCA-AD.png" />
+<em>Figure 11: AWS Private CA Conenctor for Active Directory</em></p>
+<p>This architecture displays the difference between an on-premises ADCS implementation without AWS Private CA, and an implementation using AWS Private CA with the Connector for AD. </p>
+<h3 id="cross-account-ca-sharing">Cross account CA sharing</h3>
+<p>AWS Private CA supports cross-account sharing, which allows you to share your private certificate authority (CA) with other AWS accounts within your organization. </p>
+<p>You can use AWS RAM (Resource Access Manager) to share an ACM Private CA to create a resource share with another AWS account. Using AWS RAM to apply a resource-based policy, an AWS Private CA administrator can share access to a CA with a user in a different AWS account directly or through AWS Organizations. The primary account attaches a policy to the Private CA, specifying which secondary accounts or IAM roles can perform actions like issuing certificates, revoking certificates, or exporting the CA certificate. Secondary accounts then use IAM policies to allow their users or roles to interact with the shared CA. This setup ensures centralized control over the CA’s lifecycle while delegating certificate issuance to trusted accounts.</p>
+<p>You can also share an ACM Private CA with other entities such as the following:</p>
+<ul>
+<li>Other principals, such as AWS Identify and Access  Management (IAM) users and IAM roles.</li>
+<li>Organizational units (OUs).</li>
+<li>The entire AWS organization that your account is a  member of.</li>
+</ul>
+<p><img alt="Cross-account CA Sharing" src="../../images/PCA-crossaccount.png" />
+<em>Figure 12: Cross Account CA Sharing</em></p>
+<p>This architecture provides a detailed overview of Cross-Account CA Sharing using AWS Private CA. It demonstrates how the Root CA, Issuing CA, and RAM Shared CA work together to enable centralized certificate management while maintaining a chain of trust across accounts.</p>
+<h3 id="what-is-the-difference-between-acm-and-private-ca">What is the difference between ACM and Private CA?</h3>
+<p>AWS Private CA and ACM are distinct yet complementary services. AWS Private CA enables organizations to establish and operate their own CA within AWS, allowing them to issue private certificates for both internal and external resources with complete control over the certificate hierarchy and policies. In contrast, ACM primarily focuses on managing SSL/TLS certificates specifically for AWS services, offering free public certificates from Amazon Trust Services CA and automated certificate lifecycle management including renewal and deployment.</p>
+<p>While Private CA provides broader flexibility and can issue certificates for any resource with associated costs for CA operation and certificate issuance, ACM streamlines certificate management specifically for AWS services with free public certificates and deep service integrations. These services often work together in practice, with AWS Private CA handling the creation of private certificates and ACM managing their deployment and lifecycle within AWS services, providing a comprehensive certificate management solution for organizations.</p>
+<ul>
+<li>Use ACM when you need free, automatically managed public certificates for your AWS services like websites, applications, or APIs running on AWS.</li>
+<li>Use AWS Private CA when you need to create and manage your own private certificates for internal resources, applications outside of AWS, or when you require complete control over your certificate issuance and policies.</li>
+</ul>
+<h3 id="cost-considerations">Cost considerations</h3>
+<p>AWS Certificate Manager (ACM) provides public TLS certificates at no cost. AWS PrivateCA pricing follows a three-part model: a fixed monthly fee per CA for operational costs, usage-based charges for private certificate issuance, and OCSP validation fees (while CRL usage remains free).</p>
+<p>If you are just getting started with AWS Private CA or enabling it on new accounts, AWS Private CA has a 30-day free trial for the first private CA created in the account in each Region. You pay for any certificates issued during the trial, including a one-time charge for the first time you export the private key and certificate of certificates requested through ACM. This trial period provides an opportunity to evaluate the service's features and confirm it meets your organization's PKI requirements without incurring the full CA operation costs. </p>
+<h2 id="aws-private-ca-best-practices-checklist">AWS Private CA best practices checklist</h2>
+<p>Best practices are recommendations that can help you use AWS Private CA effectively. The following best practices are based on real-world experience from current AWS Private CA customers.</p>
+<ul>
+<li>Document CA structure and policies. Do not issue end entity certificates from the root CA.</li>
+<li>Define and set CA validity periods during initial CA creation. </li>
+<li>Limit Root CA usage to only issuing intermediate CA certificates. </li>
+<li>Maintain a simple CA hierarchy of 2-3 levels for efficient management. </li>
+<li>Deploy the root CA in a dedicated AWS account separate from other CAs. </li>
+<li>Maintain separation between administrator and certificate issuer roles through distinct IAM permissions. </li>
+<li>Implement certificate revocation through OCSP or CRLs for automated certificate status management. </li>
+<li>Enable AWS CloudTrail logging before creating and operating private CAs. </li>
+<li>Regularly rotate CA private keys through certificate imports or CA replacement. </li>
+<li>Remove unused CAs following the recommended deletion process. </li>
+<li>Enable S3 Block Public Access for CRL storage buckets to protect PKI details. </li>
+<li>Follow Amazon EKS Best Practices Guides when using AWS Private CA with Kubernetes environments.</li>
+</ul>
+<h2 id="resources">Resources</h2>
+<h3 id="workshops">Workshops</h3>
+<ul>
+<li><a href="https://awsactivationdays.splashthat.com/">Activation Days</a></li>
+<li><a href="https://catalog.workshops.aws/certificatemanager/en-US">AWS Encryption in Transit Workshop</a></li>
+<li><a href="https://catalog.workshops.aws/acm-troubleshooting/en-US">Hands-on ACM Troubleshooting Labs</a></li>
+</ul>
+<h3 id="videos">Videos</h3>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=sqlyaQqyUnw">AWS Private Certificate Authority (AWS Private CA) Connector for SCEP</a></li>
+</ul>
+<h3 id="blogs">Blogs</h3>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-manage-certificate-lifecycles-using-acm-event-driven-workflows/">How to manage certificate lifecycles using ACM event-driven workflows</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-enforce-dns-name-constraints-in-aws-private-ca/">How to enforce DNS name constraints in AWS Private cA</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
