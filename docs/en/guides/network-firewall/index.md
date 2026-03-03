@@ -164,7 +164,6 @@ Below we have also included a custom template for an egress security use case to
 # Silently allow TCP 3-way handshake to be setup by $HOME_NET clients so that the domain filtering rules will work properly
 # Do not move this section, it's important that this be at the top of the entire firewall ruleset to reduce rule conflicts
 pass tcp $HOME_NET any -> any any (flow:not_established, to_server; sid:202501021;)
-pass tcp any any -> $HOME_NET any (flow:not_established, to_client; sid:202501022;)
 
 # Silently turn on JA3/S hash logging for all other tls alert rules (like sid:999991)
 alert tls $HOME_NET any -> any any (ja3.hash; content:!"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; noalert; flow:to_server; sid:202501024;)
@@ -266,6 +265,7 @@ pass tls $HOME_NET any -> any any (tls.sni; dotprefix; content:".amazon.com"; no
 # These replace "Drop All" or "Drop Established" or "Application drop established" default actions
 #
 # Egress Default Block Rules
+pass tcp $HOME_NET any -> any any (msg:"Allow three-way handshake to be setup by $HOME_NET"; flow:not_established, to_server; sid:999990;)
 reject tls $HOME_NET any -> any any (msg:"Default Egress HTTPS Reject"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999991;)
 alert tls $HOME_NET any -> any any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:999993;)
 reject http $HOME_NET any -> any any (msg:"Default Egress HTTP Reject"; flowbits:set,blocked; flow:to_server; sid:999992;)
@@ -274,9 +274,10 @@ drop udp $HOME_NET any -> any any (msg:"Default Egress UDP Drop"; flow:to_server
 drop icmp $HOME_NET any -> any any (msg:"Default Egress ICMP Drop"; flow:to_server; sid:999996;)
 drop ip $HOME_NET any -> any any (msg:"Default Egress All Other IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:999997;)
 
-
 # Ingress Default Block Rules in case ingress traffic lands on this firewall
 # You may want to silence these rules by putting "noalert" on them to save on logging costs
+# Uncomment the following rule if the firewall will be used for the ingress use case and you want to perform L7 filtering
+# pass tcp any any -> $HOME_NET any (msg:"Allow three-way handshake to be setup by any"; flow:not_established, to_server; sid:999980;)
 drop tls any any -> $HOME_NET any (msg:"Default Ingress HTTPS Drop"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999999;)
 alert tls any any -> $HOME_NET any (msg:"X25519Kyber768"; flowbits:isnotset,blocked; flowbits:set,X25519Kyber768; noalert; flow:to_server; sid:9999910;)
 drop http any any -> $HOME_NET any (msg:"Default Ingress HTTP Drop"; flowbits:set,blocked; flow:to_server; sid:9999911;)
@@ -314,7 +315,7 @@ You want to make sure that the $HOME_NET CIDR range lines up with all your VPCs 
 
 This variable can be set at a global firewall policy level or in each rule group. If it’s set at both levels, the rule group setting wins.
 
-The $HOME_NET variable and it’s inverse ($EXTERNAL_NET) are used for matching traffic in AWS managed rules. $EXTERNAL_NET follows $HOME_NET and is always anything outside of $HOME_NET.
+The $HOME_NET variable and it’s inverse ($EXTERNAL_NET) are used for matching traffic in AWS managed rules. By default, $EXTERNAL_NET is the inverse of whatever $HOME_NET is set to at the firewall policy level. If you set $HOME_NET at the rule group level, make sure that you also set $EXTERNAL_NET at the rule group level, too, otherwise the rule group's $EXTERNAL_NET may not be the inverse of the rule group's $HOME_NET.
 
 When using the managed rules for an east/west use case you will want to decide which VPCs/CIDRs you want to protect and assign only those CIDRs to the $HOME_NET variable. If you assign all VPCs/CIDRs then none of those CIDR ranges will be matched by the $EXTERNAL_NET variable in the managed rules. You can also copy out the rules from the threat signatures and adjust the variables to your liking (even replacing the variables by “any“) if you want them to match any/all CIDRs. The downside of doing this is those rules will be static at that point in time and will not be automatically updated like the AWS managed rules.
 
