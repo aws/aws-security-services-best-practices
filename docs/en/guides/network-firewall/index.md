@@ -135,7 +135,7 @@ Alternatively, the Egress Default Block Rules in the [custom Suricata rules temp
 
 ### Use Custom Suricata rules instead of UI generated rules
 
-These are configurable under the Stateful rule group options and are a free-form text that you to have full control. They allow you to more easily leverage the full flexibility of Suricata. Here are [example Suricata rules](https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-examples.html) that customers have found helpful when getting started.
+These are configurable under the Stateful rule group options and are a free-form text format that give you full control over the rule options. They allow you to more easily leverage the full flexibility of Suricata. Here are [example Suricata rules](https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-examples.html) that customers have found helpful when getting started. And below is a full Suricata template that many customers use to get started.
 
 ![ANF Stateful Rule Group](../../images/ANF-stateful-rule-group.png)
 
@@ -145,16 +145,16 @@ We recommend you educate yourself and your team on using custom Suricata rules e
 
 The pros of using customer Suricata rules:
 
+* Allows for adding the very important keyword: “flow:to_server” to rules easily
 * Maximum flexibility
 * Control over the alerting and how it shows up in the logs
 * Custom rule signature ID can be used which helps troubleshooting and simplifying log analysis
 * Free-form text rules are easier to copy, edit, share, and backup.
 * Easy to switch rule(s) from one rule group to another (blue-green testing for example)
-* Allow for adding the very important keyword: “flow:to_server” to rules easily
 
 To assist customers in writing their custom Suricata rules, we created the [Suricata Rule Generator for AWS Network Firewall Open Source application](https://github.com/aws-samples/sample-suricata-generator)
 
-Below we have also included a custom template for an egress security use case to show examples of custom suricata rules.
+Here is a custom Suricata template that customer find helpful.
 
 ```
 # This is a "Strict rule ordering" egress security template meant only for the egress use case. These rules would need to be adjusted to accommodate any other use cases. Use this ruleset with "Strict" rule ordering firewall policy and no default block action, as this template includes custom default block rules at the end that block everything not explicently allowed.
