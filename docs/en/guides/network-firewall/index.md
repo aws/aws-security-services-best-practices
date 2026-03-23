@@ -157,9 +157,9 @@ To assist customers in writing their custom Suricata rules, we created the [Suri
 Here is a custom Suricata template that customer find helpful.
 
 ```
-# This is a "Strict rule ordering" ruleset template. Use this ruleset with "Strict" rule ordering firewall policy and no default block action, as this template includes custom default block rules at the end that block everything not explicently allowed.
+# This is a "Strict rule ordering" ruleset template. Use this ruleset with "Strict" rule ordering firewall policy and no default actions, as this template includes custom default block rules at the end that block everything not explicently allowed.
 # This template will not work well with the "Drop All" or "Drop Established" or "Application Drop Established" default firewall policy actions.
-# Make sure the $HOME_NET variable is set correctly (do this at the firewall policy level so all Rule Groups inherit it)
+# Make sure the $HOME_NET variable is set correctly (usually all RFC 1918 IP space) at the firewall policy level so all Rule Groups inherit it. 
 
 # Silently allow TCP 3-way handshake to be setup by $HOME_NET clients so that the domain filtering rules will work properly
 # Do not move this section, it's important that this be at the top of the entire firewall ruleset to reduce rule conflicts
