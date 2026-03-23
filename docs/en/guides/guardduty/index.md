@@ -23,6 +23,7 @@ This guide is geared towards security practitioners who are responsible for moni
 * [Operationalizing GuardDuty findings](#operationalize-guardduty-findings)
     * [Filtering findings](#filtering-findings)
     * [Reducing potential noise](#reducing-potential-noise)
+    * [Custom trusted and threat entity lists](#custom-trusted-and-threat-entity-lists)
     * [Automated notification for high priority findings](#automated-notification-for-high-priority-findings)
     * [Automated remediation for common finding types](#automated-remediation-for-common-finding-types)
 * [Cost optimization](#cost-optimization)
@@ -47,7 +48,8 @@ In addition to the foundational data sources, GuardDuty can use additional data 
 * [Amazon Aurora](https://docs.aws.amazon.com/guardduty/latest/ug/rds-protection.html) – GuardDuty monitors and profiles relational database service login activity for potential threats.
 * [Amazon S3](https://docs.aws.amazon.com/guardduty/latest/ug/s3-protection.html) – GuardDuty monitors AWS CloudTrail S3 data events to identify potential threats in your Amazon S3 resources. AWS CloudTrail S3 management events are monitored by default after GuardDuty is enabled.
 * [Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring.html) - Runtime Monitoring observes and analyzes operating system-level, networking, and file events to help you detect potential threats in specific AWS workloads in your environment.
-* [S3 Malware Protection](https://docs.aws.amazon.com/guardduty/latest/ug/gdu-malware-protection-s3.html) - Malware Protection for S3 helps you detect potential presence of malware by scanning newly uploaded objects to your selected Amazon Simple Storage Service (Amazon S3) bucket. When an S3 object or a new version of an existing S3 object gets uploaded to your selected bucket, GuardDuty automatically starts a malware scan. It is important to note that S3 malware protection is not intended to be deployed across your entire S3 estate. S3 Malware protection is purpose built to provide a cost effective solution that will scan objects that are uploaded to untrusted buckets. For example, in a scenario where you have third parties sending you documents or files and you need to ensure there is no malware before processing them in an application.
+* [S3 Malware Protection](https://docs.aws.amazon.com/guardduty/latest/ug/gdu-malware-protection-s3.html) - Malware Protection for S3 helps you detect potential presence of malware by scanning newly uploaded objects to your selected Amazon Simple Storage Service (Amazon S3) bucket. When an S3 object or a new version of an existing S3 object gets uploaded to your selected bucket, GuardDuty automatically starts a malware scan. In addition to automatic scanning on upload, GuardDuty supports [on-demand scanning](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-on-demand.html) of existing S3 objects via the `SendObjectMalwareScan` API. This is valuable for scanning objects that were uploaded before Malware Protection was enabled, or for re-scanning objects against updated threat signatures. It is important to note that S3 malware protection is not intended to be deployed across your entire S3 estate. S3 Malware protection is purpose built to provide a cost effective solution that will scan objects that are uploaded to untrusted buckets. For example, in a scenario where you have third parties sending you documents or files and you need to ensure there is no malware before processing them in an application.
+* [Malware Protection for AWS Backup](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-backup.html) - Malware Protection for Backup scans AWS Backup–protected resources such as Amazon EBS snapshots, Amazon EC2 AMIs, and Amazon S3 Recovery Points for malware. This helps you verify that your backups are clean before using them for recovery, which is critical in ransomware scenarios where you need to identify the last known clean recovery point. Scans can be triggered automatically after each backup completes or initiated on-demand, and the feature can be enabled independently from the rest of GuardDuty.
 
 ## What are the benefits of enabling GuardDuty?
 
@@ -261,8 +263,7 @@ It is recommended to familiarize your team with the [GuardDuty Finding Types](ht
 
 ## Amazon GuardDuty Extended Threat Detection
 
-GuardDuty Extended Threat Detection automatically detects multi-stage attacks that span data sources, multiple types of AWS resources, and time, within an AWS account. With this capability, GuardDuty focuses on the sequence of multiple events that it observes by monitoring different types of data sources. Extended Threat Detection correlates these events to identify scenarios that present themselves as a potential threat to your AWS environment, and then generates an attack sequence finding.
-
+GuardDuty Extended Threat Detection (ETD) automatically detects multi-stage attacks that span data sources, multiple types of AWS resources, and time, within an AWS account. With this capability, GuardDuty focuses on the sequence of multiple events that it observes by monitoring different types of data sources. Extended Threat Detection correlates these events to identify scenarios that present themselves as a potential threat to your AWS environment, and then generates an attack sequence finding.
 
 A single finding can encompass an entire attack sequence. For example, it might detect a scenario such as:
 
@@ -270,34 +271,18 @@ A single finding can encompass an entire attack sequence. For example, it might 
 2. The actor then performing a series of actions such as privilege escalation and establishing persistence. 
 3. Finally, the actor exfiltrating data from an Amazon S3 resource.
 
-Extended Threat Detection covers threat scenarios that involve compromise related to AWS credentials misuse, and data compromise attempts in your AWS accounts. Because of the nature of these threat scenarios, GuardDuty considers all attack sequence finding types as Critical.
+Extended Threat Detection covers threat scenarios involving AWS credentials misuse, data compromise attempts in Amazon S3, Amazon EKS cluster compromise, Amazon EC2 instance group compromise, and Amazon ECS cluster compromise. ETD correlates signals including runtime activity, malware detections, VPC Flow Logs, DNS queries, and CloudTrail events to identify multi-stage attack patterns across these resource types. Because of the nature of these threat scenarios, GuardDuty considers all attack sequence finding types as Critical.
 
-Few Considerations
+### Key considerations for Extended Threat Detection
 
-Automatic Activation:
+ETD is automatically enabled for all GuardDuty accounts at no additional cost. No manual activation is required. You can verify that ETD is enabled by visiting the Extended Threat Detection page under Protection plans in the GuardDuty console. To maximize ETD's detection coverage, enable Runtime Monitoring for your EC2, ECS, and EKS workloads — this provides the operating system–level signals that ETD correlates with network and API activity to detect multi-stage attacks.
 
-1. ETD is automatically turned on for all GuardDuty accounts.
-2. No manual activation is required for ETD.
-3. TD is at no additional cost.
-
-S3 Protection:
-
-1. Remains a separate feature from ETD.
-2. Must be enabled if desired.
-3. Not automatically activated with ETD.
-
-Functionality:
-
-1. ETD enhances GuardDuty's threat detection capabilities automatically.
-2. Works alongside other GuardDuty features, including optional S3 Protection.
-
-Visit the Extended Threat Detection page under Protection plans in the GuardDuty console.
-Make sure that Extended Threat Detection is enabled.
+It is important to note that S3 Protection remains a separate feature from ETD. S3 Protection must be enabled independently and is not automatically activated when ETD is turned on. ETD works alongside other GuardDuty features, including optional S3 Protection, to enhance your overall threat detection capabilities.
 
 ### Filtering findings
 
 
-If you are new to GuardDuty the easiest way to view/filter your findings is via the Summary tab. The Summary dashboard displays an aggregated view of the last 10,000 GuardDuty findings generated in the current AWS Region. You can choose to view the Last 2 days (default), Last 7 days or Last 30 days. This dashboard provides 6 widgets, 3 of which include filter capabilities to customize your view.
+If you are new to GuardDuty the easiest way to view/filter your findings is via the Summary tab. The Summary dashboard displays an aggregated view of GuardDuty findings generated in the current AWS Region. You can choose to view the Last 2 days (default), Last 7 days or Last 30 days. This dashboard provides 6 widgets, 3 of which include filter capabilities to customize your view.
 ![GuardDuty Summary page](../../images/GD-Summary-page.png)
 *Figure 10: GuardDuty summary page*
 
@@ -313,13 +298,19 @@ Note: Frequently used filters can be saved to reduce future efforts. To save the
 
 As accounts and workloads grow within an AWS Organization, it is possible there will be an increase in GuardDuty findings because of certain configurations. Some of the findings may be deemed low value or threats not intended to be acted upon. To make it easier to recognize security threats that are most impactful to your environment, enabling quick remediation actions, it is recommended to deploy suppression rules. A [suppression rule](https://docs.aws.amazon.com/guardduty/latest/ug/findings_suppression-rule.html) is a set of criteria, consisting of a filter attribute paired with a value, used to filter findings by automatically archiving new findings that match the specified criteria.
 
-After creating a suppression rule, new findings that match the criteria defined in the rule are automatically archived as long as the suppression rule is in place. Existing filters can be used to create suppression rules. Suppression rules can be configured to suppress entire finding types, or define more granular filter criteria to suppress only specific instances of a particular finding type. Suppression rules can be edited at any time. It is recommended to suppress with as much granularity as possible. This will help with reducing findings for only certain circumstances without losing total coverage of a finding type.
+After creating a suppression rule, new findings that match the criteria defined in the rule are automatically archived as long as the suppression rule is in place. Existing filters can be used to create suppression rules. Suppression rules can be configured to suppress entire finding types, or define more granular filter criteria to suppress only specific instances of a particular finding type. Suppression rules can be edited at any time. It is recommended to suppress with as much granularity as possible. This will help with reducing findings for only certain circumstances without losing total coverage of a finding type. Suppression rule filter conditions also support wildcard characters (`*` and `?`) in Matches and NotMatches conditions, making it easier to write flexible rules that cover variations of resource names, tags, or other attributes without needing to create multiple individual rules.
 
 Suppressed findings are not sent to AWS Security Hub, Amazon S3, Amazon Detective, or Amazon CloudWatch, reducing finding noise level if you consume GuardDuty findings via Security Hub, a third-party SIEM, or other alerting and ticketing applications.
 
 GuardDuty continues to generate findings even when they match suppression rules, however, those findings are automatically marked as archived. An archived finding is stored in GuardDuty for 90-days and can be viewed at any time during that period. You can view suppressed findings in the GuardDuty console by selecting Archived from the findings table, or through the GuardDuty API using the ListFindings API with a findingCriteria criterion of service.archived equal to true.
 
 A common use case for a suppression rule is filtering out a known resource that scans EC2 instances. This resource may result in a finding type Recon:EC2/Portscan which for certain resources in your environment may be intended. For this scenario it is recommended to suppress associated findings using a combination of resource tagging and Finding Type.
+
+### Custom trusted and threat entity lists
+
+GuardDuty supports [custom entity lists](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_upload-lists.html) that enable you to bring your own threat intelligence into GuardDuty. Entity lists support both IP addresses and domain names, allowing you to feed domain-based indicators of compromise (IOCs) from your own threat intelligence sources directly into GuardDuty. When GuardDuty observes activity involving an indicator on your threat entity list, it generates a finding — effectively extending GuardDuty's built-in threat intelligence with indicators specific to your industry, threat landscape, or internal investigations.
+
+This is particularly valuable for organizations that subscribe to commercial threat feeds, participate in industry ISACs, or maintain internal threat intelligence from past incidents. For example, if your threat intelligence team identifies a set of command-and-control domains associated with a campaign targeting your sector, adding those domains to a threat entity list means GuardDuty will immediately alert on any DNS queries or network connections to those domains across your entire AWS environment. GuardDuty also continues to support trusted IP lists for reducing noise from known safe infrastructure such as corporate VPN egress points or penetration testing hosts. Entity lists can be managed via the console, API, or infrastructure as code.
 
 ### Automated notification for high priority findings
 
@@ -403,10 +394,6 @@ def lambda_handler(event, context):
         raise e
 ```
 
-<<<<<<< HEAD
-
-
-=======
 ### S3 Malware Protection automation workflow
 
 Giving GuardDuty the ability to add tags such as NO_THREATS_FOUND, THREATS_FOUND, UNSUPPORTED, ACCESS_DENIED, or FAILED based on the result of the malware scan gives you the ability to create automated workflows. For example, if you are allowing untrusted third parties to upload documents into S3 before you bring them into an application you can use GuardDuty S3 malware protection to scan these documents and then either move them into the application bucket or a quarantine bucket based on the tag given. As a primer we have included a picture below illustrating how GuardDuty S3 Malware Protection processes files and integrates with other AWS services.
@@ -506,7 +493,6 @@ def lambda_handler(event, context):
             logger.info("scan_result is: %s not moving", scan_result)
 ```
 
->>>>>>> 421eb98926175b205b99d22ed374dd1ef9fc421b
 ## Cost Optimization
 
 When GuardDuty is enabled for the first time in an account, that account will be automatically provided with a 30-day free trial period for each region. Subsequently each feature also has a free trial too. For more information on pricing and free trials please refer to the [GuardDuty pricing page](https://aws.amazon.com/guardduty/pricing/). This is an important first step in understanding monthly GuardDuty costs in a given account. During the trial an administrator can view cost estimations based on Account ID, Data source, Feature and S3 buckets. If enabling GuardDuty in an AWS organization, the administrator can monitor cost metrics for all of the member accounts.
@@ -641,6 +627,7 @@ ORDER BY  numRequests DESC limit 10;
 * S3 protection can be disabled but GuardDuty does not allow you to remove any additional data sources. However, if DNS is disabled at the VPC level, those logs are not processed by GuardDuty. Accounts will not be charged or have DNS-based results.
 * GuardDuty is optimized for security value and will not charge customers for processing some low-risk events that would otherwise be delivered to a customer's CloudTrail. Therefore, the event counts may not exactly match.
 * If Runtime Monitoring is enabled for your account, you will not be charged for analysis of VPC Flow Logs from instances where the GuardDuty agent is deployed and active.
+* GuardDuty publishes usage metrics to Amazon CloudWatch for all protection plans. These metrics can be used to set up CloudWatch alarms that alert you when usage for a specific protection plan exceeds a threshold you define, helping you catch unexpected cost increases before they appear on your bill.
 
 ## Troubleshooting
 ### Troubleshooting AWS Systems Manager (SSM) Agent Issues
@@ -722,12 +709,8 @@ If you see issue type **Agent exited** and additional information error message 
 * [Enable GuardDuty Lambda Protection to monitor your Lambda execution environment](https://www.youtube.com/watch?v=dpc6jvtHB0g&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=38&pp=iAQB)
 * [GuardDuty EKS Runtime Monitoring](https://www.youtube.com/watch?v=t3rVVilJWEk&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=40&pp=iAQB)
 * [Amazon GuardDuty RDS Protection](https://www.youtube.com/watch?v=f_CFtrAG8Nw&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=41&pp=iAQB)
-<<<<<<< HEAD
 * [Amazon Guardduty Extended Threat Detection](https://www.youtube.com/embed/xLqGwoSaoPw?si=_wprcGe8l9oypKFR)
-
-=======
 * [S3 Malware Protection overview](https://youtu.be/uweeumMAif4)
->>>>>>> 421eb98926175b205b99d22ed374dd1ef9fc421b
 
 ### Blogs
 

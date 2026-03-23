@@ -23,6 +23,7 @@ This guide is geared towards security practitioners who are responsible for moni
     * [ECR scanning](#ecr-scanning)
     * [Lambda scanning](#lambda-scanning)
     * [CI/CD](#cicd-scanning)
+    * [Code Security](#code-security)
     * [CIS Scans](#cis-scans)
 * [Operationalizing](#operationalizing)
     * [Actioning Inspector findings](#actioning-inspector-findings)
@@ -143,6 +144,8 @@ Next you will need to make sure you activate scanning for all current accounts a
 
 Alternatively, you may enable Inspector across all accounts and regions using CLI. Check out the [enablement script on Github](https://github.com/aws-samples/inspector2-enablement-with-cli).
 
+For organizations that want declarative governance over Inspector enablement, [AWS Organizations now supports Inspector policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_inspector.html). An Inspector policy is a JSON document attached to your organization root or OUs that specifies which scan types should be enabled. When the policy is in place, all in-scope accounts are automatically aligned with your policy definition, and member accounts cannot disable policy-managed scanning via the Inspector API. This is stronger than the auto-enable toggle above — it provides a guardrail that prevents drift, ensuring consistent vulnerability scanning coverage as your organization scales.
+
 ## Coverage
 
 In this section we will cover the enablement of different features to configure Inspector across all supported resources in your environment.
@@ -179,6 +182,8 @@ Amazon Inspector automatically discovers all supported Windows instances and inc
 
 When you first activate ECR scanning, and your repository is configured for continuous scanning, Amazon Inspector detects all eligible images that you have pushed within 30 days, or pulled within the last 90 days. Amazon Inspector continues to monitor images as long as they were pushed or pulled within the last 90 days (by default), or within the ECR rescan duration you configure. You might choose to stop scanning instances after a defined period of time because they are no longer used for applications in your environment or based on other compensating controls you might have in place. You can configure Inspector to re-scan based on either image push date or image pull date. For example, if you select 60 days for push date, and 180 days for pull date configurations, Amazon Inspector will continue to monitor images if they were pushed in the last 60 days or if they have been pulled at least once in the last 180 days. We recommend understanding the application deployment patterns at your organization when deciding the re-scan duration settings. For example if you build images often you might want shorter scan durations. Also, if you utilize [ECR lifecycle policies](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html) this might affect how long images exist in ECR. For detailed instructions on how to set this duration please refer to the [ECR automated re-scan duration documentation](https://docs.aws.amazon.com/inspector/latest/user/scanning-ecr.html#scan-duration-ecr).
 
+Inspector also [maps ECR images to running containers](https://aws.amazon.com/blogs/aws/amazon-inspector-enhances-container-security-by-mapping-amazon-ecr-images-to-running-containers/) in your Amazon ECS and EKS environments. This is critical for prioritization — a vulnerable image sitting unused in a registry is a different risk than one actively running in production. The mapping lets security teams focus remediation efforts on vulnerabilities that are actually exposed in running workloads rather than treating every ECR finding equally.
+
 ![Inspector ECR scan settings](../../images/I-ECR-Settings.png)
 *Figure 10: Inspector ECR scan settings*
 
@@ -193,7 +198,17 @@ Lambda scanning has two different functionalities. The first is the ability to s
 
 You can integrate Amazon Inspector directly in CI/CD tools such as Jenkins. For [Jenkins](https://docs.aws.amazon.com/inspector/latest/user/cicd-jenkins.html) and [TeamCity](https://docs.aws.amazon.com/inspector/latest/user/cicd-teamcity.html) tools Inspector has dedicated plugins that can be installed so you can add vulnerability scanning directly into these pipelines. These plugins can be used as a pass or fail mechanism based on finding severities.
 
+For AWS-native pipelines, [AWS CodePipeline offers a built-in InspectorScan action](https://docs.aws.amazon.com/inspector/latest/user/cicd-inspector-codepipeline-actions.html) that scans source code repositories and container images as part of your pipeline execution. This is the simplest path for teams already using CodePipeline — no plugin installation required, and scans can be configured to pass or fail pipeline executions based on vulnerability count and severity thresholds.
+
 If Amazon Inspector does not provide plugins for your CI/CD solution, you can create your own [custom CI/CD integration](https://docs.aws.amazon.com/inspector/latest/user/scanning-cicd.html) using a combination of the Amazon Inspector SBOM Generator and the Amazon Inspector Scan API.
+
+### Code Security
+
+Amazon Inspector [Code Security](https://aws.amazon.com/about-aws/whats-new/2025/06/amazon-inspector-code-security-shift-security-development) extends vulnerability detection into your source code repositories by integrating directly with source code management (SCM) tools such as GitHub and GitLab. Code Security provides three capabilities: static application security testing (SAST) for analyzing application source code, software composition analysis (SCA) for evaluating third-party dependencies, and infrastructure as code (IaC) scanning for validating infrastructure definitions such as CloudFormation and Terraform templates.
+
+This is a significant shift-left capability — rather than discovering vulnerabilities only after code is deployed to EC2, Lambda, or ECR, Code Security catches issues during development. For organizations that already use Inspector for runtime scanning, enabling Code Security closes the gap between when a vulnerability is introduced (at commit time) and when it would otherwise be detected (at deployment or post-deployment). Connect your SCM repositories through the Inspector console to get started.
+
+For teams that need deeper context-aware analysis beyond standard SAST/SCA/IaC scanning, the AWS Security Agent (currently in preview) goes further. The Security Agent can ingest your existing documents — architecture diagrams, threat models, design documents — alongside your source code to perform contextually aware testing that chains vulnerabilities together and validates exploits, significantly reducing false positives. It also provides automated code remediation. Where Inspector Code Security answers "does this code have known vulnerabilities?", the Security Agent answers "given everything I know about this application's architecture and threat landscape, what are the real, exploitable risks and how do I fix them?"
 
 ### CIS Scans
 
@@ -223,7 +238,7 @@ Many organizations have a well-established vulnerability management program, but
 ![Inspector code remediation](../../images/I-Code-Remediation.png)
 *Figure 14: Generative AI powered code remediation recommendation*
 
-Inspector vulnerability findings give great detail into the resource affected, the CVE, and generative AI powered code remediation suggestions giving security and application teams the context needed to more quickly remediate vulnerabilities in your AWS environment. Inspector findings are also stateful. This means that if you update a package that contained a vulnerability Inspector will see the package change, initiate an assessment, and if the vulnerability was in fact remediated then close the finding. This understanding is important for understanding you will handle Inspector findings. Below will dive into some of the different themes we think you should be thinking through.
+Inspector vulnerability findings give great detail into the resource affected, the CVE, and generative AI powered code remediation suggestions giving security and application teams the context needed to more quickly remediate vulnerabilities in your AWS environment. Inspector findings are also stateful. This means that if you update a package that contained a vulnerability Inspector will see the package change, initiate an assessment, and if the vulnerability was in fact remediated then close the finding. This understanding is important for determining how you will handle Inspector findings. Below we dive into some of the different themes we think you should be thinking through.
 
 1. A critical component of an effective vulnerability management program is the ability to assess and prioritize security findings. This is where pulling in context, organizational history, and tuning detection systems comes into place. Prioritization of security findings helps establish the appropriate speed for response level. We recommend prioritizing the investigation of all critical and high severity findings.
 2. Understand what you will do with findings when they are created by Inspector. For example, Amazon Inspector has 5 different finding severity levels described [here](https://docs.aws.amazon.com/inspector/latest/user/findings-understanding-severity.html). It is important to understand how quickly you will require teams in your organization to remediate findings. This is likely to depend on severity, as you will want to more quickly respond to critical findings vs informational findings.
