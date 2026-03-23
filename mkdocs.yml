@@ -33,7 +33,7 @@ nav:
   - Amazon GuardDuty Best Practices: guides/guardduty/index.md
   - Amazon Inspector Best Practices: guides/inspector/index.md
   - Amazon Macie Best Practices: guides/macie/index.md
-  - AWS Security Hub Best Practices: guides/security-hub/index.md
+  - AWS Security Hub CSPM Best Practices: guides/security-hub/index.md
   - Amazon Security Lake Best Practices: guides/security-lake/index.md
   - AWS WAF Best Practices:
       - Home: guides/waf/index.md
