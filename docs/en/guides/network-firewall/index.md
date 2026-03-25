@@ -145,7 +145,7 @@ We recommend you educate yourself and your team on using custom Suricata rules e
 
 The pros of using customer Suricata rules:
 
-* Allows for adding the very important keyword: “flow:to_server” to rules easily
+* Allows for adding the very important keyword: [“flow:to_server”](https://aws.github.io/aws-security-services-best-practices/guides/network-firewall/#use-flowto_server-keyword-in-stateful-rules) to rules easily
 * Maximum flexibility
 * Control over the alerting and how it shows up in the logs
 * Custom rule signature ID can be used which helps troubleshooting and simplifying log analysis
