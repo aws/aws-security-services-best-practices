@@ -558,6 +558,7 @@ Each customer will have to determine if their specific application's threat mode
 
 ### Workshops
 
+* [AWS Advanced Network Security: Network Firewall & DNS Firewall](https://catalog.workshops.aws/network-security/en-US)
 * [AWS Network Firewall Workshop](https://catalog.workshops.aws/networkfirewall/en-US)
 * [Egress Controls Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/503778b9-6dbb-4e0d-9920-e8dbae141f43/en-US)
 
