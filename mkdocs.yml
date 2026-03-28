@@ -61,4 +61,11 @@ plugins:
             nav:
               - 홈: index.md
               - AWS Network Firewall 모범 사례: guides/network-firewall/index.md
+          - locale: ja
+            name: 日本語
+            build: true
+            nav:
+              - ホーム: index.md
+              - AWS Network Firewall ベストプラクティス: guides/network-firewall/index.md
+              - Amazon Route 53 Resolver DNS Firewall ベストプラクティス: guides/dns-firewall/index.md
     - search
