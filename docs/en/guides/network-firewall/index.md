@@ -43,7 +43,7 @@ In this section we will cover what you need to consider before activating AWS Ne
 
 When customers first start deploying AWS Network Firewall, they might be tempted to start configuring it right away without looking at all its capabilities, for example deploying endpoints to each VPC, only using managed rules or not using Alert rules. We recommend looking into the [Network Firewall documentation](https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html) as this could be a significant time-saver later down the road.
 
-To get started you should understand the three main architecture patterns for Network Firewall deployments and what would be best suite your environment.
+To get started you should understand the three main architecture patterns for Network Firewall deployments and what would be best suit your environment.
 
 * Distributed deployment model — Network Firewall is deployed into each individual VPC.
 * Centralized deployment model — Network Firewall is deployed into a centralized VPC attached to an instance of AWS Transit Gateway for East-West (VPC-to-VPC) or North-South (inbound and outbound from internet, on-premises) traffic. We refer to this VPC as the inspection VPC.
@@ -157,7 +157,7 @@ To assist customers in writing their custom Suricata rules, we created the [Suri
 Here is a custom Suricata template that customer find helpful.
 
 ```
-# This is a "Strict rule ordering" ruleset template. Use this ruleset with "Strict" rule ordering firewall policy and no default actions, as this template includes custom default block rules at the end that block everything not explicently allowed.
+# This is a "Strict rule ordering" ruleset template. Use this ruleset with "Strict" rule ordering firewall policy and no default actions, as this template includes custom default block rules at the end that block everything not explicitly allowed.
 # This template will not work well with the "Drop All" or "Drop Established" or "Application Drop Established" default firewall policy actions. And "Alert establsihed" will produce redundant log entries if it's used with this template, so we reccomend not using "Alert estabished" with this template ruleset.
 # Make sure the $HOME_NET variable is set correctly (usually all RFC 1918 IP space) at the firewall policy level so all Rule Groups inherit it. 
 
@@ -296,7 +296,7 @@ alert ip any any -> any any (msg:"$HOME_NET may not be set right! Set it at the 
 
 The reasons for this we have listed below:
 
-* When a custom rule group is created, its capacity needs to be defined and extra headroom needs to be taken into account because capacity cannot be modified after a rule group has been created. Having many rule groups creates additional headaches for managing rule capacity limits. For capacity it is recommended to set your custom rule group capcity to whatever leftover capacity you have after implementing your AWS managed rule groups.
+* When a custom rule group is created, its capacity needs to be defined and extra headroom needs to be taken into account because capacity cannot be modified after a rule group has been created. Having many rule groups creates additional headaches for managing rule capacity limits. For capacity it is recommended to set your custom rule group capacity to whatever leftover capacity you have after implementing your AWS managed rule groups.
 * With several rule groups to manage, understanding how traffic is going to be handled becomes more complex since every rule group needs to be inspected to analyze how it impacts the traffic. Seeing your rules in one view makes it easier to identify if a rule conflicts or overshadows other rules instead of jumping between multiple rule groups to stitch together an understanding of how traffic will be evaluated by the policy.
 * Network Firewall supports a maximum combined total of 20 rule groups (Managed and Custom).  If you create many custom rule groups you will limit how many AWS Managed Rule Groups can also be added.
 * For troubleshooting purposes, you will want to make sure Signature IDs (SIDs) are unique across all rule groups.  Within a single rule group Network Firewall will enforce unique SIDs, but not across all rule groups. If you don’t have unique SIDs across all rule groups then it can be more challenging to understand from the logs which rule actually handled the traffic.
@@ -335,7 +335,7 @@ pass tls $HOME_NET any-> any any (tls.sni; content:".amazonaws.com"; nocase; end
 
 You need to use Strict Ordering and the Alert rule needs a higher priority than the Pass rule as demonstrated in the code sample above.
 
-The SID in the alert rule message can refer the SID of the pass rule and vice-versa. It can be helpful to use longer SIDs so that you can quickly search your logs for that SID without the query showing unrealted information that might also contain that identifier.
+The SID in the alert rule message can refer the SID of the pass rule and vice-versa. It can be helpful to use longer SIDs so that you can quickly search your logs for that SID without the query showing unrelated information that might also contain that identifier.
 
 Alternatively, you can add `alert;` keyword to pass rules, but they will produce a verdict in the alert log of alert instead of a verdict of pass. Example rule:
 ```
@@ -452,13 +452,13 @@ Here’s an example of how you can analyze your rule group using AWS Management 
 
 The rule group analyzer identified that stateless rule with priority 2 will lead to asymmetric routing through Network Firewall.
 
-![ANF Analysis results](../../images/ANF-troubleshotting-2.png)
+![ANF Analysis results](../../images/ANF-troubleshooting-2.png)
 
 To fix this issue you can click on “Edit” and add another rule to allow return traffic i.e. from 0.0.0.0/0 to 10.2.0.0/24.
 
-![ANF Analysis results edit](../../images/ANF-troubleshotting-3.png)
+![ANF Analysis results edit](../../images/ANF-troubleshooting-3.png)
 
-![ANF Fixed rule group](../../images/ANF-troubleshotting-4.png)
+![ANF Fixed rule group](../../images/ANF-troubleshooting-4.png)
 
 After updating the rules, run the analyzer again to confirm the issue has been resolved.
 

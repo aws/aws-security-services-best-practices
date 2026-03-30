@@ -44,6 +44,13 @@ nav:
   - AWS Network Firewall Best Practices: guides/network-firewall/index.md
   - Amazon Route 53 Resolver DNS Firewall Best Practices: guides/dns-firewall/index.md
   - Contributors: contributors.md
+markdown_extensions:
+    - mdx_truly_sane_lists
+    - toc:
+        slugify: !!python/object/apply:pymdownx.slugs.slugify
+          kwds:
+            case: lower
+
 plugins:
     - i18n:
         docs_structure: suffix

@@ -147,12 +147,12 @@ Network Firewall は非対称ルーティングをサポートしていないた
 
 カスタム Suricata ルール使用のメリット:
 
+* 非常に重要なキーワード [「flow:to_server」](https://aws.github.io/aws-security-services-best-practices/guides/network-firewall/#use-flowto_server-keyword-in-stateful-rules) をルールに簡単に追加可能
 * 最大限の柔軟性
 * アラートとログへの表示方法の制御
 * トラブルシューティングとログ分析の簡素化に役立つカスタムルールシグネチャ ID の使用が可能
 * 自由形式のテキストルールはコピー、編集、共有、バックアップが容易
 * ルールグループ間でのルールの切り替えが容易（例: ブルーグリーンテスト）
-* 非常に重要なキーワード [「flow:to_server」](https://aws.github.io/aws-security-services-best-practices/guides/network-firewall/#use-flowto_server-keyword-in-stateful-rules) をルールに簡単に追加可能
 
 カスタム Suricata ルールの作成を支援するために、[AWS Network Firewall 用 Suricata ルールジェネレーターオープンソースアプリケーション](https://github.com/aws-samples/sample-suricata-generator)を作成しました。
 
