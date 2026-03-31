@@ -334,7 +334,7 @@ alert tcp !$HOME_NET any -> !$HOME_NET any (flow:to_server,established; msg:"It 
 ```
 #https://*.amazonaws.com への許可されたトラフィックのログ記録
 alert tls $HOME_NET any -> any any (tls.sni; content:".amazonaws.com"; nocase; endswith; msg:"*.amazonaws.com allowed by sid:021420242"; flow:to_server; sid:021420241;)
-pass tls $HOME_NET any-> any any (tls.sni; content:".amazonaws.com"; nocase; endswith; msg:"Pass rules don't alert, alert is on sid:021420241"; flow.to_server; sid:021420242;)
+pass tls $HOME_NET any -> any any (tls.sni; content:".amazonaws.com"; nocase; endswith; msg:"Pass rules don't alert, alert is on sid:021420241"; flow:to_server; sid:021420242;)
 ```
 
 Strict Ordering を使用する必要があり、上記のコードサンプルで示されているように、Alert ルールは Pass ルールよりも高い優先順位を持つ必要があります。

@@ -330,7 +330,7 @@ alert tcp !$HOME_NET any -> !$HOME_NET any (flow:to_server,established; msg:"It 
 ```
 #https://*.amazonaws.com에 대한 허용된 트래픽 로깅
 alert tls $HOME_NET any -> any any (tls.sni; content:".amazonaws.com"; nocase; endswith; msg:"*.amazonaws.com allowed by sid:021420242"; flow:to_server; sid:021420241;)
-pass tls $HOME_NET any-> any any (tls.sni; content:".amazonaws.com"; nocase; endswith; msg:"Pass rules don't alert, alert is on sid:021420241"; flow.to_server; sid:021420242;)
+pass tls $HOME_NET any -> any any (tls.sni; content:".amazonaws.com"; nocase; endswith; msg:"Pass rules don't alert, alert is on sid:021420241"; flow:to_server; sid:021420242;)
 ```
 
 Strict Ordering을 사용해야 하며 Alert 규칙은 위의 코드 샘플에서 보여주는 것처럼 Pass 규칙보다 높은 우선순위를 가져야 합니다.
