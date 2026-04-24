@@ -262,7 +262,7 @@ pass tls $HOME_NET any -> any any (tls.sni; dotprefix; content:".amazon.com"; no
 
 #
 # Custom Block Rules
-# These replace "Drop All" or "Drop Established" or "Application Drop Established" default actions
+# These replace "Drop All" or "Drop Established" or "Application Drop Established" default actions. Do not use these custom block rules with any firewall policy default actions.
 #
 # Egress Default Block Rules
 pass tcp $HOME_NET any -> any any (msg:"Allow three-way handshake to be setup by $HOME_NET"; flow:not_established, to_server; sid:999990;)
