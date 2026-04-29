@@ -91,13 +91,14 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 
 ### Use Custom Default Deny Rules instead of the default firewall policy actions
 
-* In the Network Firewal Policy options there are "default actions" that can be selected. Today the actions don't yet include "Application Reject Established." The "reject" action sends a TCP reset packet to the client when something is blocked so that the connection fails gracefully. We reccomend that customers create their own "Default Deny" Suricata compatbile rule group with the following default deny custom rules in it, then place this rule group at the very end of their firewall policy. Customers should not combine these custom default deny rules with any firewall default actions.
+* In the Network Firewal Policy options there are "default actions" that can be selected. Today the actions don't yet include "Application Reject Established." The "reject" action sends a TCP reset packet to the client when a connection is blocked so that the connection fails gracefully. We reccomend that customers create their own "Default Deny" Suricata compatbile rule group with the following default deny custom rules in it, then place this rule group at the very end of their firewall policy. Customers should not combine these custom default deny rules with any firewall default actions.
 
 * Option 1 - Blanket "Application Reject Established"
 ```
 # "Application Reject Established" custom default deny rules
 # 
 # These replace "Drop All" or "Drop Established" or "Application Drop Established" default actions. Do not use these custom block rules with any firewall policy default actions.
+#
 reject tls any any -> any any (msg:"Default HTTPS Reject"; ssl_state:client_hello; ja4.hash; content:"_"; flowbits:set,blocked; flow:to_server; sid:999991;)
 alert tls any any -> any any (msg:"PQC"; flowbits:isnotset,blocked; flowbits:set,PQC; noalert; flow:to_server; sid:999993;)
 reject http any any -> any any (msg:"Default HTTP Reject"; flowbits:set,blocked; flow:to_server; sid:999992;)
@@ -108,8 +109,8 @@ drop ip any any -> any any (msg:"Default All Other IP Drop"; ip_proto:!TCP; ip_p
 ```
 * Option 2 - "Application Egress Reject Ingress Drop Established"
 ```
+# "Application Egress Reject Ingress Drop Established"
 #
-# Custom Block Rules
 # These replace "Drop All" or "Drop Established" or "Application Drop Established" default actions. Do not use these custom block rules with any firewall policy default actions.
 #
 # Egress Default REJECT Rules
