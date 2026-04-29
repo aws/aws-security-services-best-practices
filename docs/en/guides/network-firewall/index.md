@@ -89,7 +89,7 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
   * The "Strict" option is recommended because it instructs Suricata to process the rules in the order you have defined.
   * The "Action Order" option supports Suricata's default IDS rule processing, but it is not a good fit for firewall use cases.
 
-![Network Firewall Strict rule order](../../images/nfw-strict.png)
+![Network Firewall Strict rule order](../../images/nfw-strict.jpg)
 
 *Figure 3a: Network Firewall Strict rule ordering*
 
