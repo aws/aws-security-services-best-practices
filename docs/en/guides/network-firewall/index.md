@@ -85,7 +85,7 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 
 ### Use Strict rule ordering
 
-* In Network Firewall there are two options for how the Suricata engine is going to process rules.
+* In Network Firewall policy there are two options for how the Suricata engine is going to process rules.
   * The "Strict" option is recommended because it instructs Suricata to process the rules in the order you have defined.
   * The "Action Order" option supports Suricata's default IDS rule processing, but it is not a good fit for firewall use cases.
 
