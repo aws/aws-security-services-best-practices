@@ -90,7 +90,6 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
   * The "Action Order" option supports Suricata's default IDS rule processing, but it is not a good fit for firewall use cases.
 
 ![Network Firewall Strict rule order](../../images/ANF-strict.jpg)
-
 *Figure 3a: Network Firewall Strict rule ordering*
 
 ### Use Custom Default Deny Rules instead of the default firewall policy actions
