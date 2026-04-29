@@ -89,6 +89,10 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
   * The "Strict" option is recommended because it instructs Suricata to process the rules in the order you have defined.
   * The "Action Order" option supports Suricata's default IDS rule processing, but it is not a good fit for firewall use cases.
 
+![Network Firewall Strict rule order](../../images/nfw-strict.png)
+
+*Figure 3a: Network Firewall Strict rule ordering*
+
 ### Use Custom Default Deny Rules instead of the default firewall policy actions
 
 * In the Network Firewal Policy options there are "default actions" that can be selected. Today the actions don't yet include "Application Reject Established." The "reject" action sends a TCP reset packet to the client when a connection is blocked so that the connection fails gracefully. We reccomend that customers create their own "Default Deny" Suricata compatbile rule group with the following default deny custom rules in it, then place this rule group at the very end of their firewall policy. Customers should not combine these custom default deny rules with any firewall default actions.
