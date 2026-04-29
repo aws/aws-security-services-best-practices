@@ -93,7 +93,7 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 
 * In the Network Firewal Policy options there are "default actions" that can be selected. Today the actions don't yet include "Application Reject Established." The "reject" action sends a TCP reset packet to the client when a connection is blocked so that the connection fails gracefully. We reccomend that customers create their own "Default Deny" Suricata compatbile rule group with the following default deny custom rules in it, then place this rule group at the very end of their firewall policy. Customers should not combine these custom default deny rules with any firewall default actions.
 
-* Option 1 - Blanket "Application Reject Established"
+* Option 1 - "Application Reject Established"
 ```
 # "Application Reject Established" custom default deny rules
 # 
