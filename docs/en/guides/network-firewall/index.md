@@ -96,7 +96,7 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 * In the Network Firewal policy options there are "default actions" that can be selected. Today the actions don't yet include "Application Reject Established." The "reject" action sends a TCP reset packet to the client when a connection is blocked so that the connection fails gracefully. We reccomend that customers create their own "Default Deny" Suricata compatbile rule group with the following default deny custom rules in it, then place this rule group at the very end of their firewall policy. Customers should not combine these custom default deny rules with any firewall default actions.
 
 * Option 1 - "Application Reject Established"
-  * This option doesn't rely on $HOME_NET, but it also treats ingress and egress traffic the same.
+  * This option doesn't rely on $HOME_NET being set, but it also treats ingress and egress traffic the same.
 ```
 # "Application Reject Established" custom default deny rules
 # 
@@ -141,6 +141,8 @@ drop ip any any -> $HOME_NET any (msg:"Default Ingress All Other IP Drop"; ip_pr
   * Don't block TCP control packets
   * Allow TCP three-way handshakes so that L7 attributes can be inspected
   * Don't duplicate logging
+
+If you're just beginning to build your firewall ruleset you may want to start out with all of these rules in alert mode so that you can see from your logs which traffic will be blocked when you move the rules into block mode. Be careful to never change sid:999993 to a block action, as this rule is there to support post-quantum TLS connections.
 
 ### Use Stateful rules over Stateless rules
 
