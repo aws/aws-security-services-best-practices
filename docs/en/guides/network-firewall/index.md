@@ -44,7 +44,7 @@ In this section we will cover what you need to consider before activating AWS Ne
 
 When customers first start deploying AWS Network Firewall, they might be tempted to start configuring it right away without looking at all its capabilities, for example deploying endpoints to each VPC, only using managed rules or not using Alert rules. We recommend looking into the [Network Firewall documentation](https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html) as this could be a significant time-saver later down the road.
 
-To get started you should understand the three main architecture patterns for Network Firewall deployments and what would be best suit your environment.
+To get started you should understand the three main architecture patterns for Network Firewall deployments and what would be best suited for your environment.
 
 * Distributed deployment model — Network Firewall is deployed into each individual VPC.
 * Centralized deployment model — Network Firewall is deployed into a centralized VPC attached to an instance of AWS Transit Gateway for East-West (VPC-to-VPC) or North-South (inbound and outbound from internet, on-premises) traffic. We refer to this VPC as the inspection VPC.
@@ -93,7 +93,7 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 
 ### Use Custom Default Deny Rules instead of the default firewall policy actions
 
-* In the Network Firewal policy options there are "default actions" that can be selected. Today the actions don't yet include "Application Reject Established." The "reject" action sends a TCP reset packet to the client when a connection is blocked so that the connection fails gracefully. We reccomend that customers create their own "Default Deny" Suricata compatbile rule group with the following default deny custom rules in it, then place this rule group at the very end of their firewall policy. Customers should not combine these custom default deny rules with any firewall default actions.
+* In the Network Firewall policy options there are "default actions" that can be selected. Today the actions don't yet include "Application Reject Established." The "reject" action sends a TCP reset packet to the client when a connection is blocked so that the connection fails gracefully. We recommend customers create their own "Default Deny" Suricata compatible rule group with the following default deny custom rules in it, then place this rule group at the very end of their firewall policy. Customers should not combine these custom default deny rules with any firewall default actions.
 
 * Option 1 - "Application Reject Established"
   * This option doesn't rely on $HOME_NET being set, but it also treats ingress and egress traffic the same.
@@ -191,7 +191,7 @@ Here is a custom Suricata template that customer find helpful.
 
 ```
 # This is a "Strict rule ordering" ruleset template. Use this ruleset with "Strict" rule ordering firewall policy and no default actions, as this template includes custom default block rules at the end that block everything not explicitly allowed.
-# This template will not work well with the "Drop All" or "Drop Established" or "Application Drop Established" default firewall policy actions. And "Alert establsihed" will produce redundant log entries if it's used with this template, so we reccomend not using "Alert estabished" with this template ruleset.
+# This template will not work well with the "Drop All" or "Drop Established" or "Application Drop Established" default firewall policy actions. And "Alert establsihed" will produce redundant log entries if it's used with this template, so we recommend not using "Alert estabished" with this template ruleset.
 # Make sure the $HOME_NET variable is set correctly (usually all RFC 1918 IP space) at the firewall policy level so all Rule Groups inherit it. 
 
 # Silently allow TCP 3-way handshake to be setup by $HOME_NET clients so that the domain filtering rules will work properly
@@ -601,7 +601,7 @@ Each customer will have to determine if their specific application's threat mode
 * [AWS Network Firewall console experience](https://www.youtube.com/watch?v=BYVObzBWnqo&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=1&pp=iAQB)
 * [Decrypt, inspect, and re-encrypt TLS egress traffic at scale](https://www.youtube.com/watch?v=S7_hUxWrYmw&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=3&pp=iAQB)
 * [Decrypt, inspect, and re-encrypt TLS traffic at scale](https://www.youtube.com/watch?v=j2pLuHdAj0A&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=40&pp=iAQB)
-* [AWS Network Fireall Suricata HOME_NET variable override](https://www.youtube.com/watch?v=ufx8sO5s4BI&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=22&pp=iAQB)
+* [AWS Network Firweall Suricata HOME_NET variable override](https://www.youtube.com/watch?v=ufx8sO5s4BI&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=22&pp=iAQB)
 * [AWS Network Firewall support for reject action for TCP traffic](https://www.youtube.com/watch?v=_K_2TVNygF4&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=54&pp=iAQB)
 * [AWS Network Firewall tag-based resource groups](https://www.youtube.com/watch?v=SDj_tMHN5Zk&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=55&pp=iAQB)
 * [AWS re:Inforce 2023 - Firewalls, and where to put them (NIS306)](https://www.youtube.com/watch?v=lTJxWAiQrHM)
