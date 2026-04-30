@@ -93,7 +93,7 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 
 ### Use Custom Default Deny Rules instead of the default firewall policy actions
 
-* In the Network Firewal Policy options there are "default actions" that can be selected. Today the actions don't yet include "Application Reject Established." The "reject" action sends a TCP reset packet to the client when a connection is blocked so that the connection fails gracefully. We reccomend that customers create their own "Default Deny" Suricata compatbile rule group with the following default deny custom rules in it, then place this rule group at the very end of their firewall policy. Customers should not combine these custom default deny rules with any firewall default actions.
+* In the Network Firewal policy options there are "default actions" that can be selected. Today the actions don't yet include "Application Reject Established." The "reject" action sends a TCP reset packet to the client when a connection is blocked so that the connection fails gracefully. We reccomend that customers create their own "Default Deny" Suricata compatbile rule group with the following default deny custom rules in it, then place this rule group at the very end of their firewall policy. Customers should not combine these custom default deny rules with any firewall default actions.
 
 * Option 1 - "Application Reject Established"
   * This option doesn't rely on $HOME_NET, but it also treats ingress and egress traffic the same.
@@ -111,7 +111,7 @@ drop icmp any any -> any any (msg:"Default ICMP Drop"; flow:to_server; sid:99999
 drop ip any any -> any any (msg:"Default All Other IP Drop"; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:999997;)
 ```
 * Option 2 - "Application Egress Reject Ingress Drop Established"
-  * This option uses $HOME_NET to treat ingress traffic differently than egress traffic.
+  * This option uses $HOME_NET to treat ingress traffic differently than egress traffic so [Ensure the $HOME_NET variable is set correctly](https://aws.github.io/aws-security-services-best-practices/guides/network-firewall/#ensure-the-home_net-variable-is-set-correctly)
 ```
 # "Application Egress Reject Ingress Drop Established"
 #
@@ -140,7 +140,7 @@ drop ip any any -> $HOME_NET any (msg:"Default Ingress All Other IP Drop"; ip_pr
   * Support post-quantum TLS connections
   * Don't block TCP control packets
   * Allow TCP three-way handshakes so that L7 attributes can be inspected
-  * 
+  * Don't duplicate logging
 
 ### Use Stateful rules over Stateless rules
 
