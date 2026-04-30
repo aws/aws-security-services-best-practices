@@ -139,6 +139,7 @@ drop ip any any -> $HOME_NET any (msg:"Default Ingress All Other IP Drop"; ip_pr
 * Both of the above custom default deny options have the following features:
   * Support post-quantum TLS connections
   * Don't block TCP control packets
+  * Don't block return traffic for UDP or ICMP traffic allowed by a rule with flow:to_server on it.
   * Allow TCP three-way handshakes so that L7 attributes can be inspected
   * Don't duplicate logging
 
