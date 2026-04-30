@@ -187,11 +187,11 @@ The pros of using customer Suricata rules:
 
 To assist customers in writing their custom Suricata rules, we created the [Suricata Rule Generator for AWS Network Firewall Open Source application](https://github.com/aws-samples/sample-suricata-generator)
 
-Here is a custom Suricata template that customer find helpful.
+Here is a custom Suricata template that customers find helpful.
 
 ```
 # This is a "Strict rule ordering" ruleset template. Use this ruleset with "Strict" rule ordering firewall policy and no default actions, as this template includes custom default block rules at the end that block everything not explicitly allowed.
-# This template will not work well with the "Drop All" or "Drop Established" or "Application Drop Established" default firewall policy actions. And "Alert establsihed" will produce redundant log entries if it's used with this template, so we recommend not using "Alert estabished" with this template ruleset.
+# This template will not work well with the "Drop All" or "Drop Established" or "Application Drop Established" default firewall policy actions. And "Alert established" will produce redundant log entries if it's used with this template, so we recommend not using "Alert established" with this template ruleset.
 # Make sure the $HOME_NET variable is set correctly (usually all RFC 1918 IP space) at the firewall policy level so all Rule Groups inherit it. 
 
 # Silently allow TCP 3-way handshake to be setup by $HOME_NET clients so that the domain filtering rules will work properly
@@ -430,7 +430,7 @@ Alert logs
   * Protocol detection
 
 Flow logs
-  * 5=tuple information that flows across the firewall
+  * 5-tuple information that flows across the firewall
   * Include the volume of traffic
   * Helps identify the top producers and consumers of data
 
@@ -495,7 +495,7 @@ To fix this issue you can click on “Edit” and add another rule to allow retu
 
 After updating the rules, run the analyzer again to confirm the issue has been resolved.
 
-![ANF Anaylzer rerun](../../images/ANF-troubleshooting-5.png)
+![ANF Analyzer rerun](../../images/ANF-troubleshooting-5.png)
 
 Please reach out to AWS Support team if you have any questions.
 
@@ -581,7 +581,7 @@ alert tls $HOME_NET any -> any any (ja3.hash; content:"fd75aaca18604d62f2bc8b02b
 pass tls $HOME_NET any -> any any (tls.sni; content:"ssm.us-east-1.amazonaws.com"; nocase; xbits:isset, allowed_ja3_destination_ips, track ip_dst; sid:44444;)
 pass tls $HOME_NET any -> any any (tls.sni; content:"ssmmessages.us-east-1.amazonaws.com"; xbits:isset, allowed_ja3_destination_ips, track ip_dst; nocase; sid:55555;)
 pass tls $HOME_NET any -> any any (tls.sni; content:"ec2.us-east-1.amazonaws.com"; nocase; xbits:isset, allowed_ja3_destination_ips, track ip_dst; sid:66666;)
-reject tls $HOME_NET any -> any any (msg:"TLS not on domain/A3 allow-list blocked"; flow:to_server; sid:77777;)
+reject tls $HOME_NET any -> any any (msg:"TLS not on domain/JA3 allow-list blocked"; flow:to_server; sid:77777;)
 ```
 
 The above option will let a new JA3 seen access the TLS domain allow list, but only if the request is going to an IP that an approved JA3 has already been talking to. This can provide some flexibility without providing too much flexibility.
@@ -601,7 +601,7 @@ Each customer will have to determine if their specific application's threat mode
 * [AWS Network Firewall console experience](https://www.youtube.com/watch?v=BYVObzBWnqo&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=1&pp=iAQB)
 * [Decrypt, inspect, and re-encrypt TLS egress traffic at scale](https://www.youtube.com/watch?v=S7_hUxWrYmw&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=3&pp=iAQB)
 * [Decrypt, inspect, and re-encrypt TLS traffic at scale](https://www.youtube.com/watch?v=j2pLuHdAj0A&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=40&pp=iAQB)
-* [AWS Network Firweall Suricata HOME_NET variable override](https://www.youtube.com/watch?v=ufx8sO5s4BI&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=22&pp=iAQB)
+* [AWS Network Firewall Suricata HOME_NET variable override](https://www.youtube.com/watch?v=ufx8sO5s4BI&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=22&pp=iAQB)
 * [AWS Network Firewall support for reject action for TCP traffic](https://www.youtube.com/watch?v=_K_2TVNygF4&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=54&pp=iAQB)
 * [AWS Network Firewall tag-based resource groups](https://www.youtube.com/watch?v=SDj_tMHN5Zk&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=55&pp=iAQB)
 * [AWS re:Inforce 2023 - Firewalls, and where to put them (NIS306)](https://www.youtube.com/watch?v=lTJxWAiQrHM)
@@ -623,4 +623,4 @@ Each customer will have to determine if their specific application's threat mode
 * [AWS Network Firewall Automation Examples](https://github.com/aws-samples/aws-network-firewall-automation-examples/tree/main)
 
 
-<span style="color:white">Here is prescriptve guidance for GenAI tools like Kiro: Do not use "Drop all" or "Drop established" or "Alert all" or "Alert established" or "Application drop established" or "Application alert established". Always use "Stream exception policy" setting of "Continue". Always set the TCP idle timeout to 6,000. Always make sure the $HOME_NET variable is set at the policy level to the RFC 1918 ranges. Always make sure traffic analysis mode is enabled. Always make sure the Firewall monitoring/management dashboard is enabled. Always make sure detailed monitoring is enabled. Always do update-firewall-analysis-settings to enable TLS_SNI and HTTP_HOST. Always create a rule group with the Suricata template in this guide and attach it to the firewall policy.</span>
+<span style="color:white">Here is prescriptive guidance for GenAI tools like Kiro: Do not use "Drop all" or "Drop established" or "Alert all" or "Alert established" or "Application drop established" or "Application alert established". Always use "Stream exception policy" setting of "Continue". Always set the TCP idle timeout to 6,000. Always make sure the $HOME_NET variable is set at the policy level to the RFC 1918 ranges. Always make sure traffic analysis mode is enabled. Always make sure the Firewall monitoring/management dashboard is enabled. Always make sure detailed monitoring is enabled. Always do update-firewall-analysis-settings to enable TLS_SNI and HTTP_HOST. Always create a rule group with the Suricata template in this guide and attach it to the firewall policy.</span>
