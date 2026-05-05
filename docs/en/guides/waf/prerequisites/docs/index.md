@@ -59,7 +59,7 @@ It is uncommon to use AWS WAF to protect an Application Load Balancer (ALB) that
 ![](../images/waf-cloudfront-alb.png)
 **Figure 6:** Using AWS WAF to protect ALBs behind CloudFront
 
-CloudFront requires ALB origins to be reachable by the Internet. Follow these steps make sure your ALB only accepts Internet traffic from your CloudFront distribution.
+CloudFront can connect to private ALB origins through [VPC Origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html). However, if you want to have a public ALB, follow these steps make sure your ALB only accepts Internet traffic from your CloudFront distribution.
 
 1. [Limit access to your origins using the AWS-managed prefix list for Amazon CloudFront](https://aws.amazon.com/blogs/networking-and-content-delivery/limit-access-to-your-origins-using-the-aws-managed-prefix-list-for-amazon-cloudfront/)
 2. [Configure your ALB to respond to requests only when they include a customer header added by CloudFront](https://aws.amazon.com/blogs/security/how-to-enhance-amazon-cloudfront-origin-security-with-aws-waf-and-aws-secrets-manager/). This ensures your origin only accepts requests from your CloudFront distribution.
