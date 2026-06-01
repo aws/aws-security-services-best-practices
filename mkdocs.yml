@@ -28,6 +28,7 @@ theme:
 
 nav:
   - Home: index.md
+  - Amazon Certificate Services Best Practices: guides/certificate-services/index.md
   - Amazon Detective Best Practices: guides/detective/index.md
   - Amazon GuardDuty Best Practices: guides/guardduty/index.md
   - Amazon Inspector Best Practices: guides/inspector/index.md
@@ -42,6 +43,37 @@ nav:
       - Monitoring WAF Rules: guides/waf/monitoring-waf-rules/docs/index.md
       - Using WAF with other AWS Services: guides/waf/using-waf-with-other-services/docs/index.md
   - AWS Network Firewall Best Practices: guides/network-firewall/index.md
+  - Amazon Route 53 Resolver DNS Firewall Best Practices: guides/dns-firewall/index.md
   - Contributors: contributors.md
+markdown_extensions:
+    - mdx_truly_sane_lists
+    - toc:
+        slugify: !!python/object/apply:pymdownx.slugs.slugify
+          kwds:
+            case: lower
+
 plugins:
+    - i18n:
+        docs_structure: suffix
+        fallback_to_default: true
+        reconfigure_material: true
+        reconfigure_search: true
+        languages:
+          - locale: en
+            default: true
+            name: English
+            build: true
+          - locale: ko
+            name: 한국어
+            build: true
+            nav:
+              - 홈: index.md
+              - AWS Network Firewall 모범 사례: guides/network-firewall/index.md
+          - locale: ja
+            name: 日本語
+            build: true
+            nav:
+              - ホーム: index.md
+              - AWS Network Firewall ベストプラクティス: guides/network-firewall/index.md
+              - Amazon Route 53 Resolver DNS Firewall ベストプラクティス: guides/dns-firewall/index.md
     - search
