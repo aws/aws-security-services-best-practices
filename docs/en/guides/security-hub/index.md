@@ -1,8 +1,10 @@
-# Security Hub
+# AWS Security Hub
 
 ## Introduction
 
 Welcome to the AWS Security Hub Best Practices Guide. The purpose of this guide is to provide prescriptive guidance for leveraging AWS Security Hub for unified cloud security operations, automated correlation of security signals, and streamlined response to critical security issues. Publishing this guidance via GitHub will allow for quick iterations to enable timely recommendations that include service enhancements, as well as the feedback of the user community. This guide is designed to provide value whether you are deploying Security Hub for the first time in a single account, or looking for ways to optimize Security Hub in an existing multi-account deployment.
+
+> For guidance on CSPM capabilities including security standards, compliance controls, and posture checks, see the [AWS Security Hub CSPM Best Practices Guide](../security-hub-cspm/index.md).
 
 ## How to use this guide
 
@@ -19,7 +21,7 @@ This guide is geared towards security practitioners who are responsible for moni
 * [Threat analytics plan](#threat-analytics-plan)
 * [Integrate your security tools](#integrate-your-security-tools)
 * [Enable security standards](#enable-security-standards)
-* [Operationalize SecurityHub Findings](#Operationalize-SecurityHub-Findings)
+* [Operationalize Security Hub Findings](#operationalize-security-hub-findings)
 * [Investigating exposure findings](#investigating-exposure-findings)
 * [Understanding attack paths](#understanding-attack-paths)
 * [Analyzing traits and signals](#analyzing-traits-and-signals)
@@ -130,16 +132,16 @@ Security Hub Essential capabilities provide comprehensive security coverage thro
 
 ### Threat Analytics Plan
 
-The Threat Analytics plan embeds GuardDuty's threat detection capabilities directly into the SecurityHub console. This means that threat findings such as privilege escalation, suspicious API calls, network anomalies, data exfiltration appear alongside resource misconfigurations, and vulnerabilities in a single unified view. A suspicious IAM action surfaces next to the configuration gap that enabled it, eliminating the need to manually pivot between services. Security Hub's native integrations with EventBridge and automated response workflows allow teams to act on these findings immediately—triggering remediation playbooks, normalizing severity across sources, and prioritizing what matters most. Without this plan, threat detection lives in isolation. When you enable threat analytics plan, Security Hub becomes a complete threat-aware security operations hub.
+The Threat Analytics plan embeds GuardDuty's threat detection capabilities directly into the Security Hub console. This means that threat findings such as privilege escalation, suspicious API calls, network anomalies, data exfiltration appear alongside resource misconfigurations, and vulnerabilities in a single unified view. A suspicious IAM action surfaces next to the configuration gap that enabled it, eliminating the need to manually pivot between services. Security Hub's native integrations with EventBridge and automated response workflows allow teams to act on these findings immediately—triggering remediation playbooks, normalizing severity across sources, and prioritizing what matters most. Without this plan, threat detection lives in isolation. When you enable threat analytics plan, Security Hub becomes a complete threat-aware security operations hub.
 
-### Securityhub Extended
+### Security Hub Extended
 
 Security Hub Extended is a curated marketplace of enterprise-grade partner security solutions delivered directly through AWS Security Hub. It covers nine security categories — Endpoint, Identity, Email, Network, Data, Browser, Cloud, AI, and Security Operations with integrated partner offerings from providers such as CrowdStrike, Splunk, Zscaler, SailPoint, Okta, Proofpoint, Cyera, and others. AWS acts as the seller of record, which means you get pre-negotiated pay-as-you-go pricing, a single consolidated bill, and no long-term commitments. For AWS Enterprise Support customers, unified Level 1 support is also included. AWS Security Hub Extended expands Security Hub beyond AWS-native services into a full-stack enterprise security solution. It addresses one of the most common challenges security teams face: managing a fragmented portfolio of tools across multiple vendors, contracts, and consoles. Refer to the [Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-extended-plan.html) documentation for an updated list of supported partner solutions.
 
 ![Security Hub Extended Plan](../../images/security-hub/security-hub-extended-plan.png)
 
 
-## Operationalize SecurityHub Findings
+## Operationalize Security Hub Findings
 
 ### Investigate Critical Risks
 
@@ -148,7 +150,7 @@ To understand the most critical security risks in your environment, start by rev
 This widget shows your exposures by severity and frequency, with findings categorized as Critical, High, Medium, or Low. The widget displays the highest risks with the greatest number of critical findings, allowing you to quickly identify the most pressing security issues. 
 
 
-![Security Hub Dashboard Trends](../../images/security-hub/securtity-hub-summary-dashboard-exposure-summary.png)
+![Security Hub Dashboard Trends](../../images/security-hub/security-hub-summary-dashboard-exposure-summary.png)
 
 From the exposure summary widget, you can pivot to the exposure dashboard to see a pre-filtered view of your exposures for continued analysis. The exposure console shows findings by their title and ranked by decreasing severity, organized by filter criteria and grouped by finding title. Quick filters on the left-hand side provide a fast way to filter through exposures based on severity, top 10 attributes, top 10 accounts, and top 10 resource types.
 
@@ -254,7 +256,7 @@ To update the re-scan configuration for ECR, Navigate to the Amazon inspector co
     * **Test Updated Integration:** Validate that all downstream systems continue receiving findings after the change
     * **Communicate changes:** Notify security operations and integration owners about the architectural changes
 
-* **Review SecurityHub Coverage** - Use configuration policies to apply different capability levels to different account types, enabling full capabilities for production accounts while using essential-only capabilities for development or sandbox accounts. This flexibility enables you to balance security coverage with budget constraints while maintaining the ability to expand coverage as needed. Accounts without Security Hub enabled can continue to use individual service pricing for GuardDuty, Inspector, and Security Hub CSPM, while accounts with Security Hub enabled benefit from streamlined pricing and enhanced capabilities.Leverage the 30-day free trial to evaluate costs and capabilities before organization wide deployment.
+* **Review Security Hub Coverage** - Use configuration policies to apply different capability levels to different account types, enabling full capabilities for production accounts while using essential-only capabilities for development or sandbox accounts. This flexibility enables you to balance security coverage with budget constraints while maintaining the ability to expand coverage as needed. Accounts without Security Hub enabled can continue to use individual service pricing for GuardDuty, Inspector, and Security Hub CSPM, while accounts with Security Hub enabled benefit from streamlined pricing and enhanced capabilities.Leverage the 30-day free trial to evaluate costs and capabilities before organization wide deployment.
 
 ## Resources
 

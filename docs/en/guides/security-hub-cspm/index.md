@@ -1,8 +1,10 @@
-# Security Hub CSPM
+# AWS Security Hub CSPM
 
 ## Introduction
 
 Welcome to the AWS Security Hub CSPM Best Practices Guide. The purpose of this guide is to provide prescriptive guidance for leveraging AWS Security Hub for automated, continuous security best practice checks against your AWS resources. Publishing this guidance via GitHub will allow for quick iterations to enable timely recommendations that include service enhancements, as well as, the feedback of the user community. This guide is designed to provide value whether you are deploying Security Hub for the first time in a single account, or looking for ways to optimize Security Hub in an existing multi-account deployment.
+
+> For guidance on the unified AWS Security Hub including exposure findings, attack paths, and streamlined response, see the [AWS Security Hub Best Practices Guide](../security-hub/index.md).
 
 ## How to use this guide
 
