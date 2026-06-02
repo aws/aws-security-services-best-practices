@@ -1,0 +1,1763 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ja/guides/network-firewall/">
+      
+      
+        <link rel="prev" href="../../">
+      
+      
+        <link rel="next" href="../dns-firewall/">
+      
+      
+        
+          <link rel="alternate" href="../../../guides/network-firewall/" hreflang="en">
+        
+          <link rel="alternate" href="../../../ko/guides/network-firewall/" hreflang="ko">
+        
+          <link rel="alternate" href="./" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>AWS Network Firewall ベストプラクティス - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#aws-network-firewall-ベストプラクティス" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              AWS Network Firewall ベストプラクティス
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../guides/network-firewall/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../ko/guides/network-firewall/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#はじめに" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        はじめに
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#本ガイドの使い方" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本ガイドの使い方
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-network-firewall-とは" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS Network Firewall とは
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-network-firewall-を有効にするメリット" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS Network Firewall を有効にするメリット
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#開始方法" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        開始方法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="開始方法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#デプロイに関する考慮事項" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        デプロイに関する考慮事項
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#実装" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        実装
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#運用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        運用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="運用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#対称ルーティングの確保" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        対称ルーティングの確保
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strict-ルール順序と-drop-established-または-application-drop-established-および対応する-alert-デフォルトアクションの使用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strict ルール順序と 'Drop established' または 'Application drop established' および対応する 'Alert' デフォルトアクションの使用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Strict ルール順序と &#39;Drop established&#39; または &#39;Application drop established&#39; および対応する &#39;Alert&#39; デフォルトアクションの使用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#drop-all-ではなく-drop-established-を使用する理由" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        'Drop all' ではなく 'Drop established' を使用する理由
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drop-established" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drop established
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-drop-established" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application drop established
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ステートレスルールよりもステートフルルールを使用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステートレスルールよりもステートフルルールを使用
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ui-生成ルールの代わりにカスタム-suricata-ルールを使用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI 生成ルールの代わりにカスタム Suricata ルールを使用
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#カスタムルールグループの数を最小限に抑える" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        カスタムルールグループの数を最小限に抑える
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#home_net-変数が正しく設定されていることを確認" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        $HOME_NET 変数が正しく設定されていることを確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#許可されたトラフィックをログに記録するために-pass-ルールの前に-alert-ルールを使用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        許可されたトラフィックをログに記録するために Pass ルールの前に Alert ルールを使用
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ステートフルルールで-flowto_server-キーワードを使用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステートフルルールで "flow:to_server" キーワードを使用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステートフルルールで &#34;flow:to_server&#34; キーワードを使用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#悪いルールセットの例strict-rule-ordering-使用しないでください" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        悪いルールセットの例（Strict rule ordering）– 使用しないでください
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#良いルールセットの例strict-rule-ordering-使用可能" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        良いルールセットの例（Strict rule ordering）– 使用可能
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#新しいステートフルファイアウォールルールを既存のフローに適用する方法" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        新しいステートフルファイアウォールルールを既存のフローに適用する方法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ログ記録とモニタリングの設定" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ログ記録とモニタリングの設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#コストに関する考慮事項" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コストに関する考慮事項
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#非対称転送に関するステートレスルールのトラブルシューティング" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        非対称転送に関するステートレスルールのトラブルシューティング
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-network-firewall-を使用したクライアント側-tls-sni-操作の緩和オプション" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS Network Firewall を使用したクライアント側 TLS SNI 操作の緩和オプション
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#リソース" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        リソース
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="リソース">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ワークショップ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ワークショップ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#動画" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        動画
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ブログ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ブログ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#サンプルコード" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        サンプルコード
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dns-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Route 53 Resolver DNS Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#はじめに" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        はじめに
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#本ガイドの使い方" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本ガイドの使い方
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-network-firewall-とは" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS Network Firewall とは
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-network-firewall-を有効にするメリット" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS Network Firewall を有効にするメリット
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#開始方法" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        開始方法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="開始方法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#デプロイに関する考慮事項" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        デプロイに関する考慮事項
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#実装" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        実装
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#運用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        運用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="運用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#対称ルーティングの確保" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        対称ルーティングの確保
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strict-ルール順序と-drop-established-または-application-drop-established-および対応する-alert-デフォルトアクションの使用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strict ルール順序と 'Drop established' または 'Application drop established' および対応する 'Alert' デフォルトアクションの使用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Strict ルール順序と &#39;Drop established&#39; または &#39;Application drop established&#39; および対応する &#39;Alert&#39; デフォルトアクションの使用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#drop-all-ではなく-drop-established-を使用する理由" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        'Drop all' ではなく 'Drop established' を使用する理由
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drop-established" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drop established
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-drop-established" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application drop established
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ステートレスルールよりもステートフルルールを使用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステートレスルールよりもステートフルルールを使用
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ui-生成ルールの代わりにカスタム-suricata-ルールを使用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI 生成ルールの代わりにカスタム Suricata ルールを使用
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#カスタムルールグループの数を最小限に抑える" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        カスタムルールグループの数を最小限に抑える
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#home_net-変数が正しく設定されていることを確認" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        $HOME_NET 変数が正しく設定されていることを確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#許可されたトラフィックをログに記録するために-pass-ルールの前に-alert-ルールを使用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        許可されたトラフィックをログに記録するために Pass ルールの前に Alert ルールを使用
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ステートフルルールで-flowto_server-キーワードを使用" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステートフルルールで "flow:to_server" キーワードを使用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステートフルルールで &#34;flow:to_server&#34; キーワードを使用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#悪いルールセットの例strict-rule-ordering-使用しないでください" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        悪いルールセットの例（Strict rule ordering）– 使用しないでください
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#良いルールセットの例strict-rule-ordering-使用可能" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        良いルールセットの例（Strict rule ordering）– 使用可能
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#新しいステートフルファイアウォールルールを既存のフローに適用する方法" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        新しいステートフルファイアウォールルールを既存のフローに適用する方法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ログ記録とモニタリングの設定" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ログ記録とモニタリングの設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#コストに関する考慮事項" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        コストに関する考慮事項
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#非対称転送に関するステートレスルールのトラブルシューティング" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        非対称転送に関するステートレスルールのトラブルシューティング
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-network-firewall-を使用したクライアント側-tls-sni-操作の緩和オプション" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS Network Firewall を使用したクライアント側 TLS SNI 操作の緩和オプション
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#リソース" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        リソース
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="リソース">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ワークショップ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ワークショップ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#動画" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        動画
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ブログ" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ブログ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#サンプルコード" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        サンプルコード
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="aws-network-firewall-ベストプラクティス">AWS Network Firewall ベストプラクティス</h1>
+<h2 id="はじめに">はじめに</h2>
+<p>AWS Network Firewall ベストプラクティスガイドへようこそ。本ガイドは、VPC とワークロードを効率的に保護するための AWS Network Firewall の運用指針を提供することを目的としています。GitHub を通じて公開することで、サービスの機能強化やユーザーコミュニティからのフィードバックを迅速に反映できます。本ガイドは、単一アカウントで初めて Network Firewall をデプロイする場合でも、既存のマルチアカウントやマルチ VPC 環境で Network Firewall を最適化する方法を探している場合でも、有用な内容を提供できるよう設計されています。</p>
+<h2 id="本ガイドの使い方">本ガイドの使い方</h2>
+<p>本ガイドは、AWS アカウント（およびリソース）内のセキュリティイベント、悪意のあるアクティビティ、脆弱性の監視と修復を担当するセキュリティ担当者を対象としています。ベストプラクティスは、理解しやすいように複数のカテゴリに分類されています。各カテゴリには、対応するベストプラクティスが含まれており、概要に続いて実装のための詳細な手順が記載されています。トピックは特定の順序で読む必要はありません。</p>
+<ul>
+<li><a href="#開始方法">開始方法</a><ul>
+<li><a href="#デプロイに関する考慮事項">デプロイに関する考慮事項</a></li>
+</ul>
+</li>
+<li><a href="#実装">実装</a></li>
+<li><a href="#運用">運用</a><ul>
+<li><a href="#対称ルーティングの確保">対称ルーティングの確保</a></li>
+<li><a href="#strict-ルール順序と-drop-established-または-application-drop-established-および対応する-alert-デフォルトアクションの使用">Strict ルール順序と 'Drop established' または 'Application drop established' および対応する 'Alert' デフォルトアクションの使用</a></li>
+<li><a href="#ステートレスルールよりもステートフルルールを使用">ステートレスルールよりもステートフルルールを使用</a></li>
+<li><a href="#ui-生成ルールの代わりにカスタム-suricata-ルールを使用">UI 生成ルールの代わりにカスタム Suricata ルールを使用</a></li>
+<li><a href="#カスタムルールグループの数を最小限に抑える">カスタムルールグループの数を最小限に抑える</a></li>
+<li><a href="#home_net-変数が正しく設定されていることを確認">$HOME_NET 変数が正しく設定されていることを確認</a></li>
+<li><a href="#許可されたトラフィックをログに記録するために-pass-ルールの前に-alert-ルールを使用">許可されたトラフィックをログに記録するために Pass ルールの前に Alert ルールを使用</a></li>
+<li><a href="#ステートフルルールで-flowto_server-キーワードを使用">ステートフルルールで "flow:to_server" キーワードを使用</a></li>
+<li><a href="#新しいステートフルファイアウォールルールを既存のフローに適用する方法">新しいステートフルファイアウォールルールを既存のフローに適用する方法</a></li>
+<li><a href="#ログ記録とモニタリングの設定">ログ記録とモニタリングの設定</a></li>
+<li><a href="#aws-network-firewall-を使用したクライアント側-tls-sni-操作の緩和オプション">AWS Network Firewall を使用したクライアント側 TLS SNI 操作の緩和オプション</a></li>
+</ul>
+</li>
+<li><a href="#コストに関する考慮事項">コストに関する考慮事項</a></li>
+<li><a href="#非対称転送に関するステートレスルールのトラブルシューティング">非対称転送に関するステートレスルールのトラブルシューティング</a></li>
+<li><a href="#リソース">リソース</a></li>
+</ul>
+<h2 id="aws-network-firewall-とは">AWS Network Firewall とは</h2>
+<p>AWS Network Firewall は、すべての <a href="https://aws.amazon.com/vpc/">Amazon Virtual Private Cloud (VPC)</a> に対して、L3〜L7 のディープパケットインスペクション保護を簡単にデプロイできるマネージドサービスです。VPC のサブネットレベルでトラフィックをフィルタリングでき、インターネットゲートウェイ、NAT ゲートウェイ、VPN、または AWS Direct Connect を経由するトラフィックのフィルタリングも可能です。</p>
+<h2 id="aws-network-firewall-を有効にするメリット">AWS Network Firewall を有効にするメリット</h2>
+<p>AWS Network Firewall は、お客様固有のワークロードを保護するためのカスタムファイアウォールルールを構築できる、非常に柔軟なルールエンジンを備えています。数千のルールをサポートし、ポート、プロトコル、FQDN/ドメインに基づいてルールを定義できます。Suricata 形式のルールをサポートしているため、パケットサイズやバイトマッチパターンなどの特定のネットワークトラフィック特性に基づいたカスタムルールを作成できます。また、<a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html">AWS マネージドドメインリスト</a>と脅威シグネチャも提供されるため、独自の Suricata IPS ルールの作成やメンテナンスは不要です。</p>
+<h2 id="開始方法">開始方法</h2>
+<p>このセクションでは、AWS インフラストラクチャで AWS Network Firewall を有効化する前に考慮すべき事項について説明します。</p>
+<h3 id="デプロイに関する考慮事項">デプロイに関する考慮事項</h3>
+<p>AWS Network Firewall を初めてデプロイする際、すべての機能を確認せずにすぐに設定を始めたくなるかもしれません。例えば、各 VPC にエンドポイントをデプロイしたり、マネージドルールのみを使用したり、Alert ルールを使用しないといったケースがあります。<a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/what-is-aws-network-firewall.html">Network Firewall のドキュメント</a>を事前に確認することで、後々大幅な時間の節約につながります。</p>
+<p>まず、Network Firewall デプロイの 3 つの主要なアーキテクチャパターンを理解し、ご自身の環境に最適なものを選択する必要があります。</p>
+<ul>
+<li>分散デプロイモデル — Network Firewall を各 VPC に個別にデプロイします。</li>
+<li>集中デプロイモデル — East-West（VPC 間）または North-South（インターネットやオンプレミスからのインバウンドおよびアウトバウンド）トラフィック用に、AWS Transit Gateway インスタンスに接続された集中型 VPC に Network Firewall をデプロイします。この VPC を検査 VPC と呼びます。</li>
+<li>複合デプロイモデル — East-West（VPC 間）および一部の North-South（オンプレミス、エグレス）トラフィック用に、集中型検査 VPC に Network Firewall をデプロイします。インターネットからのインバウンドアクセスが必要な VPC にはインターネットイングレスを分散し、それに応じて Network Firewall をデプロイします。</li>
+</ul>
+<p>デプロイモデルの詳細については、<a href="https://aws.amazon.com/jp/blogs/news/networking-and-content-delivery-deployment-models-for-aws-network-firewall/">AWS Network Firewall のデプロイモデルに関するブログ記事</a>を参照してください。</p>
+<h2 id="実装">実装</h2>
+<p>このセクションでは、AWS Network Firewall をデプロイするための最小要件について説明します。</p>
+<p>Network Firewall をデプロイするには、1 つの VPC と 1 つのサブネットがあれば十分ですが、耐障害性のために、ワークロードが存在する各アベイラビリティーゾーンにファイアウォールエンドポイント/サブネットをデプロイすることを強くお勧めします。</p>
+<p><img alt="ANF VPC and Subnet Configuration settings" src="../../../images/jp/ANF-configure.png" /></p>
+<p><em>図 1: Network Firewall VPC 設定</em></p>
+<p>独自のキーで Network Firewall の設定データを保管時に暗号化する場合は、KMS キーを指定する必要があります。</p>
+<p><img alt="ANF CMK configuration" src="../../../images/jp/ANF-cmk.png" /></p>
+<p><em>図 2: Network Firewall CMK 設定</em></p>
+<p>デプロイの詳細については、<a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/what-is-aws-network-firewall.html">Network Firewall の開始方法に関するドキュメント</a>を参照してください。</p>
+<p>トラフィックの中断を最小限に抑えたい本番環境に AWS Network Firewall を実装する場合は、<a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/stream-exception-policy.html">ストリーム例外ポリシーオプション</a>を「Continue」または「Reject」に設定し、デフォルトのブロックアクションを使用しないことをお勧めします。「Drop」オプションは、ミッドストリームフローを通知なしにブロックし、TCP Reset を送信しないため、本番トラフィックへの影響がより大きくなる可能性があります。</p>
+<h2 id="運用">運用</h2>
+<h3 id="対称ルーティングの確保">対称ルーティングの確保</h3>
+<p>Network Firewall は非対称ルーティングをサポートしていないため、VPC で対称ルーティングが設定されていることを確認する必要があります。VPC に Network Firewall をデプロイする際は、トラフィックが検査されるようにファイアウォールエンドポイントを経由するようルートテーブルを変更する必要があります。ルートテーブルは、双方向でファイアウォールエンドポイントへのネットワークフローを考慮する必要があります。</p>
+<p>集中デプロイ構成で <a href="https://aws.amazon.com/transit-gateway/">AWS Transit Gateway (TGW)</a> を使用し、Network Firewall で VPC 間の East-West トラフィックを検査する場合、検査 VPC のアタッチメントに対して <a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/vpc-config.html">TGW のアプライアンスモードオプション</a>を有効にする必要があります。アプライアンスモードは AWS コンソールおよび API で有効化できます。</p>
+<p>アプライアンスモードが有効になっていない場合、リターンパスのトラフィックが別のアベイラビリティーゾーンのエンドポイントに到達する可能性があり、Network Firewall がファイアウォールポリシーに基づいてトラフィックを正しく評価できなくなります。</p>
+<h3 id="strict-ルール順序と-drop-established-または-application-drop-established-および対応する-alert-デフォルトアクションの使用">Strict ルール順序と 'Drop established' または 'Application drop established' および対応する 'Alert' デフォルトアクションの使用</h3>
+<ul>
+<li>Network Firewall には、Suricata エンジンがルールを処理する方法について 2 つのオプションがあります。<ul>
+<li>「Strict」オプションは、定義した順序でルールを処理するよう Suricata に指示するため推奨されます。</li>
+<li>「Action Order」オプションは、IDS のユースケースには適していますが、一般的なファイアウォールのユースケースには適さない Suricata のデフォルトのルール処理をサポートします。</li>
+</ul>
+</li>
+<li>Strict ルール順序を選択すると、すべてのルールの末尾で実行される「デフォルト」アクションも選択できます。このアクションは、それ以前のルールに一致しなかったトラフィックに適用されます。デフォルトアクションには主に 2 つのアプローチがあります:</li>
+</ul>
+<h4 id="drop-all-ではなく-drop-established-を使用する理由">'Drop all' ではなく 'Drop established' を使用する理由</h4>
+<p>「Drop established」が「Drop all」よりも推奨される理由は、Suricata エンジンがドロップの判断を行う前にレイヤー 7 の検査を実行できるためです。これは、TLS SNI や HTTP ホストヘッダーフィールドのドメイン情報に一致する pass ルールにとって非常に重要です。「Drop all」を使用すると、Suricata がこれらのアプリケーションレイヤー属性を検査する前にトラフィックがドロップされてしまいます。</p>
+<h4 id="drop-established">Drop established</h4>
+<p>「Drop established」はよりシンプルなオプションであり、ほとんどのデプロイにとって良い出発点です。以前のルールに一致しない確立済み接続のトラフィックをすべてドロップしつつ、ドメインベースのフィルタリングに必要なレイヤー 7 の検査を許可します。</p>
+<p>対応する「Alert established」アクションも必ず選択してください。これを選択しないと、デフォルトアクションによってドロップされたトラフィックがログに記録されません。「Alert established」はドロップアクションなしで単独で選択することもできます。これは、ルールを適用する前にどのトラフィックがドロップされるかを確認するのに便利です。</p>
+<p><img alt="Network Firewall Drop Established default actions" src="../../../images/jp/nfw-drop-established.png" /></p>
+<p><em>図 3a: Network Firewall Drop Established デフォルトアクション</em></p>
+<h4 id="application-drop-established">Application drop established</h4>
+<p>「Application drop established」は、TLS Client Hello メッセージが複数のパケットに分割される可能性がある環境向けに設計されており、これはポスト量子ハイブリッド暗号鍵交換でますます一般的になっています。TCP ハンドシェイク直後にトラフィックをドロップするのではなく、ドロップの判断を行う前に十分なアプリケーションレイヤーデータ（TLS SNI フィールドなど）を確認するまで待機します。</p>
+<p><img alt="Network Firewall Application Drop Established default actions" src="../../../images/jp/nfw-app-drop-established.png" /></p>
+<p><em>図 3b: Network Firewall Application Drop Established デフォルトアクション</em></p>
+<p>「Application drop established」を使用する場合、TCP ハンドシェイク後、pass ルールが適用される前に発生する TCP フロー制御パケット（ウィンドウ更新、キープアライブ、リセットなど）がドロップされる可能性があることに注意してください。これらのパケットを許可するためのカスタムルールが必要になる場合があります。詳細については、<a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/suricata-rule-evaluation-order.html">ステートフルルールグループの評価順序</a>のドキュメントを参照してください。</p>
+<p>あるいは、本ガイドに含まれる<a href="#ui-生成ルールの代わりにカスタム-suricata-ルールを使用">カスタム Suricata ルールテンプレート</a>の Egress Default Block Rules は、TCP フロー制御パケット用の個別ルールを必要とせずに、カスタムルールを使用して同じアプリケーションレイヤー対応のドロップ戦略を適用します。</p>
+<h3 id="ステートレスルールよりもステートフルルールを使用">ステートレスルールよりもステートフルルールを使用</h3>
+<ul>
+<li>ステートレスルールは、非対称フロー転送の問題（ファイアウォールのステートフル検査エンジンがフローの片方向のみを検査する状態）を容易に引き起こします。また、ファイアウォールルールセット全体の理解とトラブルシューティングをより複雑にします。大多数のユースケースでは、ステートレスエンジンのデフォルトアクションを「Forward to stateful rule groups」に設定し、ステートフルルールよりも優先されるステートレスルールは設定しないことをお勧めします。</li>
+<li>ステートレスルールを使用する場合は、Network Firewall の Stateless Rule Group Analyzer を使用して非対称フローの問題をトラブルシューティングおよび解決する方法を理解することが重要です。「非対称転送に関するステートレスルールのトラブルシューティング」セクションを参照してください。</li>
+<li>Network Firewall のディープパケットインスペクション IPS 機能を活用するには、ステートフルルールを使用する必要があります。一部のお客様はステートレスルールから始めてしまい、後になってステートフルルールが必要だったことに気づくケースがあります。<ul>
+<li>ステートレスルールは、一部のトラフィックをログやアラートなしに単純に拒否したい場合に使用できますが、ほとんどの場合、ルールグループは AWS コンソールで以下のような構成にする必要があります:</li>
+</ul>
+</li>
+</ul>
+<p><img alt="ANF Stateless Rule Groups" src="../../../images/jp/ANF-stateless-rule-evaluation.png" /></p>
+<p><em>図 4: Network Firewall ステートレスルールグループ</em></p>
+<ul>
+<li>ステートフルルール使用のメリット<ul>
+<li>リターントラフィックが自動的に許可されるため、同一トラフィックフローに対してインバウンドとアウトバウンドの両方のルールを定義する必要がありません</li>
+<li>ディープパケットインスペクションがサポートされ、トラフィックのレイヤー 7 属性に対するより深い可視性が得られます</li>
+<li>ログ記録をサポートしているため、標準的な 5 タプルフロー情報に加えて、アプリケーションレベルのトラフィック詳細を確認できます</li>
+<li>これらのルールはトラブルシューティングが容易で、ステートレスルールよりもはるかに柔軟で強力です<ul>
+<li>ルールに作成日（変更リクエスト番号付き）、ユースケース、その他のコメントなどの説明を追加できます</li>
+</ul>
+</li>
+<li>Reject アクションがサポートされています</li>
+<li>これらのルールのキャパシティ計算がより簡単です</li>
+</ul>
+</li>
+</ul>
+<h3 id="ui-生成ルールの代わりにカスタム-suricata-ルールを使用">UI 生成ルールの代わりにカスタム Suricata ルールを使用</h3>
+<p>管理者が自ら標準ステートフルルールでプロトコル、送受信元、送受信ポートを設定追加するのではなく、カスタム Suricata ルールを使用することを推奨します。これらはステートフルルールグループオプションで設定でき、完全な制御が可能な自由形式のテキストです。Suricata の柔軟性をより簡単に活用できます。開始時に役立つ <a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/suricata-examples.html">Suricata ルールの例</a>を参照してください。</p>
+<p><img alt="ANF Stateful Rule Group" src="../../../images/jp/ANF-stateful-rule-group.png" /></p>
+<p><em>図 5: Network Firewall ステートフルルールグループ</em></p>
+<p>後にさまざまなユースケースをサポートする際に、カスタム Suricata ルールの柔軟性が必要になることが多いため、導入の早い段階からチームとともにカスタム Suricata ルールの使用方法を習得することをお勧めします。</p>
+<p>カスタム Suricata ルール使用のメリット:</p>
+<ul>
+<li>非常に重要なキーワード <a href="https://aws.github.io/aws-security-services-best-practices/guides/network-firewall/#use-flowto_server-keyword-in-stateful-rules">「flow:to_server」</a> をルールに簡単に追加可能</li>
+<li>最大限の柔軟性</li>
+<li>アラートとログへの表示方法の制御</li>
+<li>トラブルシューティングとログ分析の簡素化に役立つカスタムルールシグネチャ ID の使用が可能</li>
+<li>自由形式のテキストルールはコピー、編集、共有、バックアップが容易</li>
+<li>ルールグループ間でのルールの切り替えが容易（例: ブルーグリーンテスト）</li>
+</ul>
+<p>カスタム Suricata ルールの作成を支援するために、<a href="https://github.com/aws-samples/sample-suricata-generator">AWS Network Firewall 用 Suricata ルールジェネレーターオープンソースアプリケーション</a>を作成しました。</p>
+<p>以下に、エグレスセキュリティのユースケース向けのカスタム Suricata ルールテンプレートの例も含めています。</p>
+<pre><code># This is a &quot;Strict rule ordering&quot; ruleset template. Use this ruleset with &quot;Strict&quot; rule ordering firewall policy and no default actions, as this template includes custom default block rules at the end that block everything not explicently allowed.
+# This template will not work well with the &quot;Drop All&quot; or &quot;Drop Established&quot; or &quot;Application Drop Established&quot; default firewall policy actions. And &quot;Alert establsihed&quot; will produce redundant log entries if it's used with this template, so we reccomend not using &quot;Alert estabished&quot; with this template ruleset.
+# Make sure the $HOME_NET variable is set correctly (usually all RFC 1918 IP space) at the firewall policy level so all Rule Groups inherit it. 
+
+# Silently allow TCP 3-way handshake to be setup by $HOME_NET clients so that the domain filtering rules will work properly
+# Do not move this section, it's important that this be at the top of the entire firewall ruleset to reduce rule conflicts
+pass tcp $HOME_NET any -&gt; any any (flow:not_established, to_server; sid:202501021;)
+
+# Silently turn on JA3/S hash logging for all other tls alert rules (like sid:999991)
+alert tls $HOME_NET any -&gt; any any (ja3.hash; content:!&quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;; noalert; flow:to_server; sid:202501024;)
+alert tls any any -&gt; $HOME_NET any (ja3s.hash; content:!&quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;; noalert; flow:to_client; sid:202501025;)
+
+# Direct to IP connections
+reject http $HOME_NET any -&gt; any any (http.host; content:&quot;.&quot;; pcre:&quot;/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/&quot;; msg:&quot;HTTP direct to IP via http host header (common malware download technique)&quot;; flow:to_server; sid:202501026;)
+reject tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;.&quot;; pcre:&quot;/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/&quot;; msg:&quot;TLS direct to IP via TLS SNI (common malware download technique)&quot;; flow:to_server; sid:202501027;)
+# JA4 No SNI Reject
+reject tls $HOME_NET any -&gt; any any (ja4.hash; content:&quot;_&quot;; startswith; content:!&quot;d&quot;; offset:3; depth:1; msg:&quot;JA4 No SNI Reject&quot;; sid:1297713;)
+
+# Block higher risk Geoip
+drop ip $HOME_NET any -&gt; any any (msg:&quot;Egress traffic to RU IP&quot;; geoip:dst,RU; metadata:geo RU; flow:to_server; sid:202501028;)
+drop ip $HOME_NET any -&gt; any any (msg:&quot;Egress traffic to CN IP&quot;; geoip:dst,CN; metadata:geo CN; flow:to_server; sid:202501029;)
+
+# Block higher risk domain categories
+reject tls $HOME_NET any -&gt; any any (msg:&quot;Category:Command and Control&quot;; aws_domain_category:Command and Control; ja4.hash; content:&quot;_&quot;; flow:to_server; sid:202602061;)
+reject tls $HOME_NET any -&gt; any any (msg:&quot;Category:Hacking&quot;; aws_domain_category:Hacking; ja4.hash; content:&quot;_&quot;; flow:to_server; sid:202602062;)
+reject tls $HOME_NET any -&gt; any any (msg:&quot;Category:Malicious&quot;; aws_domain_category:Malicious; ja4.hash; content:&quot;_&quot;; flow:to_server; sid:202602063;)
+reject tls $HOME_NET any -&gt; any any (msg:&quot;Category:Malware&quot;; aws_domain_category:Malware; ja4.hash; content:&quot;_&quot;; flow:to_server; sid:202602064;)
+reject tls $HOME_NET any -&gt; any any (msg:&quot;Category:Phishing&quot;; aws_domain_category:Phishing; ja4.hash; content:&quot;_&quot;; flow:to_server; sid:202602065;)
+reject tls $HOME_NET any -&gt; any any (msg:&quot;Category:Proxy Avoidance&quot;; aws_domain_category:Proxy Avoidance; ja4.hash; content:&quot;_&quot;; flow:to_server; sid:202602066;)
+reject tls $HOME_NET any -&gt; any any (msg:&quot;Category:Spam&quot;; aws_domain_category:Spam; ja4.hash; content:&quot;_&quot;; flow:to_server; sid:202602067;)
+reject http $HOME_NET any -&gt; any any (msg:&quot;Category:Command and Control&quot;; aws_url_category:Command and Control; flow:to_server; sid:202602068;)
+reject http $HOME_NET any -&gt; any any (msg:&quot;Category:Hacking&quot;; aws_url_category:Hacking; flow:to_server; sid:202602069;)
+reject http $HOME_NET any -&gt; any any (msg:&quot;Category:Malicious&quot;; aws_url_category:Malicious; flow:to_server; sid:2026020610;)
+reject http $HOME_NET any -&gt; any any (msg:&quot;Category:Malware&quot;; aws_url_category:Malware; flow:to_server; sid:2026020611;)
+reject http $HOME_NET any -&gt; any any (msg:&quot;Category:Phishing&quot;; aws_url_category:Phishing; flow:to_server; sid:2026020612;)
+reject http $HOME_NET any -&gt; any any (msg:&quot;Category:Proxy Avoidance&quot;; aws_url_category:Proxy Avoidance; flow:to_server; sid:2026020613;)
+reject http $HOME_NET any -&gt; any any (msg:&quot;Category:Spam&quot;; aws_url_category:Spam; flow:to_server; sid:2026020614;)
+
+
+# Block higher risk ccTLDs
+reject tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;.ru&quot;; nocase; endswith; msg:&quot;Egress traffic to RU ccTLD&quot;; flow:to_server; sid:202501036;)
+reject http $HOME_NET any -&gt; any any (http.host; content:&quot;.ru&quot;; endswith; msg:&quot;Egress traffic to RU ccTLD&quot;; flow:to_server; sid:202501037;)
+reject tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;.cn&quot;; nocase; endswith; msg:&quot;Egress traffic to CN ccTLD&quot;; flow:to_server; sid:202501038;)
+reject http $HOME_NET any -&gt; any any (http.host; content:&quot;.cn&quot;; endswith; msg:&quot;Egress traffic to CN ccTLD&quot;; flow:to_server; sid:202501039;)
+
+# Block high risk TLDs
+reject tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;.xyz&quot;; nocase; endswith; msg:&quot;High risk TLD .xyz blocked&quot;; flow:to_server; sid:202501040;)
+reject http $HOME_NET any -&gt; any any (http.host; content:&quot;.xyz&quot;; endswith; msg:&quot;High risk TLD .xyz blocked&quot;; flow:to_server; sid:202501041;)
+reject tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;.info&quot;; nocase; endswith; msg:&quot;High risk TLD .info blocked&quot;; flow:to_server; sid:202501042;)
+reject http $HOME_NET any -&gt; any any (http.host; content:&quot;.info&quot;; endswith; msg:&quot;High risk TLD .info blocked&quot;; flow:to_server; sid:202501043;)
+reject tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;.top&quot;; nocase; endswith; msg:&quot;High risk TLD .top blocked&quot;; flow:to_server; sid:202501044;)
+reject http $HOME_NET any -&gt; any any (http.host; content:&quot;.top&quot;; endswith; msg:&quot;High risk TLD .top blocked&quot;; flow:to_server; sid:202501045;)
+
+# Block QUICK traffic
+drop quic $HOME_NET any -&gt; any any (msg:&quot;QUIC traffic blocked&quot;; flow:to_server; sid:3898932;)
+
+# Log higher risk ports
+alert ip $HOME_NET any -&gt; any 53 (msg:&quot;Possible GuardDuty/DNS Firewall bypass!&quot;; flow:to_server; sid:202501055;)
+alert ip $HOME_NET any -&gt; any 1389 (msg:&quot;Possible Log4j callback!&quot;; flow:to_server; sid:202501059;)
+alert ip $HOME_NET any -&gt; any [4444,666,3389] (msg:&quot;Egress traffic to high risk port!&quot;; flow:to_server; sid:202501058;)
+
+# Port/protocol enforcement (TLS can only use TCP/443, TLS can't use anything other than TCP/443, etc.)
+reject tcp $HOME_NET any -&gt; any 443 (msg:&quot;Egress Port TCP/443 but not TLS&quot;; app-layer-protocol:!tls; flow:to_server; sid:202501030;)
+reject tls $HOME_NET any -&gt; any !443 (msg:&quot;Egress TLS but not port TCP/443&quot;; flow:to_server; sid:202501031;)
+reject tcp $HOME_NET any -&gt; any 80 (msg:&quot;Egress Port TCP/80 but not HTTP&quot;; app-layer-protocol:!http; flow:to_server; sid:202501032;)
+reject http $HOME_NET any -&gt; any !80 (msg:&quot;Egress HTTP but not port TCP/80&quot;; flow:to_server; sid:202501033;)
+reject tcp $HOME_NET any -&gt; any 22 (msg:&quot;Egress Port TCP/22 but not SSH&quot;; app-layer-protocol:!ssh; flow:to_server; sid:202501060;)
+reject ssh $HOME_NET any -&gt; any !22 (msg:&quot;Egress SSH but not port TCP/22&quot;; flow:to_server; sid:202501061;)
+
+# Silently (do not log) allow low risk protocols out to anywhere
+pass ntp $HOME_NET any -&gt; any 123 (flow:to_server; sid:202501034;)
+pass icmp $HOME_NET any -&gt; any any (flow:to_server; sid:202501035;)
+
+# Alert on requests to possible suspicious TLDs
+alert tls $HOME_NET any -&gt; any any (tls.sni; pcre:&quot;/^(?!.*\.(com|org|net|io|edu|aws)$).*/i&quot;; msg:&quot;Request to possible suspicious TLDs&quot;; flow:to_server; sid:202501065;)
+alert http $HOME_NET any -&gt; any any (http.host; pcre:&quot;/^(?!.*\.(com|org|net|io|edu|aws)$).*/i&quot;; msg:&quot;Request to possible suspicious TLDs&quot;; flow:to_server; sid:202501066;)
+
+# Silently (do not log) allow AWS public service endpoints that we have not setup VPC endpoints for yet
+# VPC endpoints are highly encouraged. They reduce NFW data processing costs and allow for additional security features like VPC endpoint policies.
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ec2messages.&quot;; startswith; nocase; content:&quot;.amazonaws.com&quot;; endswith; nocase; flow:to_server; sid:202501047;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ssm.&quot;; startswith; nocase; content:&quot;.amazonaws.com&quot;; endswith; nocase; flow:to_server; sid:202501048;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ssmmessages.&quot;; startswith; nocase; content:&quot;.amazonaws.com&quot;; endswith; nocase; flow:to_server; sid:202501049;)
+
+# Allow-list of strict FQDNs to silently allow
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;checkip.amazonaws.com&quot;; startswith; nocase; endswith; flow:to_server; sid:202501050;)
+pass http $HOME_NET any -&gt; any any (http.host; content:&quot;checkip.amazonaws.com&quot;; startswith; endswith; flow:to_server; sid:202501051;)
+
+# Allow-List of strict FQDNs, but still alert on them
+# This method shows the verdict of &quot;pass&quot;
+alert tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;www.example.com&quot;; startswith; nocase; endswith; msg:&quot;TLS SNI Allowed&quot;; flow:to_server; sid:202501052;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;www.example.com&quot;; startswith; nocase; endswith; flow:to_server; sid:202501053;)
+
+# Allow HTTPS domain and also log it
+# This method shows the verdict of &quot;alert&quot; instead of pass
+pass tls $HOME_NET any -&gt; any any (alert; msg:&quot;www.example2.com allowed&quot;; tls.sni; content:&quot;www.example2.com&quot;; startswith; nocase; endswith; flow:to_server; sid:202506131;)
+
+
+# Allow-List of second level/registered domain and all of its subdomains
+# When using 'dotprefix': Always place it before 'content' and always include the leading dot in the domain name (.amazon.com in the following example)
+pass tls $HOME_NET any -&gt; any any (tls.sni; dotprefix; content:&quot;.amazon.com&quot;; nocase; endswith; flow:to_server; sid:202501078;)
+
+
+
+#
+# Custom Block Rules
+# These replace &quot;Drop All&quot; or &quot;Drop Established&quot; or &quot;Application drop established&quot; default actions
+#
+# Egress Default Block Rules
+pass tcp $HOME_NET any -&gt; any any (msg:&quot;Allow three-way handshake to be setup by $HOME_NET&quot;; flow:not_established, to_server; sid:999990;)
+reject tls $HOME_NET any -&gt; any any (msg:&quot;Default Egress HTTPS Reject&quot;; ssl_state:client_hello; ja4.hash; content:&quot;_&quot;; flowbits:set,blocked; flow:to_server; sid:999991;)
+alert tls $HOME_NET any -&gt; any any (msg:&quot;PQC&quot;; flowbits:isnotset,blocked; flowbits:set,PQC; noalert; flow:to_server; sid:999993;)
+reject http $HOME_NET any -&gt; any any (msg:&quot;Default Egress HTTP Reject&quot;; flowbits:set,blocked; flow:to_server; sid:999992;)
+reject tcp $HOME_NET any -&gt; any any (msg:&quot;Default Egress TCP Reject&quot;; flowbits:isnotset,blocked; flowbits:isnotset,PQC; flow:to_server; sid:999994;)
+drop udp $HOME_NET any -&gt; any any (msg:&quot;Default Egress UDP Drop&quot;; flow:to_server; sid:999995;)
+drop icmp $HOME_NET any -&gt; any any (msg:&quot;Default Egress ICMP Drop&quot;; flow:to_server; sid:999996;)
+drop ip $HOME_NET any -&gt; any any (msg:&quot;Default Egress All Other IP Drop&quot;; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:999997;)
+
+# Ingress Default Block Rules in case ingress traffic lands on this firewall
+# You may want to silence these rules by putting &quot;noalert&quot; on them to save on logging costs
+# Uncomment the following rule if the firewall will be used for the ingress use case and you want to perform L7 filtering
+# pass tcp any any -&gt; $HOME_NET any (msg:&quot;Allow three-way handshake to be setup by any&quot;; flow:not_established, to_server; sid:999980;)
+drop tls any any -&gt; $HOME_NET any (msg:&quot;Default Ingress HTTPS Drop&quot;; ssl_state:client_hello; ja4.hash; content:&quot;_&quot;; flowbits:set,blocked; flow:to_server; sid:999999;)
+alert tls any any -&gt; $HOME_NET any (msg:&quot;PQC&quot;; flowbits:isnotset,blocked; flowbits:set,PQC; noalert; flow:to_server; sid:9999910;)
+drop http any any -&gt; $HOME_NET any (msg:&quot;Default Ingress HTTP Drop&quot;; flowbits:set,blocked; flow:to_server; sid:9999911;)
+drop tcp any any -&gt; $HOME_NET any (msg:&quot;Default Ingress TCP Drop&quot;; flowbits:isnotset,blocked; flowbits:isnotset,PQC; flow:to_server; sid:9999912;)
+drop udp any any -&gt; $HOME_NET any (msg:&quot;Default Ingress UDP Drop&quot;; flow:to_server; sid:9999913;)
+drop icmp any any -&gt; $HOME_NET any (msg:&quot;Default Ingress ICMP Drop&quot;; flow:to_server; sid:9999914;)
+drop ip any any -&gt; $HOME_NET any (msg:&quot;Default Ingress All Other IP Drop&quot;; ip_proto:!TCP; ip_proto:!UDP; ip_proto:!ICMP; flow:to_server; sid:9999915;)
+
+# The following rules alert you if they see traffic not to or from $HOME_NET (meaning $HOME_NET probably isn't set correctly)
+alert ip $HOME_NET any -&gt; any any (noalert; flowbits:set,egress_from_home_net; flow:to_server; sid:8925324;)
+alert ip any any -&gt; $HOME_NET any (noalert; flowbits:set,ingress_to_home_net; flow:to_server; sid:8923323;)
+alert ip any any -&gt; any any (msg:&quot;$HOME_NET may not be set right! Set it at the firewall policy level.&quot;; flowbits:isnotset,ingress_to_home_net; flowbits:isnotset,egress_from_home_net; threshold: type limit, track by_both, seconds 600, count 1; flow:to_server; sid:8923283;)
+</code></pre>
+<h3 id="カスタムルールグループの数を最小限に抑える">カスタムルールグループの数を最小限に抑える</h3>
+<p>その理由は以下の通りです:</p>
+<ul>
+<li>カスタムルールグループを作成する際にはキャパシティを定義する必要があり、作成後にキャパシティを変更できないため、余裕を持たせる必要があります。ルールグループが多いとキャパシティ制限の管理がより煩雑になります。キャパシティについては、AWS マネージドルールグループを実装した後の残りのキャパシティをカスタムルールグループに割り当てることをお勧めします。</li>
+<li>管理するルールグループが複数あると、トラフィックの処理方法を把握するのがより複雑になります。ルールを 1 つのビューで確認できれば、複数のルールグループを行き来してトラフィックの評価方法を理解するよりも、ルール間の競合や優先順位の問題をはるかに容易に特定できます。</li>
+<li>Network Firewall は、マネージドとカスタムを合わせて最大 20 のルールグループをサポートしています。カスタムルールグループを多く作成すると、追加できる AWS マネージドルールグループの数が制限されます。</li>
+<li>トラブルシューティングのために、すべてのルールグループでシグネチャ ID（SID）が一意であることを確認する必要があります。Network Firewall は単一のルールグループ内では一意の SID を強制しますが、ルールグループ間では強制しません。すべてのルールグループで一意の SID がない場合、ログからどのルールが実際にトラフィックを処理したかを把握するのがより困難になります。</li>
+</ul>
+<h3 id="home_net-変数が正しく設定されていることを確認">$HOME_NET 変数が正しく設定されていることを確認</h3>
+<p>デフォルトでは、$HOME_NET 変数は Network Firewall がデプロイされている VPC の CIDR 範囲に設定されます。</p>
+<p><img alt="ANF HOME_NET variable" src="../../../images/ANF-homenet-variable.png" /></p>
+<p><em>図 6: Network Firewall HOME_NET 変数</em></p>
+<p>ただし、このデフォルトの動作では、上記の例の Spoke VPC A や Spoke VPC B のように、保護したい VPC の CIDR 範囲がカバーされない場合があります。</p>
+<p>$HOME_NET の CIDR 範囲が、保護対象のすべての VPC およびトラフィックマッチング対象と一致していることを確認してください。ほとんどのお客様は、$HOME_NET をすべての <a href="https://datatracker.ietf.org/doc/html/rfc1918">RFC 1918</a> IP アドレス範囲（10.0.0.0/8、172.16.0.0/12、192.168.0.0/16）に設定することが有効です。</p>
+<p>この変数は、グローバルなファイアウォールポリシーレベルまたは各ルールグループで設定できます。両方のレベルで設定されている場合、ルールグループの設定が優先されます。</p>
+<p>$HOME_NET 変数とその逆変数（$EXTERNAL_NET）は、AWS マネージドルールでのトラフィックマッチングに使用されます。デフォルトでは、$EXTERNAL_NET はファイアウォールポリシーレベルで設定された $HOME_NET の逆になります。ルールグループレベルで $HOME_NET を設定する場合は、ルールグループレベルで $EXTERNAL_NET も設定してください。設定しないと、ルールグループの $EXTERNAL_NET がルールグループの $HOME_NET の逆にならない可能性があります。</p>
+<p>East-West のユースケースでマネージドルールを使用する場合は、保護したい VPC/CIDR を決定し、それらの CIDR のみを $HOME_NET 変数に割り当てる必要があります。すべての VPC/CIDR を割り当てると、マネージドルールの $EXTERNAL_NET 変数に一致する CIDR 範囲がなくなります。</p>
+<p>脅威シグネチャからルールをコピーして変数を調整することもできます（変数を「any」に置き換えてすべての CIDR に一致させることも可能）。ただし、この場合はルールがコピー時点で固定され、AWS マネージドルールのように自動更新されないという欠点があります。</p>
+<p>以下は、ファイアウォールを通過するトラフィックが $HOME_NET に含まれておらず、含めるべきかどうかを特定するのに役立つカスタム Suricata ルールの例です:</p>
+<p>alert tcp !$HOME_NET any -&gt; !$HOME_NET any (flow:to_server,established; msg:"It looks like you might have $HOME_NET traffic that is not a part of the $HOME_NET variable. Please make sure your $HOME_NET variable is set correctly."; sid:39179777;)</p>
+<h3 id="許可されたトラフィックをログに記録するために-pass-ルールの前に-alert-ルールを使用">許可されたトラフィックをログに記録するために Pass ルールの前に Alert ルールを使用</h3>
+<p>すべてのトラフィック（拒否または許可）をログに記録する要件がある場合、Suricata の Pass ルールはトラフィックを許可するだけでログを記録しないため、Pass ルール自体の前に同じトラフィックに対する Alert ルールを追加する必要があります。</p>
+<pre><code>#https://*.amazonaws.com への許可されたトラフィックのログ記録
+alert tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;.amazonaws.com&quot;; nocase; endswith; msg:&quot;*.amazonaws.com allowed by sid:021420242&quot;; flow:to_server; sid:021420241;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;.amazonaws.com&quot;; nocase; endswith; msg:&quot;Pass rules don't alert, alert is on sid:021420241&quot;; flow:to_server; sid:021420242;)
+</code></pre>
+<p>Strict Ordering を使用する必要があり、上記のコードサンプルで示されているように、Alert ルールは Pass ルールよりも高い優先順位を持つ必要があります。</p>
+<p>Alert ルールのメッセージで Pass ルールの SID を参照でき、その逆も可能です。十分に長い SID を使用すると、ログ検索時にその SID と無関係な情報が表示されることなく、素早く検索できます。</p>
+<p>あるいは、pass ルールに <code>alert;</code> キーワードを追加できますが、アラートログでは pass ではなく alert の verdict が生成されます。ルールの例:</p>
+<pre><code># この方法では pass ではなく alert の verdict が表示されます
+pass tls $HOME_NET any -&gt; any any (alert; msg:&quot;www.example2.com allowed&quot;; tls.sni; content:&quot;www.example2.com&quot;; startswith; nocase; endswith; flow:to_server; sid:202506131;)
+</code></pre>
+<h3 id="ステートフルルールで-flowto_server-キーワードを使用">ステートフルルールで "flow:to_server" キーワードを使用</h3>
+<p>Suricata では、競合するルールセットが構成される可能性があります。宛先へのトラフィックが <a href="https://en.wikipedia.org/wiki/OSI_model">OSI モデル</a>の異なるレイヤーで動作する場合、上位レイヤー（例: TLS）で許可したいトラフィックが、下位レイヤー（例: TCP）のルールによってブロックされる可能性があります:</p>
+<h4 id="悪いルールセットの例strict-rule-ordering-使用しないでください">悪いルールセットの例（Strict rule ordering）– 使用しないでください</h4>
+<pre><code># ルール 1 は baddomain.com への http トラフィックをブロックするためのものです
+reject http $HOME_NET any → any 80 (http.host; content:&quot;baddomain.com&quot;; sid:1;)
+
+# ルール 2 はアプリケーションプロトコル検査の前に TCP ポート 80 のトラフィックフローを許可します
+pass tcp $HOME_NET any → any 80 (sid:2;)
+</code></pre>
+<p>ルールで「flow:to_server」を使用すると、同じレベルで動作するようになり、トラフィックを同時に評価できます。pass ルール（sid:2）が reject ルール（sid:1）よりも優先される形でトラフィックを許可することはなくなります。</p>
+<h4 id="良いルールセットの例strict-rule-ordering-使用可能">良いルールセットの例（Strict rule ordering）– 使用可能</h4>
+<pre><code># ルール 1 は baddomain.com への http トラフィックをブロックします
+reject http $HOME_NET any → any 80 (http.host; content:&quot;baddomain.com&quot;; sid:1;)
+
+# ルール 2 はルール 1 よりも優先されません
+pass tcp $HOME_NET any → any 80 (flow:to_server; sid:2;)
+</code></pre>
+<p>ファイアウォールルールのトラブルシューティングの詳細については、<a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/troubleshooting-rules.html">Network Firewall でのルールのトラブルシューティング</a>を参照してください。</p>
+<h3 id="新しいステートフルファイアウォールルールを既存のフローに適用する方法">新しいステートフルファイアウォールルールを既存のフローに適用する方法</h3>
+<p>Network Firewall は、すべてのステートフルファイアウォールルールに Suricata ディープパケットインスペクションエンジンを使用しています。フローが Suricata ルールによって許可されると、Suricata はそのフローを状態テーブルに登録します。これにより、そのフローに対してディープパケットインスペクションにリソースを費やす必要がなくなります。そのフローがアクティブである限り、すでに判断が下されているため、新しいステートフルファイアウォールルールはそのトラフィックに適用されません。</p>
+<p>しかし、新しく追加したルールを、以前に許可されたアクティブなトラフィックを含むすべてのトラフィックに適用したい場合があります。例えば、最初に「すべてのトラフィックを許可」するルールで開始し、その後ルールセットを絞り込んでいく過程で、既に許可されたトラフィックも新しいルールで再評価したい場合です。</p>
+<p>Network Firewall のステートフルルール状態テーブルをクリアする方法</p>
+<ul>
+<li>ファイアウォールポリシーの「Details」ページに移動します</li>
+<li>「Stream exception policy」を現在の設定とは異なるものに変更し、Save をクリックします</li>
+<li>次に「Stream exception policy」を編集し、以前の設定に戻します。ほとんどの場合の推奨設定: 「Stream exception policy: Reject」</li>
+</ul>
+<p>これにより、以前に許可されたトラフィックを含むすべてのトラフィックが、最新のステートフルファイアウォールルールに対して再評価されます。</p>
+<h3 id="ログ記録とモニタリングの設定">ログ記録とモニタリングの設定</h3>
+<p>Network Firewall は、Alert ログと Flow ログの 2 種類のログタイプをサポートしています。</p>
+<ul>
+<li>Alert ログ<ul>
+<li>Suricata からの情報</li>
+<li>IPS エンジン</li>
+<li>レイヤー 7 属性（ドメインなど）</li>
+<li>プロトコル検出</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Flow ログ<ul>
+<li>ファイアウォールを通過するフローの 5 タプル情報</li>
+<li>トラフィック量を含む</li>
+<li>トラフィックの主要な発生源と宛先の特定に役立つ</li>
+</ul>
+</li>
+</ul>
+<p>ネイティブの<a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/nwfw-using-dashboard.html">ファイアウォールモニタリングダッシュボード</a>は、ファイアウォールに関する主要なメトリクスを表示するための複数のオプションを提供します。ダッシュボードで利用可能なすべてのメトリクスは<a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/nwfw-detailed-monitoring-metrics.html">こちら</a>で確認できます。</p>
+<p>CloudWatch Logs Insights を使用して、Network Firewall のログからセキュリティおよび運用上のインサイトを分析できます。以下のクエリは、flow_id を使用して Flow ログ（トラフィック量データ）と Alert ログ（TLS SNI 情報）を相関分析します:</p>
+<pre><code>fields @timestamp, event.flow_id, event.netflow.bytes, event.tls.sni
+| stats sum(event.netflow.bytes) as flowBytes, latest(event.tls.sni) as sni by event.flow_id
+| stats sum(flowBytes) as totalBytes, count(*) as flowCount by sni
+| sort totalBytes desc
+| limit 20
+</code></pre>
+<p>このクエリは 2 段階の集計を使用して SNI とバイト数を相関させます。まず flow_id ごとに集計して Flow ログのバイト数と Alert ログの SNI を結合し、次にドメインごとにすべてのバイト数を合計します。これにより、環境が最も多く通信している外部サービスと、トラフィックの大部分がどこに向かっているかを把握できます。</p>
+<p><img alt="Custom query" src="../../../images/jp/custom-nfw-query.png" /></p>
+<h2 id="コストに関する考慮事項">コストに関する考慮事項</h2>
+<p>各 Network Firewall エンドポイントは使用していなくても時間単位の料金が発生するため、<a href="https://aws.amazon.com/jp/about-aws/whats-new/2025/07/aws-network-firewall-native-transit-gateway-support/">Network Firewall のネイティブ Transit Gateway サポート</a>を活用した集中検査設計でエンドポイント数を削減してください。TGW を使用しないが、複数の AWS アカウントや VPC でファイアウォールを共有したい場合は、Network Firewall の<a href="https://aws.amazon.com/jp/about-aws/whats-new/2025/05/aws-network-firewall-multiple-vpc-endpoints/">マルチエンドポイントサポート</a>を活用して、セカンダリエンドポイントのコストを削減できます。</p>
+<p>Transit Gateway を通じて集中型 Network Firewall を使用している複数のアカウントまたは事業部門がある組織では、<a href="https://docs.aws.amazon.com/ja_jp/vpc/latest/tgw/metering-policy.html">Transit Gateway の柔軟なコスト配分</a>を活用して、トラフィック使用パターンに基づいてコストを配分・追跡し、組織単位間でのコスト可視性とチャージバックを向上させることができます。</p>
+<p>検査が不要なトラフィックを Network Firewall に送信しないでください。Network Firewall での不要な処理料金を避けるために、TGW ルートテーブルを使用してネットワークをセグメント化してください。例えば、VPC Prod と VPC Dev が通信する必要がない場合は、相互通信を防止します。</p>
+<p><a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/reporting.html">トラフィック分析レポート機能</a>を使用して、ネットワーク処理料金を最も増加させている可能性のあるドメインを確認してください。</p>
+<p>そのトラフィックを Network Firewall 経由で送信する代わりに、S3 および DynamoDB 用の無料の VPC エンドポイントを使用してください。</p>
+<p>ファイアウォールによる検査が不要なサードパーティサービスが提供する PrivateLink エンドポイントを活用してください。ワークロードが「共有サービス」タイプの VPC 内のリソースにアクセスする必要がある場合、Network Firewall 経由ではなく VPC ピアリングを使用して「共有サービス VPC」にアクセスする方が、Network Firewall のデータ処理料金の節約に効果的な場合があります。</p>
+<p>ルートテーブルが他のアベイラビリティーゾーンのエンドポイントではなく、ローカルの Network Firewall エンドポイントにトラフィックを送信していることを確認してください。この設計により、クロス AZ データ転送料金の発生を回避できます。</p>
+<p>DNS Firewall を使用して Network Firewall に到達するトラフィックを削減してください。Network Firewall に到達するはずのトラフィックに対して DNS レイヤーで基本的なブロックを設定することで、「パケットソースに最も近い」場所でトラフィックを効果的にブロックできます。</p>
+<p>ログ出力を抑制してログコストを削減したい場合は、Suricata ルールに <code>"threshold: type limit, track by_both, seconds 600, count 1;"</code> を追加できます。例えば、以下のルールは、ルールをトリガーするソースおよび宛先 IP ペアごとに 10 分に 1 回のみアラートを発生させます。</p>
+<p><code>alert ssh $HOME_NET any -&gt; any any (msg:"Egress SSH - alert only once every ten minutes"; threshold: type limit, track by_both, seconds 600, count 1; flow:to_server; sid:898233;)</code></p>
+<h2 id="非対称転送に関するステートレスルールのトラブルシューティング">非対称転送に関するステートレスルールのトラブルシューティング</h2>
+<p>特定のステートレスルール構成により、トラフィックが一方向のみステートフルエンジンで検査される場合があります。最も一般的な原因は、リターン方向に対応するルールなしにステートレスの「Pass」または「Forward to stateful rules」を使用する場合です。</p>
+<p>この非対称転送を引き起こすステートレスルールを特定するには、サービスの組み込みルールアナライザーを使用し、非対称ルールを削除するか、リターントラフィックに一致するルールを追加してルールグループを更新してください。AWS マネジメントコンソールでステートレスルールグループを分析するか、API または CLI で DescribeRuleGroup を呼び出す際に「AnalyzeRuleGroup」オプションを使用できます。</p>
+<p>以下は、AWS マネジメントコンソールを使用してルールグループを分析する方法の例です。ステートレスルールグループに移動して「Analyze」をクリックします。</p>
+<p><img alt="ANF Rule group analyzer" src="../../../images/jp/ANF-troubleshooting-1.png" /></p>
+<p>ルールグループアナライザーは、優先順位 2 のステートレスルールが Network Firewall を通じた非対称ルーティングにつながることを特定しました。</p>
+<p><img alt="ANF Analysis results" src="../../../images/jp/ANF-troubleshooting-2.png" /></p>
+<p>この問題を修正するには、「Edit」をクリックしてリターントラフィックを許可する別のルールを追加します。つまり、0.0.0.0/0 から 10.2.0.0/24 へのトラフィックです。</p>
+<p><img alt="ANF Analysis results edit" src="../../../images/jp/ANF-troubleshooting-3.png" /></p>
+<p><img alt="ANF Fixed rule group" src="../../../images/jp/ANF-troubleshooting-4.png" /></p>
+<p>ルールを更新した後、アナライザーを再度実行して問題が解決されたことを確認します。</p>
+<p><img alt="ANF Anaylzer rerun" src="../../../images/jp/ANF-troubleshooting-5.png" /></p>
+<p>ご質問がある場合は、AWS サポートチームにお問い合わせください。</p>
+<h2 id="aws-network-firewall-を使用したクライアント側-tls-sni-操作の緩和オプション">AWS Network Firewall を使用したクライアント側 TLS SNI 操作の緩和オプション</h2>
+<p>TLS SNI フィルタリングは、ネットワークアプライアンスがエグレストラフィックを制御するためにドメインフィルタリングを実行する業界標準のメカニズムです。ドメインを IP アドレスに名前解決する必要なく TLS トラフィックを監視・制御できる、シンプルで簡単な方法です。</p>
+<p>ただし、ドメインから IP への名前解決は信頼性が低い場合があり、潜在的な脆弱性にもなります。CDN がウェブサイトホスティングに広く使用されているため、CDN の IP へのアクセスを許可すると、クライアントが偽造リクエストを作成できる場合、その CDN でホストされているすべてのドメインにアクセスできてしまいます。SNI フィルタリングにも同様の制限があります。クライアントが偽造リクエストを作成できる場合、正当なドメインに向かうように見せかけて、実際には不正な IP アドレスに接続する可能性があります。これらのクライアント側 SNI 操作のケースでは、いずれもシステムがある程度侵害されていることが前提条件です。</p>
+<ul>
+<li>では、この問題にどう対処すればよいでしょうか？</li>
+</ul>
+<p>まず最も重要なのは、SNI 操作が可能になるほどワークロードが侵害される可能性自体を低減することに集中することです。AWS Network Firewall のマネージドルールの活用が良い出発点です。よく知られた高リスクの脅威をブロックしてくれるためです。多くの AWS のお客様はここから始め、正当なドメインの短いリストのみを許可し、その他すべてをデフォルトでブロックする最小権限セキュリティモデルへと移行しています。ドメイン許可リストはリスク面を大幅に削減し、ワークロードが侵害されて偽造リクエストの送信に悪用される機会をさらに低減します。</p>
+<ul>
+<li>しかし、AWS Network Firewall でクライアント側 SNI 操作を直接ブロックしたい場合はどうすればよいでしょうか？</li>
+</ul>
+<p><a href="https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/tls-inspection-configurations.html">AWS Network Firewall の TLS 復号機能</a>を有効にすることで実現できます。TLS 復号が有効になると、クライアント側 SNI 操作はデフォルトでブロックされ、ファイアウォールの TLS ログに以下のエラーメッセージが表示されます:</p>
+<pre><code>{
+    &quot;firewall_name&quot;: &quot;NetworkFirewall&quot;,
+    &quot;availability_zone&quot;: &quot;us-east-1a&quot;,
+    &quot;event_timestamp&quot;: 1727451885,
+    &quot;event&quot;: {
+        &quot;timestamp&quot;: &quot;2024-09-27T15:44:45.321222Z&quot;,
+        &quot;src_ip&quot;: &quot;10.2.1.145&quot;,
+        &quot;src_port&quot;: &quot;39038&quot;,
+        &quot;dest_ip&quot;: &quot;44.193.128.70&quot;,
+        &quot;dest_port&quot;: &quot;443&quot;,
+        &quot;sni&quot;: &quot;spoofedsni.com&quot;,
+        &quot;tls_error&quot;: {
+            &quot;error_message&quot;: &quot;SNI: spoofedsni.com Match Failed to server certificate names: checkip.us-east-1.prod.check-ip.aws.a2z.com/checkip.us-east-1.prod.check-ip.aws.a2z.com/checkip.amazonaws.com/checkip.check-ip.aws.a2z.com &quot;
+        }
+    }
+}
+</code></pre>
+<ul>
+<li>しかし、クライアント側 SNI 操作をブロックするための他のオプションは何でしょうか？</li>
+</ul>
+<p>SNI ドメインチェックと DNS ドメイン-IP チェックの両方を追加して、SNI リクエストが DNS でそのドメインに関連付けられた IP アドレスへのみ許可されるようにすることが可能です。<a href="https://aws.amazon.com/blogs/security/how-to-control-non-http-and-non-https-traffic-to-a-dns-domain-with-aws-network-firewall-and-aws-lambda/">Network Firewall でこれを実現するソリューション例</a>を参照してください。上記の両方のソリューションには追加のコストや複雑さが伴うため、まずドメイン許可リストの導入から始め、ワークロードのセキュリティ要件に応じて追加の制御が必要かどうかを判断することをお勧めします。</p>
+<p>Network Firewall が TLS SNI スプーフィングに対抗できるもう 1 つの機能は JA3 フィルタリングです。JA3 は HTTP User-Agent に似た概念ですが TLS 用であり、簡単には設定変更できません。JA3 の詳細については<a href="https://engineering.salesforce.com/tls-fingerprinting-with-ja3-and-ja3s-247362855967/">こちら</a>を参照してください。tls.sni フィルタリングと ja3.hash フィルタリングを組み合わせて使用する方法の例をいくつか見てみましょう。</p>
+<p>まず、TLS ドメイン許可リストが以下のようになっていると仮定します:</p>
+<pre><code>pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ssm.us-east-1.amazonaws.com&quot;; nocase; flow:to_server; sid:11111;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ssmmessages.us-east-1.amazonaws.com&quot;; nocase; flow:to_server; sid:22222;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ec2.us-east-1.amazonaws.com&quot;; nocase; flow:to_server; sid:33333;)
+reject tls $HOME_NET any -&gt; any any (msg:&quot;TLS not on domain allow-list blocked&quot;; flow:to_server; sid:44444;)
+</code></pre>
+<p>これらの特定のドメインをクライアントエージェントの JA3 ハッシュでのみアクセスできるようにさらに制限したい場合、ドメイン許可リストを以下のように変換できます:</p>
+<pre><code>pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ssm.us-east-1.amazonaws.com&quot;; nocase; ja3.hash; content:&quot;7a15285d4efc355608b304698cd7f9ab&quot;; sid:11111;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ssmmessages.us-east-1.amazonaws.com&quot;; nocase; ja3.hash; content:&quot;1be8360b66649edee1de25f81d98ec27&quot;; sid:22222;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ec2.us-east-1.amazonaws.com&quot;; nocase; ja3.hash; content:&quot;fd75aaca18604d62f2bc8b02b345140f&quot;; sid:33333;)
+reject tls $HOME_NET any -&gt; any any (msg:&quot;TLS not on domain/JA3 allow-list blocked&quot;; flow:to_server; sid:44444;)
+</code></pre>
+<p>上記のルールセットが適用されると、各ドメインが正しい JA3 でのみアクセス可能になるため、許可リスト上のドメインに curl でアクセスすることはできなくなります。SNI スプーフィングが成功するには、クライアントシステムが特殊なコマンドを作成・実行できるほど侵害されている必要があります。さらに、攻撃者が許可リスト上のドメインへの接続を行うために、特定のクライアントエージェント/プロセスまで操作できるほどシステムを深く掌握している必要があります。</p>
+<p>もう 1 つのオプションは、厳密にせず、3 つの JA3 がすべての SNI にアクセスできるようにする方法です:</p>
+<pre><code>alert tls $HOME_NET any -&gt; any any (ja3.hash; content:&quot;7a15285d4efc355608b304698cd7f9ab&quot;; flowbits:set,ja3_allowed; noalert; sid:11111;)
+alert tls $HOME_NET any -&gt; any any (ja3.hash; content:&quot;1be8360b66649edee1de25f81d98ec27&quot;; flowbits:set,ja3_allowed; noalert; sid:22222;)
+alert tls $HOME_NET any -&gt; any any (ja3.hash; content:&quot;fd75aaca18604d62f2bc8b02b345140f&quot;; flowbits:set,ja3_allowed; noalert; sid:33333;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ssm.us-east-1.amazonaws.com&quot;; nocase; flowbits:isset,ja3_allowed; sid:44444;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ssmmessages.us-east-1.amazonaws.com&quot;; flowbits:isset,ja3_allowed; nocase; sid:55555;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ec2.us-east-1.amazonaws.com&quot;; nocase; flowbits:isset,ja3_allowed; sid:66666;)
+reject tls $HOME_NET any -&gt; any any (msg:&quot;TLS not on domain/JA3 allow-list blocked&quot;; flow:to_server; sid:77777;)
+</code></pre>
+<p>上記の 2 つのオプションには、クライアントエージェントのアップグレードのたびに新しい JA3 ハッシュを許可リストに追加する必要があるという欠点があります。これはセキュリティ価値の向上のために運用の複雑さが増すことを意味します。</p>
+<p>許可リストの管理を容易にしつつ、リスク面の削減を継続するにはどうすればよいでしょうか？</p>
+<p>もう 1 つのオプションは、承認された JA3 ハッシュがアクセスした宛先 IP を追跡し、一定期間記憶した上で、TLS ドメイン許可リストがそれらの信頼度の高い宛先 IP に対してのみ機能するようにすることです。そのルールセットは以下のようになります:</p>
+<pre><code>alert tls $HOME_NET any -&gt; any any (ja3.hash; content:&quot;7a15285d4efc355608b304698cd7f9ab&quot;; xbits:set, allowed_ja3_destination_ips, track ip_dst, expire 21600; sid:11111;)
+alert tls $HOME_NET any -&gt; any any (ja3.hash; content:&quot;1be8360b66649edee1de25f81d98ec27&quot;; xbits:set, allowed_ja3_destination_ips, track ip_dst, expire 21600; sid:22222;)
+alert tls $HOME_NET any -&gt; any any (ja3.hash; content:&quot;fd75aaca18604d62f2bc8b02b345140f&quot;; xbits:set, allowed_ja3_destination_ips, track ip_dst, expire 21600; sid:33333;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ssm.us-east-1.amazonaws.com&quot;; nocase; xbits:isset, allowed_ja3_destination_ips, track ip_dst; sid:44444;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ssmmessages.us-east-1.amazonaws.com&quot;; xbits:isset, allowed_ja3_destination_ips, track ip_dst; nocase; sid:55555;)
+pass tls $HOME_NET any -&gt; any any (tls.sni; content:&quot;ec2.us-east-1.amazonaws.com&quot;; nocase; xbits:isset, allowed_ja3_destination_ips, track ip_dst; sid:66666;)
+reject tls $HOME_NET any -&gt; any any (msg:&quot;TLS not on domain/A3 allow-list blocked&quot;; flow:to_server; sid:77777;)
+</code></pre>
+<p>上記のオプションは、新しい JA3 が TLS ドメイン許可リストにアクセスすることを許可しますが、承認された JA3 がすでに通信している IP へのリクエストに限定されます。過度な柔軟性を与えることなく、適度な柔軟性を提供できます。</p>
+<p>各お客様は、自社アプリケーションの脅威モデルに照らして、JA3 許可リストの維持管理に伴う追加の負担が正当化されるかどうかを判断する必要があります。ほとんどの AWS Network Firewall のお客様は、ドメイン許可リストによる大幅なリスク削減で十分と判断しており、JA3 ハッシュの許可リストまで追加する必要はないと考えています。</p>
+<h2 id="リソース">リソース</h2>
+<h3 id="ワークショップ">ワークショップ</h3>
+<ul>
+<li><a href="https://catalog.workshops.aws/network-security/en-US">AWS Advanced Network Security: Network Firewall &amp; DNS Firewall</a></li>
+<li><a href="https://catalog.workshops.aws/networkfirewall/en-US">AWS Network Firewall Workshop</a></li>
+<li><a href="https://catalog.us-east-1.prod.workshops.aws/workshops/503778b9-6dbb-4e0d-9920-e8dbae141f43/en-US">Egress Controls Workshop</a></li>
+</ul>
+<h3 id="動画">動画</h3>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=67pVOv3lPlk">Introduction, Best Practices and Custom Suricata Rules</a></li>
+<li><a href="https://www.youtube.com/watch?v=BYVObzBWnqo&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=1&amp;pp=iAQB">AWS Network Firewall console experience</a></li>
+<li><a href="https://www.youtube.com/watch?v=S7_hUxWrYmw&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=3&amp;pp=iAQB">Decrypt, inspect, and re-encrypt TLS egress traffic at scale</a></li>
+<li><a href="https://www.youtube.com/watch?v=j2pLuHdAj0A&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=40&amp;pp=iAQB">Decrypt, inspect, and re-encrypt TLS traffic at scale</a></li>
+<li><a href="https://www.youtube.com/watch?v=ufx8sO5s4BI&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=22&amp;pp=iAQB">AWS Network Fireall Suricata HOME_NET variable override</a></li>
+<li><a href="https://www.youtube.com/watch?v=_K_2TVNygF4&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=54&amp;pp=iAQB">AWS Network Firewall support for reject action for TCP traffic</a></li>
+<li><a href="https://www.youtube.com/watch?v=SDj_tMHN5Zk&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=55&amp;pp=iAQB">AWS Network Firewall tag-based resource groups</a></li>
+<li><a href="https://www.youtube.com/watch?v=lTJxWAiQrHM">AWS re:Inforce 2023 - Firewalls, and where to put them (NIS306)</a></li>
+</ul>
+<h3 id="ブログ">ブログ</h3>
+<ul>
+<li><a href="https://aws.amazon.com/jp/blogs/news/networking-and-content-delivery-deployment-models-for-aws-network-firewall/">Deployment models</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/cost-considerations-and-common-options-for-aws-network-firewall-log-management/">Cost considerations and common options for AWS Network Firewall log management</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/tls-inspection-configuration-for-encrypted-traffic-and-aws-network-firewall/">TLS inspection configuration for encrypted traffic and AWS Network Firewall</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-control-non-http-and-non-https-traffic-to-a-dns-domain-with-aws-network-firewall-and-aws-lambda/">How to control non-HTTP and non-HTTPS traffic to a DNS domain with AWS Network Firewall and AWS Lambda</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/use-aws-network-firewall-to-filter-outbound-https-traffic-from-applications-hosted-on-amazon-eks/">Use AWS Network Firewall to filter outbound HTTPS traffic from applications hosted on Amazon EKS and collect hostnames provided by SNI</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-deploy-aws-network-firewall-by-using-aws-firewall-manager/">How to deploy AWS Network Firewall by using AWS Firewall Manager</a></li>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/introducing-prefix-lists-in-aws-network-firewall-stateful-rule-groups/">Introducing Prefix Lists in AWS Network Firewall Stateful Rule Groups</a></li>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-analyze-aws-network-firewall-logs-using-amazon-opensearch-service-part-1/">How to analyze AWS Network Firewall logs using Amazon OpenSearch Service – Part 1</a></li>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-analyze-aws-network-firewall-logs-using-amazon-opensearch-service-part-2/">How to analyze AWS Network Firewall logs using Amazon OpenSearch Service – Part 2</a></li>
+</ul>
+<h3 id="サンプルコード">サンプルコード</h3>
+<ul>
+<li><a href="https://github.com/aws-samples/aws-networkfirewall-cfn-templates/tree/main/cloudwatch_dashboard">AWS Network Firewall CloudWatch Dashboard</a></li>
+<li><a href="https://github.com/aws-samples/aws-network-firewall-automation-examples/tree/main">AWS Network Firewall Automation Examples</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
