@@ -38,15 +38,28 @@ nav:
   - Amazon Security Lake Best Practices: guides/security-lake/index.md
   - AWS WAF Best Practices:
       - Home: guides/waf/index.md
-      - WAF Prerequisites: guides/waf/prerequisites/docs/index.md
-      - Configuring WAF Rules: guides/waf/configuring-waf-rules/docs/index.md
+      - Prerequisites and Fundamentals: guides/waf/prerequisites/docs/index.md
+      - Recommended HTTP Architecture on AWS: guides/waf/recommended-http-architecture/docs/index.md
+      - Operationalizing: guides/waf/operationalizing/docs/index.md
+      - AWS Managed Rules: guides/waf/aws-managed-rules/docs/index.md
+      - Custom Rules: guides/waf/custom-rules/docs/index.md
+      - Bot Management: guides/waf/bot-management/docs/index.md
+      - Fraud Prevention: guides/waf/fraud-prevention/docs/index.md
+      - Recommended WAF Rule Order: guides/waf/recommended-waf-rule-order/docs/index.md
+      - CAPTCHA and Challenge: guides/waf/captcha-and-challenge/docs/index.md
+      - WAF Costs: guides/waf/waf-cost/docs/index.md
+      - Logging Approaches: guides/waf/waf-logging/docs/index.md
       - Monitoring WAF Rules: guides/waf/monitoring-waf-rules/docs/index.md
-      - Using WAF with other AWS Services: guides/waf/using-waf-with-other-services/docs/index.md
+      - Using WAF with Other AWS Services: guides/waf/using-waf-with-other-services/docs/index.md
+      - Additional References: guides/waf/additional-references/docs/index.md
   - AWS Network Firewall Best Practices: guides/network-firewall/index.md
   - Amazon Route 53 Resolver DNS Firewall Best Practices: guides/dns-firewall/index.md
   - Contributors: contributors.md
 markdown_extensions:
-    - mdx_truly_sane_lists
+    - admonition
+    - mdx_truly_sane_lists:
+        truly_sane: true
+        nested_indent: 2
     - toc:
         slugify: !!python/object/apply:pymdownx.slugs.slugify
           kwds:
