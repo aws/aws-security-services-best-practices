@@ -17,7 +17,7 @@ This guide is geared towards security practitioners who are responsible for moni
   * [Use Stateful rules over Stateless rules](#use-stateful-rules-over-stateless-rules)
   * [Use Custom Suricata rules instead of UI generated rules](#use-custom-suricata-rules-instead-of-ui-generated-rules)
   * [Use as few Custom Rule Groups as possible](#use-as-few-custom-rule-groups-as-possible)
-  * [Ensure the $HOME_NET variable is set correctly](#ensure-the-home_net-variable-is-set-correctly)
+  * [Ensure the $HOME_NET and $EXTERNAL_NET variables are set correctly](#ensure-the-$home_net-and-$external_net-variables-are-set-correctly)
   * [Use Alert rule before Pass rule to log allowed traffic](#use-alert-rule-before-pass-rule-to-log-allowed-traffic)
   * [Use “flow:to_server” keyword in stateful rules](#use-flowto_server-keyword-in-stateful-rules)
   * [How to make sure your new Stateful firewall rules apply to existing flows](#how-to-make-sure-your-new-stateful-firewall-rules-apply-to-existing-flows)
@@ -301,9 +301,9 @@ The reasons for this we have listed below:
 * Network Firewall supports a maximum combined total of 20 rule groups (Managed and Custom).  If you create many custom rule groups you will limit how many AWS Managed Rule Groups can also be added.
 * For troubleshooting purposes, you will want to make sure Signature IDs (SIDs) are unique across all rule groups.  Within a single rule group Network Firewall will enforce unique SIDs, but not across all rule groups. If you don’t have unique SIDs across all rule groups then it can be more challenging to understand from the logs which rule actually handled the traffic.
 
-### Ensure the $HOME_NET variable is set correctly
+### Ensure the $HOME_NET and $EXTERNAL_NET variables are set correctly
 
-By default the $HOME_NET variable is set to the CIDR range of the VPC where Network Firewall is deployed.
+By default the $HOME_NET variable is set to the CIDR range of the VPC where Network Firewall is deployed and $EXTERNAL_NET is set to the inverse of $HOME_NET
 
 ![ANF HOME_NET variable](../../images/ANF-homenet-variable.png)
 
@@ -315,7 +315,7 @@ You want to make sure that the $HOME_NET CIDR range lines up with all your VPCs 
 
 This variable can be set at a global firewall policy level or in each rule group. If it’s set at both levels, the rule group setting wins.
 
-The $HOME_NET variable and it’s inverse ($EXTERNAL_NET) are used for matching traffic in AWS managed rules. By default, $EXTERNAL_NET is the inverse of whatever $HOME_NET is set to at the firewall policy level. If you set $HOME_NET at the rule group level, make sure that you also set $EXTERNAL_NET at the rule group level, too, otherwise the rule group's $EXTERNAL_NET may not be the inverse of the rule group's $HOME_NET.
+The $HOME_NET and $EXTERNAL_NET variables are used for matching traffic in AWS managed rules. By default, $EXTERNAL_NET is the inverse of whatever $HOME_NET is set to **at the firewall policy level**. Howver, if you set $HOME_NET at the rule group level, make sure that you also set $EXTERNAL_NET at the rule group level, too, otherwise the rule group's $EXTERNAL_NET may not be the inverse of the rule group's $HOME_NET. $EXTERNAL_NET is not automatically set to the inverse of a rule group's $HOME_NET setting. 
 
 When using the managed rules for an east/west use case you will want to decide which VPCs/CIDRs you want to protect and assign only those CIDRs to the $HOME_NET variable. If you assign all VPCs/CIDRs then none of those CIDR ranges will be matched by the $EXTERNAL_NET variable in the managed rules. You can also copy out the rules from the threat signatures and adjust the variables to your liking (even replacing the variables by “any“) if you want them to match any/all CIDRs. The downside of doing this is those rules will be static at that point in time and will not be automatically updated like the AWS managed rules.
 
