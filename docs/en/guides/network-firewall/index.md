@@ -325,7 +325,7 @@ alert tcp !$HOME_NET any -> !$HOME_NET any (flow:to_server,established; msg:"It 
 
 ### Use Alert rule before Pass rule to log allowed traffic
 
-If you have a mandate to log all traffic (denied or allowed), you need to add an alert rule for the same traffic as the pass rule before the pass rule itself in your rule group because Pass rules in Suricata simply allow the traffic and do not log it.
+If you have a mandate to log all traffic (denied or allowed), you need to add an alert rule for the same traffic as the pass rule before the pass rule itself in your rule group because Pass rules in Suricata (that don't have the `alert;` keyword on them) simply allow the traffic and do not log it.
 
 ```
 #Log allowed traffic to https://*.amazonaws.com
