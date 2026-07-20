@@ -113,7 +113,7 @@ If you use "Application drop established", be aware that it can drop TCP flow co
 
 Alternatively, the Egress Default Block Rules in the [custom Suricata rules template](#use-custom-suricata-rules-instead-of-ui-generated-rules) included in this guide apply the same application-layer-aware drop strategy using custom rules, without requiring separate rules for TCP flow control packets.
 
-### Use Stateful rules over Stateless rules
+### Use Stateful rules instead of Stateless rules
 
 * Stateless rules should be used very sparingly because they can easily cause asymmetric flow forwarding issues (where only one side of the flow is seen by the stateful inspection engine of the firewall) and they tend to make the overall firewall ruleset more complex to understand and troubleshoot. For the large majority of use cases we recommend the stateless engine’s default action be set to “Forward to stateful rule groups” and we recommend not having any stateless rules configured since they take precedence over stateful rules.
 * If you are going to use stateless rules, it’s important to understand how to use the Network Firewall’s Stateless Rule Group Analyzer to troubleshoot and resolve asymmetric flow issues. See the “Troubleshooting stateless rules for asymmetric forwarding”
