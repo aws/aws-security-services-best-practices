@@ -82,7 +82,7 @@ When using [AWS Transit Gateway (TGW)](https://aws.amazon.com/transit-gateway/) 
 
 If appliance mode is not enabled, the return path traffic could land on an endpoint in a different AZ, which will prevent the Network Firewall from correctly evaluating the traffic against the firewall policy.
 
-### Use Strict rule ordering and 'Drop established' or 'Application drop established' with corresponding 'Alert' default actions
+### Use Strict rule ordering and 'Application drop established (server-directed only)' with 'Application alert established (server-directed only)' default actions
 
 * In Network Firewall there are two options for how the Suricata engine is going to process rules.
   * The "Strict" option is recommended because it instructs Suricata to process the rules in the order you have defined.
