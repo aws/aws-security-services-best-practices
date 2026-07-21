@@ -87,17 +87,17 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 
 * In Network Firewall there are two options for how the Suricata engine processes rules.
   * The "Strict" option is recommended because it instructs Suricata to process the rules in the order you have defined, from top to bottom.
-  * The "Action Order" option supports Suricata's default rule processing, but it is not a good fit for the firewall use cases. This option is the default when a firewall policy is created through infrastucture as code, so it's important to make sure to define strict rule ordering in your IaC.
+  * The "Action Order" option supports Suricata's default rule processing, but it is not a good fit for firewall use cases. Action Order is the default when a firewall policy is created through infrastructure as code, so it's important to make sure to define strict rule ordering in your IaC.
 
 ### Use 'Application drop established (server-directed only)' and 'Application alert established (server-directed only)' default firewall policy actions
 
-* Network Firewall policies can have default actions defined that append default block rules to the very end of the ruleset behind the scenes. The best defalt action is 'Application drop established (server-directed only)' because it supports the largest number of use cases, including domain filtering and IDS/IPS. 
+* Network Firewall policies can have default actions defined that append default block rules to the very end of the ruleset behind the scenes. The best default action is 'Application drop established (server-directed only)' because it supports the largest number of use cases, including domain filtering and IDS/IPS. 
 
 Alternatively, the Egress Default Block Rules at the end of the [custom Suricata rules template](#use-custom-suricata-rules-instead-of-ui-generated-rules) included in this guide are simliar to the rules used by 'Application drop established (server-directed only)' but they also:
-  * Log JA4 hashes when TLS traffic is blocked
-  * Make it clear in the logs what is Egress traffic and what is Ingress traffic
-  * Reject (send TCP reset to client) Egress traffic, Drop (does not send TCP reset to client) Ingress traffic.
-  * Don't block response traffic for traffic allowed by a pass rule with the flow: keyword on it.
+* Log JA4 hashes when TLS traffic is blocked
+* Make it clear in the logs what is Egress traffic and what is Ingress traffic
+* Reject (send TCP reset to client) Egress traffic, Drop (does not send TCP reset to client) Ingress traffic.
+* Don't block response traffic for traffic allowed by a pass rule with the flow: keyword on it.
 
 ### Use Stateful rules instead of Stateless rules
 
