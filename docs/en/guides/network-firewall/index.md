@@ -13,7 +13,8 @@ This guide is geared towards security practitioners who are responsible for moni
 * [Implementation](#implementation)
 * [Operationalizing](#operationalizing)
   * [Ensure Symmetric Routing](#ensure-symmetric-routing)
-  * [Use Strict rule ordering and 'Application drop established (server-directed only)' with 'Application alert established (server-directed only)' default actions](#use-strict-rule-ordering-and-drop-established-or-application-drop-established-with-corresponding-alert-default-actions)
+  * [Use Strict rule order firewall policy](#use-strict-rule-order-firewall-policy)
+  * [Use 'Application drop established (server-directed only)' and 'Application alert established (server-directed only)' default firewall policy actions] (#use-application-drop-established-server-directed-only- and-application-alert-established-server-directed-only-default-firewall- policy-actions)
   * [Use Stateful rules instead of Stateless rules](#use-stateful-rules-over-stateless-rules)
   * [Use Custom Suricata rules instead of UI generated rules](#use-custom-suricata-rules-instead-of-ui-generated-rules)
   * [Use as few Custom Rule Groups as possible](#use-as-few-custom-rule-groups-as-possible)
@@ -82,36 +83,21 @@ When using [AWS Transit Gateway (TGW)](https://aws.amazon.com/transit-gateway/) 
 
 If appliance mode is not enabled, the return path traffic could land on an endpoint in a different AZ, which will prevent the Network Firewall from correctly evaluating the traffic against the firewall policy.
 
-### Use Strict rule ordering and 'Application drop established (server-directed only)' with 'Application alert established (server-directed only)' default actions
+### Use Strict rule order firewall policy
 
-* In Network Firewall there are two options for how the Suricata engine is going to process rules.
-  * The "Strict" option is recommended because it instructs Suricata to process the rules in the order you have defined.
-  * The "Action Order" option supports Suricata's default rule processing which is appropriate for IDS use cases but is not a good fit for typical firewall use cases.
-* When selecting Strict rule ordering you are also able to select "Default" actions that are run at the end of your rules and will be applied to any traffic not matching earlier rules. There are two main approaches:
+* In Network Firewall there are two options for how the Suricata engine processes rules.
+  * The "Strict" option is recommended because it instructs Suricata to process the rules in the order you have defined, from top to bottom.
+  * The "Action Order" option supports Suricata's default rule processing, but it is not a good fit for the firewall use cases. This option is the default when a firewall policy is created through infrastucture as code, so it's important to make sure to define strict rule ordering in your IaC.
 
-#### Why 'Drop established' over 'Drop all'
+### Use 'Application drop established (server-directed only)' and 'Application alert established (server-directed only)' default firewall policy actions
 
-"Drop established" is recommended over "Drop all" because it allows the Suricata engine to perform layer 7 inspection before making a drop decision. This is critical for pass rules that match on domain information in TLS SNI and HTTP host header fields — with "Drop all", traffic would be dropped before Suricata has a chance to inspect these application layer attributes.
+* Network Firewall policies can have default actions defined that append default block rules to the very end of the ruleset behind the scenes. The best defalt action is 'Application drop established (server-directed only)' because it supports the largest number of use cases, including domain filtering and IDS/IPS. 
 
-#### Drop established
-
-"Drop established" is the simpler option and a good starting point for most deployments. It drops any established connection traffic that doesn't match an earlier rule, while still allowing the layer 7 inspection needed for domain-based filtering. Be sure to also select the corresponding "Alert established" action — without it, traffic dropped by the default action will not be logged. "Alert established" can also be selected on its own without a drop action, which is useful for seeing what traffic would be dropped before enforcing the rule.
-
-![Network Firewall Drop Established default actions](../../images/nfw-drop-established.png)
-
-*Figure 3a: Network Firewall Drop Established default actions*
-
-#### Application drop established
-
-"Application drop established" is designed for environments where TLS Client Hello messages may be fragmented across multiple packets, which is increasingly common with post-quantum hybrid cipher key exchanges. Instead of dropping traffic immediately after the TCP handshake, it waits until it has seen enough of the application layer data (such as the TLS SNI field) before making a drop decision.
-
-![Network Firewall Application Drop Established default actions](../../images/nfw-app-drop-established.png)
-
-*Figure 3b: Network Firewall Application Drop Established default actions*
-
-If you use "Application drop established", be aware that it can drop TCP flow control packets (such as window updates, keep-alives, and resets) that occur after the TCP handshake but before a pass rule applies. You may need custom rules to allow these packets. See the [Evaluation order for stateful rule groups](https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-rule-evaluation-order.html) documentation for details.
-
-Alternatively, the Egress Default Block Rules in the [custom Suricata rules template](#use-custom-suricata-rules-instead-of-ui-generated-rules) included in this guide apply the same application-layer-aware drop strategy using custom rules, without requiring separate rules for TCP flow control packets.
+Alternatively, the Egress Default Block Rules at the end of the [custom Suricata rules template](#use-custom-suricata-rules-instead-of-ui-generated-rules) included in this guide are simliar to the rules used by 'Application drop established (server-directed only)' but they also:
+  * Log JA4 hashes when TLS traffic is blocked
+  * Make it clear in the logs what is Egress traffic and what is Ingress traffic
+  * Reject (send TCP reset to client) Egress traffic, Drop (does not send TCP reset to client) Ingress traffic.
+  * Don't block response traffic for traffic allowed by a pass rule with the flow: keyword on it.
 
 ### Use Stateful rules instead of Stateless rules
 
