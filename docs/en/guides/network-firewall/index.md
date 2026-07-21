@@ -94,6 +94,7 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 * Network Firewall policies can have default actions defined that append default block rules to the very end of the ruleset behind the scenes. The best default action is 'Application drop established (server-directed only)' because it supports the largest number of use cases, including domain filtering and IDS/IPS. 
 
 Alternatively, the Egress Default Block Rules at the end of the [custom Suricata rules template](#use-custom-suricata-rules-instead-of-ui-generated-rules) included in this guide are simliar to the rules used by 'Application drop established (server-directed only)' but they also:
+
 * Log JA4 hashes when TLS traffic is blocked
 * Make it clear in the logs what is Egress traffic and what is Ingress traffic
 * Reject (send TCP reset to client) Egress traffic, Drop (does not send TCP reset to client) Ingress traffic.
