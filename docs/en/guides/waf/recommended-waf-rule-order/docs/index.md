@@ -59,7 +59,7 @@ The following table provides a more detailed recommendation of rule order.
 |  9 | AWS Managed Use-Case Rules (SQL Database, etc.) | Block | Application-specific threat coverage |
 | 10 | False Positive Exception and APpplication Specific Rules | Block |  False Positive handling or application specific protection |
 | 11 | Partner Manged Rules | Block | Varried types of protection.  Placing after free usage rules to reduce cost. |
-| 11 | Bot Control | Block/Challenge | Detect and manage bot traffic (with scope-down) |
+| 12 | Bot Control | Block/Challenge | Detect and manage bot traffic (with scope-down) |
 | 13 | Fraud Control (ATP, ACFP) | Block | Protect login and account creation pages (with scope-down) |
 
 
