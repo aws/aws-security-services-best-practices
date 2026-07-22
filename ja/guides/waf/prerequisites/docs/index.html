@@ -1,0 +1,829 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ja/guides/waf/prerequisites/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/waf/prerequisites/docs/" hreflang="en">
+        
+          <link rel="alternate" href="../../../../../ko/guides/waf/prerequisites/docs/" hreflang="ko">
+        
+          <link rel="alternate" href="./" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Prerequisites and Fundamentals - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#prerequisites-and-fundamentals" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Prerequisites and Fundamentals
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/waf/prerequisites/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ko/guides/waf/prerequisites/docs/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../network-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dns-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Route 53 Resolver DNS Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#protection-packs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protection Packs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#default-action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default Action
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wcu---waf-capacity-units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WCU - WAF Capacity Units
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#waf-labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WAF Labels
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ownership-of-protection-packs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ownership of Protection Packs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-many-protection-packs-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How many Protection Packs to use
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How many Protection Packs to use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shared-protection-pack-one-protection-pack-for-multiple-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shared Protection Pack (one Protection Pack for multiple resources)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dedicated-protection-pack-one-protection-pack-per-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dedicated Protection Pack (one Protection Pack per application)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-baseline-costs-dont-drive-the-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When baseline costs don't drive the decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#identifying-resources-to-protect-with-aws-waf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identifying resources to protect with AWS WAF
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Identifying resources to protect with AWS WAF">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-resources-that-support-aws-waf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS Resources that support AWS WAF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-endpoints-outside-of-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP endpoints outside of AWS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-changes-to-incorporate-aws-waf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture changes to incorporate AWS WAF
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#waf-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WAF Logging
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#waf-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WAF Cost
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="prerequisites-and-fundamentals">Prerequisites and Fundamentals</h1>
+<h2 id="fundamentals">Fundamentals</h2>
+<h3 id="protection-packs">Protection Packs</h3>
+<p>A Protection Pack is the top-level AWS WAF resource that contains your WAF rules. Unlike traditional WAF appliances that sit inline as a separate network hop, AWS WAF is not a standalone device you deploy in your network path. Instead, you associate a Protection Pack with a supported AWS resource (such as a CloudFront distribution, Application Load Balancer, or API Gateway) and AWS WAF evaluates requests as part of that resource's request processing — there is no additional infrastructure to provision, scale, or maintain. Once associated, every HTTP request to that resource is evaluated against the rules in the Protection Pack before reaching your application. The Protection Pack determines what happens to each request: allow it, block it, challenge it, or count it for monitoring.</p>
+<p>A Protection Pack contains:</p>
+<ul>
+<li><strong>Rules and rule groups</strong> — Individual rules or collections of rules (including Amazon Managed Rules) that inspect requests and take actions.</li>
+<li><strong>A default action</strong> — What happens to requests that don't match any rule with a terminating action (typically <em>Allow</em>).</li>
+<li><strong>Rule priority order</strong> — Rules are evaluated in priority order from lowest number to highest; the first rule with a terminating action that matches determines the outcome of the request.</li>
+</ul>
+<h3 id="default-action">Default Action</h3>
+<p>If there are no matching rules in the Protection Pack that have a terminating action (<strong>Allow</strong> or <strong>Block</strong>), the Protection Pack takes a <a href="https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-default-action.html">default action</a>. There are two possible default actions: <em>Allow</em> and <em>Block</em>.</p>
+<p>With a default action of <strong>Allow</strong>, WAF rules usually <strong>Block</strong> malicous or non-desired traffic while allowing everything else.  You might also have explicit <strong>Allow</strong> action rules but usually your rules will <strong>Block</strong>, <strong>Challenge</strong>, or <strong>Captcha</strong> requests matching your rules.</p>
+<p>With a default action of <strong>Block</strong>, you define WAF rules that explicitly define when traffic should be <strong>Allow</strong>ed.  You can also define rules that explicity block traffic.  For example, you might only want to allow requests from a specific IP range or requests that contain specific values.  This is also known as a positive security model.</p>
+<p><strong>Considerations</strong><br />
+The overwhelming majority of customers set the default action to <em>Allow</em> as this tends to be more straight forward.  If you set your default action to <em>block</em>, you usually need to create and maintain application specific rules.  Especially if using AWS WAF acrosss your organization, this can be difficult to maintain.</p>
+<h3 id="wcu---waf-capacity-units">WCU - WAF Capacity Units</h3>
+<p>WCU abstracts the complexity of WAF rules into a single dimension.  For custom inline rules and custom rule group, the rule type (rate based, geo, etc), how many statements, match type (string equal, regex pattern), and transformations (CSS_DECODE, HEX_DECODE, etc&gt;) each have a specific WCU cost.  Amazon Managed Rules like custom rule groups have a set WCU; this does not change between <a href="../../aws-managed-rules/docs/#managed-rule-group-versioning">AMR versions</a>.</p>
+<p>WCU is used determine the maximum amount of WAF rules that can effectively be used within a Protection Pack or defined within a custom rule group.</p>
+<p>Protection Packs can have a max of 5,000 WCU worth of inline, rule groups, Amazon Managed Rules, and/or Partner Managed rules; this limit cannot be increase. This limit is per Protection pack and not tracked across defined protection packs or rule groups.</p>
+<p>AWS WAF custom rule group must define a WCU max capacity; this capacity cannot be changed after creation.  To effectively change the WCU of a rule group, you must create a new rule group with the new WCU value and transition Protection Packs to use that new rule group.  Rule Groups consume the specified WCU capacity within a Protection Pack regardless of the actual WCU usage of any rules (if any) they contain.  Each Rule Groups can have a maximum of 5,000 WCU.  This limit is per rule group; there is no account/region limit to the amount of WCUs you can have configure</p>
+<p>If you for some reason require more than 5,000 WCU worth of WAF rule evaluations, you would need to have two resources inspecting that support AWS WAF.  For example, CloudFront with a Protection Pack with an origin of an Application Load Balancer (also with WAF). <strong>Note:</strong> this usually represents an anti-pattern and there is likely some way to optimize your WCU needs.</p>
+<p>WCU is also used when determining AWS WAF request based costs; standard WAF costs covers the first 1,500 WCU with an additional usage based cost per 500 WCU above 1,500. See <a href="../../waf-cost/docs/#protection-pack-capacity-units-wcu">WAF Costs</a> for more details.</p>
+<h3 id="waf-labels">WAF Labels</h3>
+<p>When a WAF rule matches, that rule can add one or more labels. When a rule adds a label but does not terminate the request (i.e. action = <em>COUNT</em>), these labels can be referenced by other rules such as AND/OR statements or scope down statements.  Amazon Managed Rules always add one or more label when a rule matches. Custom rules can but do not need to attach labels when a rule matches. By default, WAF labels are only available for a reqeust being evaluated by WAF and are a part of your WAF log.  YOur application will <em>not</em> receive WAF labels unless you configure a custom WAF rule to inject them as a header.</p>
+<p>Labels are used to:<br />
+<em> Handle False positives<br />
+</em> Simplify logic (e.g. if A, or B, or C, or D)<br />
+<em> Filter WAF logs send to a configured logging destination<br />
+</em> Are included in WAF logs (observability)  </p>
+<h2 id="ownership-of-protection-packs">Ownership of Protection Packs</h2>
+<p>In a simple organization or when AWS WAF has limited adoption, application teams typically manage their own AWS WAF rules. They create Protection Packs and own all the rules inside them. They also tend to keep AWS WAF logs in their own account.</p>
+<p>Larger organizations tend to have company-wide security requirements which translate into a minimum or baseline set of AWS WAF rules.  A security or other central team defines that baseline and then audits and/or enforces those baseline rules within the Organization; AWS Firewall Manager security policies is commonly used to achieve that audit and enforce needs.  AWS Firewall manager as needed either:
+1) Creates and associates a Protection Pack with supported resources
+2) Retrofits these bseline rules on top of an application team defined Protection Pack.</p>
+<p>AWS WAF logs are usually consolidated in a central S3 bucket or 3P SIEM/monitoring solution.  S3 wise, this might be a per region, a single bucket, and/or part of a data lake (such as Amazon Security Lake)</p>
+<h2 id="how-many-protection-packs-to-use">How many Protection Packs to use</h2>
+<p>AWS WAF Protection Packs are associated with application resources, such as CloudFront Distributions or Application Load Balancers. Protection Packs can be associated with one or more resources in the same account, region, and scope (global vs regional). You cannot share a WebACL across accounts, regions, or scope. When should you share or dedicate Protection Packs? The answer is a choice between simplicity, isolation, and cost.</p>
+<p>This choice is easy to change if the approach that makes the most sense changes. Associating a resource with a new Protection Pack does not interrupt the data plane of that resource, and outside of functional rule changes between Protection Packs the resource is never unprotected. This is the case whether you consolidate or separate into multiple Protection Packs.</p>
+<h3 id="shared-protection-pack-one-protection-pack-for-multiple-resources">Shared Protection Pack (one Protection Pack for multiple resources)</h3>
+<p>This is most common for smaller customers, when first starting out, or when you have many copies of the same application such as SaaS or ISV per-tenant endpoint products.</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><strong>Simpler rule management</strong> - You define WAF rules once and they apply to all associated resources. Changes propagate to every protected resource without needing to update multiple Protection Packs.</li>
+<li><strong>Lower baseline cost</strong> - You pay the $5/month per-Protection Pack fee and the $1/month per-rule fee once, regardless of how many resources are associated. For example, 20 CloudFront distributions sharing one Protection Pack with 5 rules costs $10/month in baseline charges, versus $200/month if each had its own Protection Pack with the same rules.</li>
+<li><strong>Consistent security posture</strong> - All applications behind the shared Protection Pack receive the same baseline protection, making it easier to enforce organizational security standards uniformly.</li>
+<li><strong>No performance impact from sharing</strong> - There are no WAF performance or service quota concerns from associating many resources with a single Protection Pack.</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><strong>Larger blast radius</strong> - A misconfigured rule or a problematic managed rule update affects every application sharing the Protection Pack at once. A single bad change can impact unrelated workloads.</li>
+<li><strong>More complex application-specific rules</strong> - Custom rules must be scoped to the correct hostname and/or URI to avoid applying to unintended applications. False positive exceptions become more complex because they need to target specific applications within the shared rule set.</li>
+<li><strong>Higher WCU consumption</strong> - Rules needed by different applications accumulate in the same Protection Pack, which can push the Protection Pack's WCU usage above the 1,500 WCU included with standard WAF pricing and drive up per-request charges. The per-request WCU overage applies to every request across all associated resources.</li>
+<li><strong>Coordination overhead</strong> - Any rule change requires agreement across the teams whose applications share the Protection Pack. In an IaC workflow, the Protection Pack usually lives in a shared stack rather than application-specific stacks.</li>
+</ul>
+<h3 id="dedicated-protection-pack-one-protection-pack-per-application">Dedicated Protection Pack (one Protection Pack per application)</h3>
+<p>This is common for larger enterprises where there are many product or app teams, many unique applications running in your environment, and/or application teams have application-specific rules rather than <em>just</em> AMRs and generic baseline rules.</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><strong>Smaller blast radius</strong> - A misconfigured rule or a problematic managed rule update only impacts the single application associated with that Protection Pack.  </li>
+<li><strong>Simpler application-specific rules and exceptions</strong> - Custom rules and false positive exceptions don't need to be scoped to specific hostnames or URIs because the Protection Pack only applies to one application. This is especially valuable for handling false positives, which are application-specific by nature.</li>
+<li><strong>IaC alignment</strong> - Application teams can define their Protection Pack as part of their application's infrastructure stack rather than coordinating changes to a shared stack. This aligns ownership and deployment with the application lifecycle.</li>
+<li><strong>Lower WCU pressure per Protection Pack</strong> - With a shared Protection Pack, custom rules and exceptions for multiple applications accumulate in the same Protection Pack, driving up WCU consumption. Dedicated Protection Packs avoid this because each only contains the exceptions and custom rules relevant to its own application, making it easier to stay within the 1,500 WCU included with standard WAF pricing and avoid per-request overage charges.</li>
+<li><strong>Independent rule evolution</strong> - Each application can adopt new AMR versions, tune rules, and roll out changes on its own schedule without affecting other applications.</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><strong>Per-Protection Pack flat costs</strong> - Each Protection Pack has a flat monthly fee ($5/month) plus a per-rule fee ($1/month per rule). When common baseline rules (IP Reputation, Core Rule Set, Known Bad Inputs, etc.) are duplicated across many Protection Packs, these flat costs add up and there are more places to keep in sync. This is usually not a significant concern unless you have many Protection Packs with very low request volume, but it should be factored into cost planning.</li>
+<li><strong>Requires additional services/automation to enforce baseline</strong> - Without tooling like AWS Firewall Manager, ensuring every application team includes a consistent baseline of rules requires coordination and review.</li>
+</ul>
+<h3 id="when-baseline-costs-dont-drive-the-decision">When baseline costs don't drive the decision</h3>
+<p>There are two scenarios where Protection Pack baseline fees, custom rules, custom rule groups, and free Amazon Managed rules do not drive a cost towards this decision:</p>
+<ul>
+<li><strong>AWS Shield Advanced customers</strong> do not pay per-Protection Pack, custom rule, custom rule group, or free Amazon Managed rule per-rule fees on Shield-protected resources.</li>
+<li><strong><a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/flat-rate-pricing-plan.html">CloudFront Flat-rate pricing plan</a> customers</strong> - the Protection Pack and rules within that flat-rate plan tier do not have the standard AWS WAF costs (they are included in the flat-rate pricing plan).</li>
+</ul>
+<p>In these scenarios, the decision comes down to blast radius, rule management complexity, and operational ownership rather than cost.</p>
+<h2 id="identifying-resources-to-protect-with-aws-waf">Identifying resources to protect with AWS WAF</h2>
+<p>You typcially should aim to protect all public facing HTTP workloads with AWS WAF.  It's important to understand what type of resources you can protect natively with AWS WAF.  It is also important to understand that AWS WAF (when used with CloudFront) can protect any HTTP application regardless of being hosted on AWS, another cloud/hosting provider, or on-prem. If your existing AWS architecture does not include one of these AWS WAF supported resources, you should consider changes to your architecture and/or layering in an AWS service that does support AWS WAF.</p>
+<h3 id="aws-resources-that-support-aws-waf">AWS Resources that support AWS WAF</h3>
+<p>AWS WAF is <a href="https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works-resources.html">natively integrated with many AWS services</a>. Simply associate a Protection Pack to the resource you want to protect.</p>
+<p><img alt="" src="../../../../../guides/waf/prerequisites/images/waf-supported-resources.png" />
+<strong>Figure 1:</strong> Global and regional AWS resources you can associate with AWS</p>
+<ul>
+<li><strong><a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html">Amazon CloudFront</a></strong> - A global content delivery network (CDN) that accelerates delivery of web content to users by caching it at edge locations worldwide. CloudFront is the only global resource type supported by AWS WAF; the Protection Pack must be created in US East (N. Virginia).</li>
+</ul>
+<ul>
+<li><strong><a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html">Application Load Balancer (ALB)</a></strong> - A regional load balancer that routes HTTP/HTTPS traffic to targets such as EC2 instances, containers, and Lambda functions based on request content.</li>
+</ul>
+<ul>
+<li><strong><a href="https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html">Amazon API Gateway REST API</a></strong> - A fully managed service for creating, publishing, and managing REST APIs at any scale.</li>
+</ul>
+<ul>
+<li><strong><a href="https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html">AWS AppSync GraphQL API</a></strong> - A managed GraphQL service that simplifies application development by providing a flexible API layer to securely access, manipulate, and combine data from multiple sources.</li>
+</ul>
+<ul>
+<li><strong><a href="https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html">Amazon Cognito user pool</a></strong> - A user directory that provides sign-up, sign-in, and access control for web and mobile applications.</li>
+</ul>
+<ul>
+<li><strong><a href="https://docs.aws.amazon.com/apprunner/latest/dg/what-is-apprunner.html">AWS App Runner service</a></strong> - A fully managed service that makes it easy to deploy containerized web applications and APIs at scale without managing infrastructure.</li>
+</ul>
+<ul>
+<li><strong><a href="https://docs.aws.amazon.com/verified-access/latest/ug/what-is-verified-access.html">AWS Verified Access instance</a></strong> - A service that provides secure access to corporate applications without requiring a VPN, using identity and device posture policies.</li>
+</ul>
+<ul>
+<li><strong><a href="https://docs.aws.amazon.com/amplify/latest/userguide/welcome.html">AWS Amplify</a></strong> - A set of tools and services for building and deploying full-stack web and mobile applications. The Protection Pack must be created in US East (N. Virginia) to protect AWS Amplify.</li>
+</ul>
+<p>For full details, see <a href="https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works-resources.html">Resources that you can protect with AWS WAF</a>.</p>
+<h3 id="http-endpoints-outside-of-aws">HTTP endpoints outside of AWS</h3>
+<p>From an AWS WAF perspective, there is no functional different when protecting an AWS or non-AWS endpoint.</p>
+<p>Customers can use an <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistS3AndCustomOrigins.html">Amazon CloudFront distribution</a> to protect <strong>any</strong> HTTP endpoint with AWS WAF, regardless of whether that endpoint is hosted on AWS or anywher else.  This incldues HTTP endpoints hosted on other cloud providers, third-party hosting services, or on-premises infrastructure.  As long as an endpoint is routable across the public internet and can accept inbound connections from <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html">Amazon CloudFront origin IPs</a> on the relevant ports (typically TCP 80 and/or TCP 443), AWS WAF can inspect and protect that traffic.  To achieve this, create an Amazon CloudFront distribution, set your endpoint as the origin, and place AWS WAF on the CloudFront distribution.  Once this is in place, update your origin to only accept traffic from <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html">CloudFront Origin IPs</a>.</p>
+<h2 id="architecture-changes-to-incorporate-aws-waf">Architecture changes to incorporate AWS WAF</h2>
+<p>There are a number of historical and application design reasons why a workload might not already have an AWS WAF-supported service inline. Below are common requirements that have historically driven these decision and how to address them, therefore allowing the incorporation of AWS WAF:</p>
+<ul>
+<li><strong>mTLS</strong>: Amazon CloudFront, Application Load Balancers, and API Gateway all support passthrough mTLS.</li>
+</ul>
+<ul>
+<li><strong>Static, dedicated, and/or customer owned IPs</strong>: Amazon CloudFront supports static, dedicated, and/or BYOIP IPs via <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/request-static-ips.html">Anycast Static IPs</a>. While this adds a non-trivial cost, it is important to understand that these static IPs can be shared across multiple distributions, allowing this to be an organization-wide cost rather than a per-distribution cost.<p><em>An alternative is using AWS Global Accelerator or an Network Load Balancer ahead of an Application Load Balancer. This provides dedicated IPs plus AWS WAF on the ALB. Note that L7 DDoS traffic still reaches the ALB in this configuration, meaning AWS WAF request-per-second capacity is based on the ALB's capabilities.</em></p>
+</li>
+</ul>
+<ul>
+<li><strong>Latency concerns</strong>: AWS WAF itself introduces very low latency (typically low single-digit milliseconds). When using CloudFront with AWS WAF, client connections to Cloudfront (with AWS WAF) are often faster than connecting directly to a regional endpoint (with AWS WAF). Clients get onto the AWS backbone network sooner, and CloudFront-to-origin traffic traverses the backbone rather than the public internet.</li>
+</ul>
+<ul>
+<li><strong>Large request/response bodies</strong>**: Amazon CloudFront supports up to a 20 GB body per request, ALB does not have a body size limit. Multi-part uploads with either CloudFront or ALB with AWS WAF allow larger uploads and POST requests while still enabling AWS WAF inspection.</li>
+</ul>
+<p>There are several requirements that will make it not possible to use AWS WAF.</p>
+<ul>
+<li><strong>Terminating TLS at your application/compute (i.e. EC2, EKS, ECS, etc)</strong>:  AWS WAF is only available on resources that terminate TLS and proxy the request to your application; this means the client TLS terminates on the ALB, CloudFront, API Gateway, etc.  These services support TLS passthrough (i.e. headers with TLS information from the actual client).  If you <em>must</em> terminate TLS at your application level, you will not be able to use AWS WAF to protect that application.</li>
+</ul>
+<ul>
+<li><strong>Non-http/https</strong>: AWS WAF is a HTTP aware firewall and only supported on AWS resources that proxy HTTP/HTTPS; non-HTTP endpoints should consider AWS Network Firewall for Layer 7 inspection and mitigation.</li>
+</ul>
+<h2 id="waf-logging">WAF Logging</h2>
+<p>AWS WAF supports logging protection pack traffic to Amazon S3, Amazon CloudWatch Logs, or third-party destinations via Amazon Data Firehose and Amazon Security Lake. Logging is essential for monitoring rule behavior, investigating incidents, and tuning your Protection Pack over time. For detailed guidance on configuring log destinations, filtering, and cost optimization, see <a href="../../waf-logging/docs/">WAF Logging</a>.</p>
+<h2 id="waf-cost">WAF Cost</h2>
+<p>AWS WAF pricing is based on the number of Protection Packs, rules, and requests inspected, with additional charges for advanced features like Bot Control, CAPTCHA, and increased body inspection limits. Some charges are waived for AWS Shield Advanced subscribers. For detailed cost guidance including per-request pricing factors, WCU capacity planning, and Shield Advanced cost protection, see <a href="../../waf-cost/docs/">WAF Cost</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

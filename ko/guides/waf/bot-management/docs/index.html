@@ -1,0 +1,759 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/bot-management/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/waf/bot-management/docs/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ko">
+        
+          <link rel="alternate" href="../../../../../ja/guides/waf/bot-management/docs/" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Bot Management - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bot-management" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Bot Management
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="언어설정">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/waf/bot-management/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ja/guides/waf/bot-management/docs/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    홈
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../network-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall 모범 사례
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#web-bot-authentication-wba" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Bot Authentication (WBA)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-vs-targeted-bot-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common vs. Targeted Bot Control
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common vs. Targeted Bot Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#targeted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Targeted
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-scope-down-statements-with-bot-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Scope-Down Statements with Bot Control
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wba-for-ai-bot-monetization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WBA for AI Bot Monetization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="bot-management">Bot Management</h1>
+<p><a href="https://docs.aws.amazon.com/waf/latest/developerguide/waf-bot-control.html">AWS WAF Bot Control</a> is a managed rule group that gives you visibility and control over bot traffic to your applications. Bot traffic can consume excess resources, skew business metrics, degrade performance for legitimate users, and undesired content scraping. Bot Control detects and categorizes bot traffic so you can decide how to handle each category — block, rate-limit, challenge, or allow.</p>
+<h2 id="web-bot-authentication-wba">Web Bot Authentication (WBA)</h2>
+<p>Web Bot Authentication is a verification method available in Bot Control version 4.0 and above.  Web Bot Authentication uses an cryptographic signatures in HTTP messages to verify that a request genuinely comes from the bot it claims to be.  That signature can also authorize payment from the requestor, allow content providers or anything on the internet to monetize requests without having a one to one relationship with each requesting party.  This is part of a recently devloped <a href="https://docs.cdp.coinbase.com/x402/welcome">x402 protocol</a>.</p>
+<p>This is particularly relevant for managing AI bots and crawlers. Many AI services now sign their requests using WBA, allowing you to distinguish a legitimate AI crawler in addition it provides a path to monetize those crawl requests.</p>
+<p>Bot Control applies WBA labels to requests based on the verification result:</p>
+<ul>
+<li><code>awswaf:managed:aws:bot-control:web_bot_auth:verified</code> – Signature successfully validated against public key directory</li>
+<li><code>awswaf:managed:aws:bot-control:web_bot_auth:invalid</code> – Signature present but cryptograpic validation failed</li>
+<li><code>awswaf:managed:aws:bot-control:web_bot_auth:expired</code> – Signature used an expired cryptograpic key</li>
+<li><code>awswaf:managed:aws:bot-control:web_bot_auth:unknown_bot</code> – Key ID not found in the key directory</li>
+</ul>
+<p>For more background on WBA and how AWS WAF identifyes it, see the announcement <a href="https://aws.amazon.com/about-aws/whats-new/2025/11/aws-waf-web-bot-auth-support/">AWS WAF announces Web Bot Auth support</a>.</p>
+<h2 id="common-vs-targeted-bot-control">Common vs. Targeted Bot Control</h2>
+<p>Bot Control is available at two inspection levels. You choose the level when you add the Bot Control rule group to your protection pack.</p>
+<h3 id="common">Common</h3>
+<p>The Common level identifies bots that self-identify. This covers search engine crawlers, social media bots, monitoring services, scrapers that don't attempt to hide, and AI and agentic bots.</p>
+<p>Use BotControl Common when:</p>
+<ul>
+<li>You want visibility into what bot traffic is hitting your application.</li>
+<li>You need to identify self-identifying bots and control what they can access — for example, allowing a search engine to crawler public pages but blocking it from API endpoints or authenticated areas.</li>
+<li>You want to manage AI bot access to your content by category (allow, block, or rate-limit specific AI crawlers).</li>
+<li>You want to restrict and/or monetize WBA enabled bots crawling your content.</li>
+</ul>
+<p>Detecting a bot by name or category is done through a WBA signature or User-Agent (and static/dedicated IPs in many cases).  Bot Control further marks bot requests as verified or unverified.</p>
+<p><strong>Verified:</strong><br />
+- A request has a valid WBA signature<br />
+- A request has a well known User-Agent plus source IP/reverse DNS.  </p>
+<p><strong>Unverified:</strong><br />
+- A request has a well known User-Agent but the source IP does not match the well known IP sources for that bot<br />
+- A request has a well known User-Agent but the bot does not have dedicated/known IPs.  </p>
+<p>User-Agent is never enough to verify a bot due to User-Agent being client provided.  The below example curl command would show up as an unverified Google bot, it has a well known User-Agent but the source IP will not match the known corresponding source IPs for the bot</p>
+<pre><code>curl -H &quot;User-Agent: Googlebot/2.1 (+http://www.google.com/bot.html)&quot; https://checkip.amazonaws.com
+</code></pre>
+<p>As of Bot Control version 4.0.0, Bot Control Common does not block any verified bots. Before version 4.0.0, BotControl blocked by default <em>CategoryAI</em> bots.  You can still restrict/block any bot (verfied or not) using a custom label based rule.</p>
+<p><strong>Example: Block a specific bot category even when verified</strong></p>
+<p>Bot Control labels requests with both a verification status and a bot category. Even though verified bots are allowed by default, you may want to block specific categories from accessing certain parts of your application. This example blocks all social media bots from accessing your site, regardless of whether they are verified.</p>
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;block-social-media&quot;,
+  &quot;Priority&quot;: 10,
+  &quot;Statement&quot;: {
+    &quot;LabelMatchStatement&quot;: {
+      &quot;Scope&quot;: &quot;LABEL&quot;,
+      &quot;Key&quot;: &quot;awswaf:managed:aws:bot-control:bot:category:social_media&quot;
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Block&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;block-social-media&quot;
+  }
+}
+</code></pre>
+<h3 id="targeted">Targeted</h3>
+<p>The Targeted level of Bot Controls includes all BotControl Common capabilities plus machine learning-based behavioral analysis to detects sophisticated bots attempting to evade other bot detection capabilities. BotControl Targeted help you catch bot that do not self-identify, rotate IPs, use headless browsers, mimic human browsing patterns, use residential proxies, and other deception to blend in with legitimate human traffic.</p>
+<p>Use Bot Control Targeted when:</p>
+<ul>
+<li>You need to protect high-value endpoints (checkout, pricing, inventory) from sophisticated automated access.</li>
+<li>You face fraud threats such as credential stuffing, fake account creation, or automated purchasing that evade simple bot signatures. For this use case, you usually want to use  Bot Control along with <a href="../../fraud-prevention/docs/">Fraud Control managed rule groups</a>.</li>
+<li>You need to defend against content threats like scraping of pricing data, product catalogs, or published content by bots that rotate IPs and mimic human behavior. The additional capabilities in BotControl Targeted are for bots taking taking these actions and are <em>not</em> well-behaved, don't self-identifying bots, and are malicious/deceitful.</li>
+<li>You are experiencing availability threats where bot traffic volume degrades performance or increases infrastructure costs beyond what rate-limiting alone can address.</li>
+</ul>
+<p>WAF rules in BotControl Targeted specific can be divided into several buckets:</p>
+<p><strong>TGT_ vs TGT_ML_</strong><br />
+BotControl Targeted has rules that are generic as in not specific your application.  e.g. Rate limiting requests without a valid WAF token.  TGT_ML_ rules build a baseline of normal per your application and detect and response based on anomalies from that baseline.</p>
+<p><strong>Session vs not Session</strong><br />
+Many BotControl Targeted rules contain <em>Session</em> in their name.  These rules track behavior based on the presence (or lack of) an AWS WAF token (i.e. Cookie obtained from a WAF Challenge or Captcha).  For example TGT_VolumetricSession is similar to a traditional Rate Based WAF rule except it counts by unique value of this cookie instead of client IP.</p>
+<p>For some additional/practical examples of using BotControl Targeted, check out the blog <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-use-aws-waf-bot-control-for-targeted-bots-signals-and-mitigate-evasive-bots-with-adaptive-user-experience/">How to use AWS WAF Bot Control for Targeted Bots signals and mitigate evasive bots</a>.</p>
+<h2 id="using-scope-down-statements-with-bot-control">Using Scope-Down Statements with Bot Control</h2>
+<p>Bot Control has per-request charges, so every request it evaluates has a cost. Scope-down statements let you limit which requests Bot Control inspects. Requests excluded by the scope-down statement are not charged for Bot Control evaluation.</p>
+<p>For most applications, a good starting point is to scope Bot Control to dynamic endpoints and exclude static assets (CSS, JavaScript).  You can also scope down to avoid inspection for authenticated only sections of your application; the idea being you can detect and block bots from authentication (legitimately or maliciously).</p>
+<p>Consider whether Bot Control needs to evaluate all dynamic endpoints or just the ones where bot traffic causes business impact — login pages, search, pricing APIs, checkout flows, etc. See the Common and Targeted examples below for how to configure scope-down statements.</p>
+<p>There is no single correct configuration — it depends on your application. The guiding principle is to match the inspection level to the risk of the endpoint:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>In Scope</th>
+<th>Out of Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bot Control Common</strong></td>
+<td>Premium or paid content, public-facing pages where scraping or metric skew matters</td>
+<td>Static assets (CSS, JS, images, fonts), health-check paths</td>
+</tr>
+<tr>
+<td><strong>Bot Control Targeted</strong></td>
+<td>Sensitive or high-value endpoints — login, account creation, checkout, pricing APIs, file upload</td>
+<td>Static assets, already-authenticated internal pages</td>
+</tr>
+</tbody>
+</table>
+<p>Bot Control Common provides broad visibility into who is crawling your content, so scope it to the pages where that visibility has business value. Bot Control Targeted adds behavioral analysis and challenge-response detection, so scope it narrowly to the endpoints where sophisticated bots could cause  damage such as undesired automation or abuse of expensive APIs.</p>
+<p><strong>Example: Common Bot Control scoped to a specific URI</strong></p>
+<p>This applies Common-level Bot Control only to requests hitting <code>/api/search</code>, excluding all other traffic from Bot Control evaluation and charges.</p>
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;bot-control-common&quot;,
+  &quot;Priority&quot;: 9,
+  &quot;OverrideAction&quot;: {
+    &quot;None&quot;: {}
+  },
+  &quot;Statement&quot;: {
+    &quot;ManagedRuleGroupStatement&quot;: {
+      &quot;VendorName&quot;: &quot;AWS&quot;,
+      &quot;Name&quot;: &quot;AWSManagedRulesBotControlRuleSet&quot;,
+      &quot;ManagedRuleGroupConfigs&quot;: [
+        {
+          &quot;AWSManagedRulesBotControlRuleSet&quot;: {
+            &quot;InspectionLevel&quot;: &quot;COMMON&quot;,
+            &quot;EnableMachineLearning&quot;: false
+          }
+        }
+      ],
+      &quot;ScopeDownStatement&quot;: {
+        &quot;ByteMatchStatement&quot;: {
+          &quot;SearchString&quot;: &quot;/api/search&quot;,
+          &quot;FieldToMatch&quot;: { &quot;UriPath&quot;: {} },
+          &quot;TextTransformations&quot;: [{ &quot;Priority&quot;: 0, &quot;Type&quot;: &quot;LOWERCASE&quot; }],
+          &quot;PositionalConstraint&quot;: &quot;STARTS_WITH&quot;
+        }
+      }
+    }
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;bot-control-common&quot;
+  }
+}
+</code></pre>
+<p><strong>Example: Targeted Bot Control scoped to checkout and pricing endpoints</strong></p>
+<p>This applies Targeted-level Bot Control to high-value endpoints where sophisticated bots cause the most business impact.</p>
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;bot-control-targeted&quot;,
+  &quot;Priority&quot;: 9,
+  &quot;OverrideAction&quot;: {
+    &quot;None&quot;: {}
+  },
+  &quot;Statement&quot;: {
+    &quot;ManagedRuleGroupStatement&quot;: {
+      &quot;VendorName&quot;: &quot;AWS&quot;,
+      &quot;Name&quot;: &quot;AWSManagedRulesBotControlRuleSet&quot;,
+      &quot;ManagedRuleGroupConfigs&quot;: [
+        {
+          &quot;AWSManagedRulesBotControlRuleSet&quot;: {
+            &quot;InspectionLevel&quot;: &quot;TARGETED&quot;,
+            &quot;EnableMachineLearning&quot;: true
+          }
+        }
+      ],
+      &quot;ScopeDownStatement&quot;: {
+        &quot;OrStatement&quot;: {
+          &quot;Statements&quot;: [
+            {
+              &quot;ByteMatchStatement&quot;: {
+                &quot;SearchString&quot;: &quot;/checkout&quot;,
+                &quot;FieldToMatch&quot;: { &quot;UriPath&quot;: {} },
+                &quot;TextTransformations&quot;: [{ &quot;Priority&quot;: 0, &quot;Type&quot;: &quot;LOWERCASE&quot; }],
+                &quot;PositionalConstraint&quot;: &quot;STARTS_WITH&quot;
+              }
+            },
+            {
+              &quot;ByteMatchStatement&quot;: {
+                &quot;SearchString&quot;: &quot;/api/pricing&quot;,
+                &quot;FieldToMatch&quot;: { &quot;UriPath&quot;: {} },
+                &quot;TextTransformations&quot;: [{ &quot;Priority&quot;: 0, &quot;Type&quot;: &quot;LOWERCASE&quot; }],
+                &quot;PositionalConstraint&quot;: &quot;STARTS_WITH&quot;
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;bot-control-targeted&quot;
+  }
+}
+</code></pre>
+<h2 id="wba-for-ai-bot-monetization">WBA for AI Bot Monetization</h2>
+<div class="admonition warning">
+<p class="admonition-title">Future Content Updates in progress</p>
+</div>
+<p>The sections below this point are actively being updated and may be incomplete.  Please come back soon or reference public docs for AWS WAF in the meantime.  </p>
+<p>Beyond being a new authoritative way to identify bots, WBA enables content monetization strategies for AI bot traffic. Before WBA, monetizing a third party consuming your content required a one-to-one agreement and technical implementation authorizing their access. This can work if there are only a few relationships needed, but is not practical as AI/Agentic bots proliferate. WBA provides a common way to detect and monetize crawling requests without any one-on-one relationship.</p>
+<p>Because WBA reliably identifies AI/Agentic bot requests, you can make policy decisions per bot — allowing access to bots from AI providers you have a commercial relationship with while blocking or rate-limiting others. This lets you treat AI bot access as a business decision rather than a purely security one.</p>
+<p>For a detailed walkthrough of managing AI bots with AWS WAF including monetization considerations, see the blog <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-manage-ai-bots-with-aws-waf-and-enhance-security/">How to manage AI Bots with AWS WAF and enhance security</a>.</p>
+<p>For how WBA integrates with AI agent frameworks, see <a href="https://aws.amazon.com/blogs/machine-learning/reduce-captchas-for-ai-agents-browsing-the-web-with-web-bot-auth-preview-in-amazon-bedrock-agentcore-browser/">Reduce CAPTCHAs for AI agents browsing the web with Web Bot Auth in Amazon Bedrock AgentCore Browser</a>.</p>
+<h2 id="related-resources">Related Resources</h2>
+<ul>
+<li><a href="https://docs.aws.amazon.com/waf/latest/developerguide/waf-bot-control.html">AWS WAF Bot Control documentation</a></li>
+<li><a href="https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-bot.html">Bot Control rule group reference</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/detect-and-block-advanced-bot-traffic/">Detect and block advanced bot traffic</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/fine-tune-and-optimize-aws-waf-bot-control-mitigation-capability/">Fine-tune and optimize AWS WAF Bot Control mitigation capability</a></li>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/protect-against-bots-with-aws-waf-challenge-and-captcha-actions/">Protect against bots with AWS WAF Challenge and CAPTCHA actions</a></li>
+<li><a href="../../captcha-and-challenge/docs/">CAPTCHA and Challenge</a> — Token-based mitigation actions that work alongside Bot Control</li>
+<li><a href="../../recommended-waf-rule-order/docs/">Recommended WAF Rule Order</a> — Where Bot Control fits in your rule evaluation order</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,996 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ja/guides/waf/custom-rules/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/waf/custom-rules/docs/" hreflang="en">
+        
+          <link rel="alternate" href="../../../../../ko/guides/waf/custom-rules/docs/" hreflang="ko">
+        
+          <link rel="alternate" href="./" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Custom Rules - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#custom-rules" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Custom Rules
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/waf/custom-rules/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ko/guides/waf/custom-rules/docs/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../network-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dns-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Route 53 Resolver DNS Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common-rules-for-most-deployments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Rules for Most Deployments
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Rules for Most Deployments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rate-based-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate-based rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geographic-restrictions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geographic restrictions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ip-allowlists-and-denylists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IP allowlists and denylists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#header-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Header validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scenario-based-custom-rule-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scenario-Based Custom Rule Examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-rule-labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Rule Labels
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#false-positive-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        False Positive Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-large-http-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handling Large HTTP Requests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Handling Large HTTP Requests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#allowing-specific-oversized-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Allowing Specific Oversized Requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="custom-rules">Custom Rules</h1>
+<p>Custom rules complement managed rules by addressing application-specific threats and scenarios that pre-built rule groups do not cover. Use custom rules to enforce business logic, handle false positives from managed rules, and protect sensitive endpoints with fine-grained conditions.</p>
+<p>For guidance on which AWS Managed Rules to pair with your custom rules, see <a href="../../aws-managed-rules/docs/">AWS Managed Rules</a>. For log analysis techniques to identify when custom rules are needed, see <a href="../../monitoring-waf-rules/docs/">Monitoring WAF Rules</a>.</p>
+<h2 id="common-rules-for-most-deployments">Common Rules for Most Deployments</h2>
+<p>Most WAF deployments benefit from the following types of custom rules.</p>
+<h3 id="rate-based-rules">Rate-based rules</h3>
+<p>Rate-based rules are one of the most common and valuable custom rules for any type of application or endpoint. They limit the number of requests a single client can make over a time window, protecting against volumetric abuse, brute force, and DDoS. See <a href="../../recommended-waf-rule-order/docs/">Recommended WAF Rule Order</a> for where to place rate-based rules in your protection pack.</p>
+<p><strong>Blanket rate-based rule</strong> — Limits the total request rate from any single IP across all endpoints. This is your first line of defense against volumetric abuse.</p>
+<!-- TODO: Add screenshot of blanket rate-based rule in the console -->
+
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;blanket-rate-limit&quot;,
+  &quot;Priority&quot;: 1,
+  &quot;Statement&quot;: {
+    &quot;RateBasedStatement&quot;: {
+      &quot;Limit&quot;: 2000,
+      &quot;EvaluationWindowSec&quot;: 300,
+      &quot;AggregateKeyType&quot;: &quot;IP&quot;
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Block&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;blanket-rate-limit&quot;
+  }
+}
+</code></pre>
+<p><strong>URI-specific rate-based rule</strong> — Applies a stricter rate limit to a sensitive endpoint like <code>/login</code>. Attackers frequently target authentication endpoints with credential stuffing or brute force at rates well below a blanket threshold.</p>
+<!-- TODO: Add screenshot of URI-specific rate-based rule in the console -->
+
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;login-rate-limit&quot;,
+  &quot;Priority&quot;: 8,
+  &quot;Statement&quot;: {
+    &quot;RateBasedStatement&quot;: {
+      &quot;Limit&quot;: 100,
+      &quot;EvaluationWindowSec&quot;: 300,
+      &quot;AggregateKeyType&quot;: &quot;IP&quot;,
+      &quot;ScopeDownStatement&quot;: {
+        &quot;ByteMatchStatement&quot;: {
+          &quot;SearchString&quot;: &quot;/login&quot;,
+          &quot;FieldToMatch&quot;: {
+            &quot;UriPath&quot;: {}
+          },
+          &quot;TextTransformations&quot;: [
+            {
+              &quot;Priority&quot;: 0,
+              &quot;Type&quot;: &quot;LOWERCASE&quot;
+            }
+          ],
+          &quot;PositionalConstraint&quot;: &quot;STARTS_WITH&quot;
+        }
+      }
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Block&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;login-rate-limit&quot;
+  }
+}
+</code></pre>
+<p><strong>Composite key rate-based rule (IP + WAF token)</strong> — Aggregates requests by both source IP and the AWS WAF token cookie. This is useful when multiple users share the same IP (e.g., behind a corporate NAT) — the WAF token differentiates individual clients so legitimate users aren't penalized by a neighbor's behavior.</p>
+<!-- TODO: Add screenshot of composite key rate-based rule in the console -->
+
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;composite-ip-token-rate-limit&quot;,
+  &quot;Priority&quot;: 2,
+  &quot;Statement&quot;: {
+    &quot;RateBasedStatement&quot;: {
+      &quot;Limit&quot;: 500,
+      &quot;EvaluationWindowSec&quot;: 300,
+      &quot;AggregateKeyType&quot;: &quot;CUSTOM_KEYS&quot;,
+      &quot;CustomKeys&quot;: [
+        {
+          &quot;IP&quot;: {}
+        },
+        {
+          &quot;Cookie&quot;: {
+            &quot;Name&quot;: &quot;aws-waf-token&quot;,
+            &quot;TextTransformations&quot;: [
+              {
+                &quot;Priority&quot;: 0,
+                &quot;Type&quot;: &quot;NONE&quot;
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Block&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;composite-ip-token-rate-limit&quot;
+  }
+}
+</code></pre>
+<p><strong>Rate-based rule scoped to Anonymous IP label</strong> — Applies a stricter rate limit to requests that the Anonymous IP List managed rule group has labeled as coming from anonymizing sources. This lets you keep the Anonymous IP rule group in Count mode while still limiting the rate of requests from those sources rather than blocking them outright.</p>
+<!-- TODO: Add screenshot of label-scoped rate-based rule in the console -->
+
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;rate-limit-anonymous-ips&quot;,
+  &quot;Priority&quot;: 8,
+  &quot;Statement&quot;: {
+    &quot;RateBasedStatement&quot;: {
+      &quot;Limit&quot;: 200,
+      &quot;EvaluationWindowSec&quot;: 300,
+      &quot;AggregateKeyType&quot;: &quot;IP&quot;,
+      &quot;ScopeDownStatement&quot;: {
+        &quot;LabelMatchStatement&quot;: {
+          &quot;Scope&quot;: &quot;LABEL&quot;,
+          &quot;Key&quot;: &quot;awswaf:managed:aws:anonymous-ip-list:AnonymousIPList&quot;
+        }
+      }
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Block&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;rate-limit-anonymous-ips&quot;
+  }
+}
+</code></pre>
+<h3 id="geographic-restrictions">Geographic restrictions</h3>
+<p>Block or rate-limit requests based on geographic origin when your application only serves specific regions.  You can use this when your audience is from a specific list of countries or you have a business or compliance requirement to block access from specific countries.</p>
+<p>Note: Geo and region based IP evaluation is not perfect, there is no single authoritative source saying which country or region IPs are assigned to.  It is uncommon but you should expect will eventually happen that an IP will be mapped to the incorrect geo or region, this is especially true if the IP is close to a geographic boarder.  If you are using Geo restrictions based on where you expect your audience to be, consider including near by countries for Geo based controls or not outright blocking those nearby countries. For example, if you only expect clients from US (United States), you may want to consider including CA (Canada) and MX (Mexico) to reduce the risk of blocking users that are close to these boarders.</p>
+<p>It is also important to acknowledge that Geo based restrictions are relevative easy to overcome using VPNs, TOR, and cloud/hosting providers.  Legitmiate users as well as bad actors use these tool and can appear as if they are coming fom another country based on their IP, bypassing Geo based restrictions.  If you require authoritative <em>proof</em> a user is from a specific country/region, you <em>cannot</em> depend on their IP address alone to authoritatively verify this.</p>
+<p><strong>Block requests from specific countries</strong> — Blocks all requests originating from countries where your application has no legitimate users or comply with compliance requirement such as country embargo lists.</p>
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;block-restricted-countries&quot;,
+  &quot;Priority&quot;: 3,
+  &quot;Statement&quot;: {
+    &quot;GeoMatchStatement&quot;: {
+      &quot;CountryCodes&quot;: [&quot;CN&quot;, &quot;RU&quot;, &quot;KP&quot;]
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Block&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;block-restricted-countries&quot;
+  }
+}
+</code></pre>
+<p><strong>Allow only specific countries</strong> — If your application exclusively serves a known set of regions, block everything else by inverting the match with a NOT statement.</p>
+<!-- TODO: Add screenshot of allow-only geo rule in the console -->
+
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;allow-only-approved-countries&quot;,
+  &quot;Priority&quot;: 3,
+  &quot;Statement&quot;: {
+    &quot;NotStatement&quot;: {
+      &quot;Statement&quot;: {
+        &quot;GeoMatchStatement&quot;: {
+          &quot;CountryCodes&quot;: [&quot;US&quot;, &quot;CA&quot;, &quot;GB&quot;, &quot;DE&quot;, &quot;FR&quot;]
+        }
+      }
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Block&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;allow-only-approved-countries&quot;
+  }
+}
+</code></pre>
+<h3 id="ip-allowlists-and-denylists">IP allowlists and denylists</h3>
+<p>Explicitly allow trusted sources or block known bad actors using <a href="https://docs.aws.amazon.com/waf/latest/developerguide/waf-ip-set-managing.html">IP sets</a>.</p>
+<p><strong>IP allowlist</strong> — Allows requests from trusted sources (e.g., monitoring systems, partner integrations) before any other rules evaluate them. Because Allow is a terminating action, allowed requests bypass all subsequent rules — including managed rules that detect web exploits and DDoS patterns. Even trusted systems should not normally be sending traffic that resembles an attack, so broadly allowing IPs removes a layer of protection you likely still want. Instead of a blanket Allow rule, consider scoping the IP set to specific rules that are causing issues — for example, excluding trusted IPs from a rate-based rule using a scope-down statement, or using a label-based exception to bypass a specific managed rule for those IPs. Reserve Allow-based IP allowlists for cases where you are certain the source should bypass all inspection.</p>
+<!-- TODO: Add screenshot of IP allowlist rule in the console -->
+
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;allow-trusted-ips&quot;,
+  &quot;Priority&quot;: 4,
+  &quot;Statement&quot;: {
+    &quot;IPSetReferenceStatement&quot;: {
+      &quot;ARN&quot;: &quot;arn:aws:wafv2:us-east-1:123456789012:regional/ipset/trusted-ips/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111&quot;
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Allow&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;allow-trusted-ips&quot;
+  }
+}
+</code></pre>
+<p><strong>IP denylist</strong> — Blocks requests from known bad actors. Useful for quickly blocking IPs identified through log analysis or threat intelligence that aren't yet on the AWS IP reputation list.</p>
+<!-- TODO: Add screenshot of IP denylist rule in the console -->
+
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;block-denied-ips&quot;,
+  &quot;Priority&quot;: 2,
+  &quot;Statement&quot;: {
+    &quot;IPSetReferenceStatement&quot;: {
+      &quot;ARN&quot;: &quot;arn:aws:wafv2:us-east-1:123456789012:regional/ipset/denied-ips/a1b2c3d4-5678-90ab-cdef-EXAMPLE22222&quot;
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Block&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;block-denied-ips&quot;
+  }
+}
+</code></pre>
+<h3 id="header-validation">Header validation</h3>
+<p>Validate expected HTTP request fields to reject obviously malformed or unexpected requests before they reach more expensive managed rule evaluations.</p>
+<p><strong>Block requests missing a required header</strong> — If your application expects a specific header on all requests (e.g., an API key header, a custom application header), block requests that don't include it.</p>
+<!-- TODO: Add screenshot of header validation rule in the console -->
+
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;require-api-key-header&quot;,
+  &quot;Priority&quot;: 5,
+  &quot;Statement&quot;: {
+    &quot;NotStatement&quot;: {
+      &quot;Statement&quot;: {
+        &quot;SizeConstraintStatement&quot;: {
+          &quot;FieldToMatch&quot;: {
+            &quot;SingleHeader&quot;: {
+              &quot;Name&quot;: &quot;x-api-key&quot;
+            }
+          },
+          &quot;ComparisonOperator&quot;: &quot;GT&quot;,
+          &quot;Size&quot;: 0,
+          &quot;TextTransformations&quot;: [
+            {
+              &quot;Priority&quot;: 0,
+              &quot;Type&quot;: &quot;NONE&quot;
+            }
+          ]
+        }
+      }
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Block&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;require-api-key-header&quot;
+  }
+}
+</code></pre>
+<p><strong>Block requests missing a custom application header</strong> — If your application injects a custom header at the CDN or load balancer layer (e.g., <code>x-app-origin</code>) to verify requests came through your infrastructure, block any request that doesn't include it.</p>
+<!-- TODO: Add screenshot of custom header validation rule in the console -->
+
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;require-app-origin-header&quot;,
+  &quot;Priority&quot;: 5,
+  &quot;Statement&quot;: {
+    &quot;NotStatement&quot;: {
+      &quot;Statement&quot;: {
+        &quot;SizeConstraintStatement&quot;: {
+          &quot;FieldToMatch&quot;: {
+            &quot;SingleHeader&quot;: {
+              &quot;Name&quot;: &quot;x-app-origin&quot;
+            }
+          },
+          &quot;ComparisonOperator&quot;: &quot;GT&quot;,
+          &quot;Size&quot;: 0,
+          &quot;TextTransformations&quot;: [
+            {
+              &quot;Priority&quot;: 0,
+              &quot;Type&quot;: &quot;NONE&quot;
+            }
+          ]
+        }
+      }
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Block&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;require-app-origin-header&quot;
+  }
+}
+</code></pre>
+<h2 id="scenario-based-custom-rule-examples">Scenario-Based Custom Rule Examples</h2>
+<!-- TODO: Add realistic, practical examples for each of the following scenarios -->
+<!-- TODO: Add composite key rate-based rule examples (e.g., rate limiting by IP + URI path, IP + query string) -->
+<!-- TODO: Add URI-specific rule examples for protecting sensitive endpoints (e.g., login, checkout, API endpoints) -->
+<!-- TODO: Add examples of rules using AMR labels for fine-grained control (e.g., matching on specific AMR labels with additional conditions) -->
+
+<p>This section provides realistic examples of common scenarios where custom rules are needed, including:</p>
+<ul>
+<li>Composite key rate-based rules for more granular rate limiting</li>
+<li>URI-specific rules for protecting sensitive endpoints</li>
+<li>Rules that use AWS Managed Rule labels for fine-grained control</li>
+<li>Combining multiple conditions with AND/OR logic</li>
+</ul>
+<h2 id="using-rule-labels">Using Rule Labels</h2>
+<p>A <a href="https://docs.aws.amazon.com/waf/latest/developerguide/waf-labels.html">label</a> is metadata added to a web request by a matching rule. Use labels to make the results of one rule available to other rules. Labels can be inspected by other rules lower (not above) in the same protection pack by using the <a href="https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-label-match.html">label match statement</a>.</p>
+<p>Labels added by rules with terminating actions cannot be inspected by other rules. These labels are included in <a href="https://docs.aws.amazon.com/waf/latest/developerguide/logging-fields.html">WAF log records</a> and <a href="https://docs.aws.amazon.com/waf/latest/developerguide/monitoring-cloudwatch.html#waf-metrics">CloudWatch metric dimensions</a> so you can analyze and visualize the behavior of terminating rules.</p>
+<p>Labels are commonly used to augment the behavior of a managed rule. The first step is to switch the managed rule's action from <em>Block</em> to <em>Count</em>. Then create another rule below that matches on the managed rule's label along with other conditions that determine if the request should be blocked.</p>
+<p>See <a href="https://aws.amazon.com/blogs/security/how-to-customize-behavior-of-aws-managed-rules-for-aws-waf/">How to customize behavior of AWS Managed Rules for AWS WAF</a> for more information on using labels.</p>
+<!-- TODO: Add practical examples of label-based custom rules, including inspecting labels from specific AMR rule groups -->
+<!-- TODO: Add guidance on how labels appear in WAF logs and how to use them for monitoring (cross-reference Monitoring WAF Rules section) -->
+
+<h2 id="false-positive-handling">False Positive Handling</h2>
+<p>When a WAF rule matches legitimate traffic (a false positive), you need to create an exception that preserves protection for all other traffic while allowing the specific legitimate requests through. This is done using the label-based exception pattern — setting the problematic rule to <em>Count</em> mode and writing a custom rule that re-implements the block with exclusions for the false positive conditions.</p>
+<p>For the full exception pattern with examples (single exception, multiple exceptions for the same rule, and Firewall Manager scenarios), see <a href="../../operationalizing/docs/#creating-exceptions">Creating Exceptions</a>.</p>
+<h2 id="handling-large-http-requests">Handling Large HTTP Requests</h2>
+<p>AWS WAF has limits on the size and number of HTTP request components it can inspect. See <a href="https://docs.aws.amazon.com/waf/latest/developerguide/waf-oversize-request-components.html">Handling oversize web request components in AWS WAF</a> for more details.  The default and max body size that can be inspected depends on the resource AWS WAF is associated with.</p>
+<ul>
+<li>For CloudFront, API Gateway, Amazon Cognito, App Runner, and Verified Access protection packs, AWS WAF can inspect request bodies up to 16 KB by default. You can increase this limit up to 64 KB in the protection pack configuration, for additional processing fees.</li>
+<li>For Application Load Balancer and AWS AppSync protection packs, the body inspection limit is fixed at 8 KB.  This limit cannot be increased today. If you need a larger amount of body inspected, consider adding CloudFront or using another AWS WAF suppported regional service such as API Gateway.</li>
+</ul>
+<h3 id="allowing-specific-oversized-requests">Allowing Specific Oversized Requests</h3>
+<p>If specific endpoints legitimately receive oversized requests (e.g., file upload endpoints), you should block oversized requests everywhere except those endpoints rather than allowing them. This keeps the rest of your protection pack rules in effect for those requests.</p>
+<pre><code class="language-json">{
+  &quot;Name&quot;: &quot;block-oversized-body-except-uploads&quot;,
+  &quot;Priority&quot;: 5,
+  &quot;Statement&quot;: {
+    &quot;AndStatement&quot;: {
+      &quot;Statements&quot;: [
+        {
+          &quot;SizeConstraintStatement&quot;: {
+            &quot;FieldToMatch&quot;: { &quot;Body&quot;: {} },
+            &quot;ComparisonOperator&quot;: &quot;GT&quot;,
+            &quot;Size&quot;: 8192,
+            &quot;TextTransformations&quot;: [{ &quot;Priority&quot;: 0, &quot;Type&quot;: &quot;NONE&quot; }],
+            &quot;OversizeHandling&quot;: &quot;MATCH&quot;
+          }
+        },
+        {
+          &quot;NotStatement&quot;: {
+            &quot;Statement&quot;: {
+              &quot;ByteMatchStatement&quot;: {
+                &quot;SearchString&quot;: &quot;/upload&quot;,
+                &quot;FieldToMatch&quot;: { &quot;UriPath&quot;: {} },
+                &quot;TextTransformations&quot;: [{ &quot;Priority&quot;: 0, &quot;Type&quot;: &quot;LOWERCASE&quot; }],
+                &quot;PositionalConstraint&quot;: &quot;STARTS_WITH&quot;
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  &quot;Action&quot;: {
+    &quot;Block&quot;: {}
+  },
+  &quot;VisibilityConfig&quot;: {
+    &quot;SampledRequestsEnabled&quot;: true,
+    &quot;CloudWatchMetricsEnabled&quot;: true,
+    &quot;MetricName&quot;: &quot;block-oversized-body-except-uploads&quot;
+  }
+}
+</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

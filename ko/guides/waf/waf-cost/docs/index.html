@@ -1,0 +1,2388 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/waf-cost/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/waf/waf-cost/docs/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ko">
+        
+          <link rel="alternate" href="../../../../../ja/guides/waf/waf-cost/docs/" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>WAF Cost - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#waf-cost" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              WAF Cost
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="언어설정">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/waf/waf-cost/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ja/guides/waf/waf-cost/docs/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    홈
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../network-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall 모범 사례
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cost-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost Dimensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cost Dimensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standard-waf-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard WAF Costs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-scenario-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core scenario Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-costs---features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional Costs - Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Additional Costs - Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wcu-overage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WCU Overage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#body-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Body inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#challenge-and-captcha-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Challenge and Captcha Costs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#premium-amrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Premium AMRs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Premium AMRs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bot-control-common" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bot Control Common
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bot-control-targeted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bot Control Targeted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#account-takeover-prevention-atp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Account Takeover Prevention (ATP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#account-creation-fraud-prevention-acfp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Account Creation Fraud Prevention (ACFP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anti-ddos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-DDoS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Logging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#log-delivery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log Delivery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-cost-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging Cost Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtered-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtered Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#partner-managed-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Partner Managed Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estimating-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimating Cost
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Estimating Cost">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#protecting-existing-aws-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protecting Existing AWS Resources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protection-non-aws-origins-or-workloads-moving-onto-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protection Non-AWS Origins or Workloads moving onto AWS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost Optimization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cost Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shield-advanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shield Advanced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scope-down-statements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope-Down Statements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#javascript-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JavaScript Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloudfront-flat-rate-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CloudFront Flat-Rate Plans
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="waf-cost">WAF Cost</h1>
+<p>AWS WAF has three core costs plus specific paid premium features and managed rules available a-la-carte as well as bundled.  This section explains how those dimensions interact in practice so you can estimate and optimize your WAF spend. For current pricing numbers, refer to the <a href="https://aws.amazon.com/waf/pricing/">AWS WAF Pricing page</a>.</p>
+<p>To best explain WAF costs, this document will use a <strong>core scenario</strong> starting with just standard WAF costs.  For each section for a paid premium feature or managaed rule, it provides examples of that feature as well as incorporating that feature into the <strong>core scenario</strong>.  </p>
+<p><strong>Core scenario</strong><br />
+One (1) Protection pack <br />
+Five (5) custom rules included in the Protection Pack<br />
+Amazon Managed Rules included in the protection pack:<br />
+  - Common Rule Set (CRS)<br />
+  - Known Bad Inputs (KBI)<br />
+Ten million (10,000,000) requests  </p>
+<h2 id="cost-dimensions">Cost Dimensions</h2>
+<h3 id="standard-waf-costs">Standard WAF Costs</h3>
+<p>Every WAF deployment has three base cost components:</p>
+<ul>
+<li><strong>Protection pack (Web ACL)</strong> -  A monthly fixed cost per protection pack. Each protection pack is associated with one or more resources (CloudFront distributions, ALBs, API Gateways, etc.). You pay per protection pack, not per resource associated to it.  </li>
+<li><strong>Rules</strong> - A Monthly cost per rule in the protection pack. Each rule group (whether custom or managed) counts as a single rule for billing purposes regardless of how many rules are inside the rule group. A protection pack with 3 custom rules and 2 managed rule groups is billed for 5 rules. Premium AMRs that carry their own subscription fee (e.g. Bot Control) which is in addition to this cost.  Custom rule groups have no cost on their own, their association with one or more protection pack(s) only has a cost.  </li>
+<li><strong>Requests</strong> — A per-request cost for every web request evaluated by the protection pack.  The base per-request rate covers up to 1,500 WCU of rule evaluation and the default body inspection size (8 KB). We cover these in more detail later in this document.  </li>
+</ul>
+<h3 id="core-scenario-cost"><strong>Core scenario</strong> Cost</h3>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom rules + CRS + KBI)</td>
+<td>7</td>
+<td>$1.00/month</td>
+<td>$7.00</td>
+</tr>
+<tr>
+<td>Requests</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$18.00</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="additional-costs---features">Additional Costs - Features</h3>
+<p>Beyond the base components, several features carry incremental costs:</p>
+<p><strong>WCU Beyond 1,500</strong><br />
+Standard WAF costs for requests allows up to 1,500 WCU worth or inline, custom rule group, or Managed Rule groups.  If a protection pack associated with a resource has more than 1,500 WCU, the per-request cost increases in 500-WCU increments. In practice, most WAF deployments are under 1,500 WCU.  </p>
+<h4 id="wcu-overage">WCU Overage</h4>
+<p><strong>Feature Example:</strong> Custom rules + AMRs brings the Protection Pack to 1,501 WCU.  </p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WCU overage (1 × 500 WCU increment)</td>
+<td>10,000,000</td>
+<td>$0.20/million</td>
+<td>$2.00</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Feature Example:</strong> Custom rules + AMRs brings the Protection Pack to 2,700 WCU.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WCU overage (3 × 500 WCU increment)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario</strong> + WCU Overage**<br />
+Custom rules + AMRs brings the Protection Pack between 1,501 - 2,000 WCU.  </p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom rules + CRS + KBI)</td>
+<td>7</td>
+<td>$1.00/month</td>
+<td>$7.00</td>
+</tr>
+<tr>
+<td>Requests</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>WCU overage (1 × 500 WCU increment)</td>
+<td>10,000,000</td>
+<td>$0.20/million</td>
+<td>$2.00</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$20.00</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="body-inspection">Body inspection</h4>
+<p>AWS WAF inspects up to 8 KB when associated with an Application Load Balancers or AWS AppSync is included in standard WAF costs.</p>
+<p>AWS WAF inspects up to 16 KB of the request body for CloudFront, API Gateway, Amazon Cognito, App Runner, and Verified Access is included with standard WAF costs. You can configure a higher maximum body inspection of 32 KB, 48 KB, or 64 KB. Extended body inspection is billed per request <em>only</em> when: a WAF rule evaluates the body and the actual body exceeds 16 KB. The rate depends on the size of the actual request body.  </p>
+<p><strong>Feature Example:</strong> 
+Body inspection set to 48 KB.<br />
+1,500,000 requests have a body &gt; 16 KB and ≤ 48 KB.<br />
+500,00 have a body &gt; 48 KB and ≤ 64 KB.  </p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requests with body &gt; 16 KB and ≤ 48 KB</td>
+<td>1,500,000</td>
+<td>$0.30/million</td>
+<td>$0.45</td>
+</tr>
+<tr>
+<td>Requests with body &gt; 48 KB and ≤ 64 KB</td>
+<td>500,000</td>
+<td>$0.60/million</td>
+<td>$0.30</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario + Body Inspection (48 KB):</strong><br />
+Body inspection set to 48 KB.<br />
+1,500,000 requests have a body &gt; 16 KB and ≤ 48 KB.<br />
+500,00 have a body &gt; 48 KB and ≤ 64 KB.  </p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom rules + CRS + KBI)</td>
+<td>7</td>
+<td>$1.00/month</td>
+<td>$7.00</td>
+</tr>
+<tr>
+<td>Requests</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>Requests with body &gt; 16 KB and ≤ 32 KB</td>
+<td>1,500,000</td>
+<td>$0.30/million</td>
+<td>$0.45</td>
+</tr>
+<tr>
+<td>Requests with body &gt; 32 KB and ≤ 64 KB</td>
+<td>500,000</td>
+<td>$0.60/million</td>
+<td>$0.30</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$18.75</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario + WCU Overage + Body Inspection (48 KB):</strong><br />
+Custom rules + AMRs brings the Protection Pack between 1,501 - 2,000.<br />
+Body inspection set to 48 KB.<br />
+1,500,000 requests have a body &gt; 16 KB and ≤ 48 KB.<br />
+500,00 have a body &gt; 48 KB and ≤ 64 KB.  </p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom rules + CRS + KBI)</td>
+<td>7</td>
+<td>$1.00/month</td>
+<td>$7.00</td>
+</tr>
+<tr>
+<td>Requests</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>WCU overage (1 × 500 WCU increment)</td>
+<td>10,000,000</td>
+<td>$0.20/million</td>
+<td>$2.00</td>
+</tr>
+<tr>
+<td>Requests with body &gt; 16 KB and ≤ 32 KB</td>
+<td>1,500,000</td>
+<td>$0.30/million</td>
+<td>$0.45</td>
+</tr>
+<tr>
+<td>Requests with body &gt; 32 KB and ≤ 64 KB</td>
+<td>500,000</td>
+<td>$0.60/million</td>
+<td>$0.30</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$20.75</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="challenge-and-captcha-costs">Challenge and Captcha Costs</h4>
+<p>Challenge and Captcha actions have their own per-use cost on top of standard request pricing.  </p>
+<p><strong>When Challenge and Captcha are included or do </strong>NOT<strong> result in a cost:</strong></p>
+<ul>
+<li>When a request triggers a WAF rule with a Challenge action but already contains a valid WAF token from a previous Challenge action.  </li>
+<li>When a request triggers a WAF rule with a Captcha action but already contains a valid WAF token from a previous Challenge or Captcha action/attempt.  </li>
+<li>When an AWS Managed Rule (AMR) uses Challenge or Captcha as its default action. Today this is applicable to specific rules within: Bot Control Targeted, Fraud Control rules (ATP, ACFP), and the AntiDDoS managed rules.  </li>
+<li><strong>JavaScript SDK (passive integration)</strong> — AWS WAF JavaScript SDK executing in the web browser.  </li>
+</ul>
+<p><strong>When Challenge and Captcha are paid:</strong></p>
+<ul>
+<li><strong>Challenge</strong> — A billable event occurs each time WAF returns an HTTP 202 interstitial Challenge response. If a user already has a valid Challenge token, the rule passes through and no billable event occurs.  </li>
+<li><strong>Captcha</strong> — A billable event occurs <strong><em>only</em></strong> when a user submits an answer to a Captcha puzzle. This applies whether the Captcha was served by a WAF rule action (HTTP 405) or rendered by the application using the Captcha JavaScript SDK — the charge is for the puzzle submission itself.  The only exception is when the Captcha is triggered by an AWS Managed Rule where the default action is Captcha.  </li>
+<li><strong>AMR set to Count + label-based custom rule</strong> — You might want to apply custom rule logic based on an AMR rule triggering where that AMR rule has a default action of Challenge or Captcha.  A custom rule using the label from a rule with a default action of Challenge/Captcha does NOT in this case waive the Challenge/Captcha cost; the AMR rule must terminate as a default action for this cost to be waived.</li>
+<li><strong>AMR rule overridden directly to Challenge/Captcha</strong> — If you override any individual AMR rule's action directly to Challenge or Captcha, that is a paid event — even if another rule(s) within the same AMR use Challenge or Captcha as a default action.</li>
+</ul>
+<p><strong>Feature Example:</strong> Custom rule issues Challenge, 1% of traffic has no valid token and a WAF rule triggers an HTTP 202 → 100,000 HTTP 202 responses.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Challenge (custom rule, HTTP 202 returned)</td>
+<td>100,000</td>
+<td>$0.40/million</td>
+<td>$0.04</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Feature Example:</strong> 50,000 requests match a rule with a Captcha action. Of those, 12,000 users actually submit a Captcha puzzle answer. The remaining 38,000 either already had a valid Captcha token (puzzle never served) or were served the puzzle but abandoned it. Only the 12,000 submitted answers are billable.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requests matching Captcha rule</td>
+<td>50,000</td>
+<td>—</td>
+<td>$0.00</td>
+</tr>
+<tr>
+<td>Captcha (submitted puzzle answers)</td>
+<td>12,000</td>
+<td>$4.00/10,000</td>
+<td>$4.80</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Feature Example:</strong> Bot Control Targeted (scope-down to 5% of traffic). Bot Control Targeted uses Challenge/Captcha as default actions on some rules — 1% of total traffic (100,000 requests) is served a Challenge or Captcha by Bot Control Targeted as its default action. Because the AMR itself is what terminates the request, these are included at no additional cost.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bot Control Targeted subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>Bot Control Targeted per-request (5% of traffic)</td>
+<td>500,000</td>
+<td>$10.00/million</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Challenge/Captcha (from Bot Control rules, 100,000 served)</td>
+<td>100,000</td>
+<td>included with AMR</td>
+<td>$0.00</td>
+</tr>
+</tbody>
+</table>
+<p>Adding JavaScript SDK (passive Challenge integration) to all HTML pages does not change the cost — tokens acquired via the SDK are not billable events, and the Bot Control Challenge/Captcha actions are already included with the AMR subscription.</p>
+<p><strong>Core scenario</strong> + Custom Challenge Rule**<br />
+Custom rule issues Challenge, 1% of traffic has no valid token and a WAF rule triggers an HTTP 202 → 100,000 HTTP 202 responses.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI)</td>
+<td>7</td>
+<td>$1.00/month</td>
+<td>$7.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>Challenge (custom rule, HTTP 202 returned)</td>
+<td>100,000</td>
+<td>$0.40/million</td>
+<td>$0.04</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$18.04</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario</strong> + Captcha on /login**<br />
+Captcha on <code>/login</code> using client SDK integration — 10,000 login attempts, 9,500 users submit a Captcha answer.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI)</td>
+<td>7</td>
+<td>$1.00/month</td>
+<td>$7.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>Captcha (submitted puzzle answers)</td>
+<td>9,500</td>
+<td>$4.00/10,000</td>
+<td>$3.80</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$21.80</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario</strong> + Bot Control Targeted (5% scope-down)**<br />
+Bot Control Targeted scoped to 5% of traffic. Challenge/Captcha from Bot Control rules is included.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI + Bot Control Targeted)</td>
+<td>8</td>
+<td>$1.00/month</td>
+<td>$8.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>Bot Control Targeted subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>Bot Control Targeted per-request (5% of traffic)</td>
+<td>500,000</td>
+<td>$10.00/million</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Challenge/Captcha (from Bot Control rules)</td>
+<td>—</td>
+<td>included with AMR</td>
+<td>$0.00</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$34.00</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario</strong> + Bot Control Targeted + Custom Challenge Rule**<br />
+Bot Control Targeted (5% scope-down) plus a custom rule issuing Challenge (1% of traffic, no overlap with Bot Control) → 100,000 HTTP 202 responses. The Bot Control Challenge/Captcha is included, but the custom rule's Challenge is a paid event.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI + Bot Control Targeted)</td>
+<td>8</td>
+<td>$1.00/month</td>
+<td>$8.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>Bot Control Targeted subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>Bot Control Targeted per-request (5% of traffic)</td>
+<td>500,000</td>
+<td>$10.00/million</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Challenge (from Bot Control rules)</td>
+<td>—</td>
+<td>included with AMR</td>
+<td>$0.00</td>
+</tr>
+<tr>
+<td>Challenge (custom rule, 100,000 HTTP 202 returned)</td>
+<td>100,000</td>
+<td>$0.40/million</td>
+<td>$0.04</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$34.04</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cost implications of token immunity timing:</strong></p>
+<ul>
+<li>Shorter immunity times cause users to re-verify more frequently within a session, increasing billable events</li>
+<li>Token domain misconfiguration causes duplicate billable events when users navigate across subdomains — a token acquired on <code>www.example.com</code> is not valid on <code>api.example.com</code> unless token domain is configured, resulting in a second billable Challenge or Captcha</li>
+<li>High-traffic endpoints with Captcha rules and short immunity times can generate significant per-use charges even from legitimate users</li>
+</ul>
+<p>See <a href="../../captcha-and-challenge/docs/">CAPTCHA and Challenge</a> for integration patterns that minimize billable events (passive and proactive approaches) and immunity time tradeoff guidance.</p>
+<p><strong>Feature Example:</strong> Custom rule issues Challenge on 100% of traffic, immunity timer is 30 seconds resulting in 2,000,000 HTTP 202 responses. (No WAF JS SDK integration)</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Challenge (custom rule, HTTP 202 returned)</td>
+<td>2,000,000</td>
+<td>$0.40/million</td>
+<td>$0.80</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Feature Example:</strong> Same configuration but immunity timer is 300 seconds, resulting in only 25,000 HTTP 202 responses.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Challenge (custom rule, HTTP 202 returned)</td>
+<td>25,000</td>
+<td>$0.40/million</td>
+<td>$0.01</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario</strong> + Challenge (30s immunity)**<br />
+Custom rule issues Challenge on 100% of traffic, immunity timer is 30 seconds → 2,000,000 HTTP 202 responses.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI)</td>
+<td>7</td>
+<td>$1.00/month</td>
+<td>$7.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>Challenge (custom rule, HTTP 202 returned)</td>
+<td>2,000,000</td>
+<td>$0.40/million</td>
+<td>$0.80</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$18.80</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario</strong> + Challenge (300s immunity)**<br />
+Same configuration but immunity timer is 300 seconds → only 25,000 HTTP 202 responses.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI)</td>
+<td>7</td>
+<td>$1.00/month</td>
+<td>$7.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>Challenge (custom rule, HTTP 202 returned)</td>
+<td>25,000</td>
+<td>$0.40/million</td>
+<td>$0.01</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$18.01</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The difference between 30-second and 300-second immunity on the same traffic is $0.79/month (~4%) — entirely from repeated Challenge responses to the same legitimate users.</p>
+<h3 id="premium-amrs">Premium AMRs</h3>
+<h4 id="bot-control-common">Bot Control Common</h4>
+<p>For Bot Control, the per-request cost applies to every request evaluated by the rule group — not just requests that match a bot label. If you scope Bot Control to only your <code>/api/</code> path, you only pay for requests to that path. Scope-down statements are the primary lever for controlling premium AMR costs.
+There is a flat subscription cost per Protection Pack with Bot Control configured.</p>
+<p><strong>Feature Example:</strong> Bot Control Common scoped to 10% of traffic.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bot Control Common subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>Bot Control Common per-request (10% of traffic)</td>
+<td>1,000,000</td>
+<td>$1.00/million</td>
+<td>$1.00</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Feature Example:</strong> Bot Control Common evaluates 100% of traffic (no scope-down).</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bot Control Common subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>Bot Control Common per-request (100% of traffic)</td>
+<td>10,000,000</td>
+<td>$1.00/million</td>
+<td>$10.00</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario</strong> + Bot Control Common (10% requests in scope)**</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI + Bot Control Common)</td>
+<td>8</td>
+<td>$1.00/month</td>
+<td>$8.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>Bot Control Common subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>Bot Control Common per-request (10% of traffic)</td>
+<td>1,000,000</td>
+<td>$1.00/million</td>
+<td>$1.00</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$30.00</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario</strong> + Bot Control Common (100% requests in scope)**</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI + Bot Control Common)</td>
+<td>8</td>
+<td>$1.00/month</td>
+<td>$8.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>Bot Control Common subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>Bot Control Common per-request (100% of traffic)</td>
+<td>10,000,000</td>
+<td>$1.00/million</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$39.00</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Most customers do not need BotControl protecting every single request; .css, .js, etc are usually not useful to protect with Bot Control.  </p>
+<h4 id="bot-control-targeted">Bot Control Targeted</h4>
+<p>Bot Control Targeted follows the same cost model as Common: a flat subscription fee per Protection Pack plus a per-request cost. It has a higher per-request rate than Common. Some rules within Bot Control Targeted use Challenge or Captcha as their default action — when those rules terminate the request, no additional Challenge/Captcha cost is incurred.</p>
+<p><strong>Feature Example:</strong> Bot Control Targeted scoped to 5% of traffic.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bot Control Targeted subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>Bot Control Targeted per-request (5% of traffic)</td>
+<td>500,000</td>
+<td>$10.00/million</td>
+<td>$5.00</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Feature Example:</strong> Bot Control Targeted evaluates 100% of traffic.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bot Control Targeted subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>Bot Control Targeted per-request (100% of traffic)</td>
+<td>10,000,000</td>
+<td>$10.00/million</td>
+<td>$100.00</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Note: This is shown as an example, but in reality you would almost always use Bot Control Targeted with a Scope down statement.</li>
+</ul>
+<p><strong>Core scenario</strong> + Bot Control Targeted (5% requests in scope)**</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI + Bot Control Targeted)</td>
+<td>8</td>
+<td>$1.00/month</td>
+<td>$8.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>Bot Control Targeted subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>Bot Control Targeted per-request (5% of traffic)</td>
+<td>500,000</td>
+<td>$10.00/million</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$34.00</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The lack of a scope-down statement adds $95.00/month from Bot Control Targeted per-request charges.  This is not commonly the best design due to many requests not requiring enhanced protection (e.g. .css, .js)</p>
+<h4 id="account-takeover-prevention-atp">Account Takeover Prevention (ATP)</h4>
+<p>ATP has a flat per protection pack plus per request that match the login endpoint you configure (not all traffic through the protection pack). Many ATP rules use challenge or Captcha actions.  When used as a default action, these are included in the cost of ATP and are not in addition to ATP costs.  ATP requires configuring which URI to inspect, only requests to that URI path (specifically POST) result in a usage based cost.  </p>
+<p><strong>Feature Example:</strong> ATP configured for <code>/login</code>, 50,000 requests/month hit the login path.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ATP subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>ATP per-request (login path only)</td>
+<td>50,000</td>
+<td>$1.00/million</td>
+<td>$0.05</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario</strong> + ATP**<br />
+ATP configured for <code>/login</code>, 50,000 requests/month hit the login path.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI + ATP)</td>
+<td>8</td>
+<td>$1.00/month</td>
+<td>$8.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>ATP subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>ATP per-request (login path only)</td>
+<td>50,000</td>
+<td>$1.00/million</td>
+<td>$0.05</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$29.05</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="account-creation-fraud-prevention-acfp">Account Creation Fraud Prevention (ACFP)</h4>
+<p>ACFP follows the same model as ATP but applies to the registration endpoint you configure.</p>
+<p><strong>Feature Example:</strong> ACFP configured for <code>/register</code>, 20,000 requests/month hit the registration path.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACFP subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>ACFP per-request (registration path only)</td>
+<td>20,000</td>
+<td>$1.00/million</td>
+<td>$0.02</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario</strong> + ACFP**<br />
+ACFP configured for <code>/register</code>, 20,000 requests/month hit the registration path.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI + ACFP)</td>
+<td>8</td>
+<td>$1.00/month</td>
+<td>$8.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>ACFP subscription</td>
+<td>1</td>
+<td>$10.00/month</td>
+<td>$10.00</td>
+</tr>
+<tr>
+<td>ACFP per-request (registration path only)</td>
+<td>20,000</td>
+<td>$1.00/million</td>
+<td>$0.02</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$29.02</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="anti-ddos">Anti-DDoS</h4>
+<p>The Anti-DDoS managed rule group has a flat fee per Protection Pack plus per-request cost. It uses Challenge as a default action on some rules — when the AMR terminates the request, these Challenge events are included at no additional cost.  Requests that are blocked by this AMR do NOT result in a usage based charge from the Anti-DDoS AMR.  Note, Shield Advanced customers can use this Premium Managed Rule on Shield Advanced protected resources for no additional cost.  See <a href="./#shield-advanced-waf-costs">Shield Advanced &amp; WAF Costs for full details</a></p>
+<p><strong>Feature Example:</strong> Anti-DDoS evaluates 100% of traffic. 3% of traffic (300,000 requests) is served a Challenge by Anti-DDoS as its default action.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Anti-DDoS subscription</td>
+<td>1</td>
+<td>$15.00/month</td>
+<td>$15.00</td>
+</tr>
+<tr>
+<td>Anti-DDoS per-request (100% of traffic)</td>
+<td>10,000,000</td>
+<td>$0.80/million</td>
+<td>$8.00</td>
+</tr>
+<tr>
+<td>Challenge (from Anti-DDoS rules, 300,000 served)</td>
+<td>300,000</td>
+<td>included with AMR</td>
+<td>$0.00</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Core scenario</strong> + Anti-DDoS**<br />
+Anti-DDoS evaluates 100% of traffic. 3% of traffic (300,000 requests) is served a Challenge by Anti-DDoS as its default action.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>Quantity</th>
+<th>Unit cost</th>
+<th>Monthly cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protection pack (Web ACL)</td>
+<td>1</td>
+<td>$5.00/month</td>
+<td>$5.00</td>
+</tr>
+<tr>
+<td>Rules (5 custom + CRS + KBI + Anti-DDoS)</td>
+<td>8</td>
+<td>$1.00/month</td>
+<td>$8.00</td>
+</tr>
+<tr>
+<td>Requests (base)</td>
+<td>10,000,000</td>
+<td>$0.60/million</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>Anti-DDoS subscription</td>
+<td>1</td>
+<td>$15.00/month</td>
+<td>$15.00</td>
+</tr>
+<tr>
+<td>Anti-DDoS per-request (100% of traffic)</td>
+<td>10,000,000</td>
+<td>$0.80/million</td>
+<td>$8.00</td>
+</tr>
+<tr>
+<td>Challenge (from Anti-DDoS rules, 300,000 served)</td>
+<td>300,000</td>
+<td>included with AMR</td>
+<td>$0.00</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$42.00</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="logging">Logging</h3>
+<blockquote>
+<p>This section does <strong>NOT</strong> cover the technical implications and strategeis in selecting the best WAF logging option For a complete answer on selecting the right log delivery and storage choice <a href="../../waf-logging/docs/">here</a>.</p>
+</blockquote>
+<p>WAF logging is not billed directly as part of the WAF service but represents an operational cost of using AWS WAF.  Logging costs are broken out into three groups:<br />
+1) <strong>Log Delivery:</strong> This is calculated based on the raw size of WAF logs (no compression)<br />
+2) <strong>Storage/Retention:</strong> In  AWS native storage (and likely many 3P) WAF logs are usually compressed.<br />
+3) <strong>Misc:</strong>  There are some additional costs, we cover what these are however they are rarely meaningful (less than 1% of of log delivery/storage costs)  </p>
+<p>A WAF log size varies based on what rules are in the protection pack as well as the request itself.  To help you quantify/estimate your own WAF logging costs, below are some useful min/max waf log sizes:<br />
+- A protection pack with 0 rules and trivial URI, headers, etc results in a ~1.4 KB WAF log item.<br />
+- A <a href="../../aws-managed-rules/docs/#protection-pack-recommendations">recommended protection pack</a> results in a ~4.6 KB waf log item.  </p>
+<p>If your application creates extremely large query strings, URI, headers, etc, this can increase your log size.  The values provided here are reason assumption you can use to accurate create an estimate/ballpark.  For the most accurate answer, enable WAF logging and capture a sample of your requests and calculate your average log size from your actual logs.  </p>
+<p>To put these ranges in perspective, one million (1,000,000) WAF requests results in:
+- 1.4 GB - 4.6 GB of logs delivered (raw)
+- 280 MB - 920 MB of logs on storage (assuming commpressed to 20%)</p>
+<h4 id="log-delivery">Log Delivery</h4>
+<p>AWS WAF supports log delivery via Amazon CloudWatch Vended Logs and Amazon Data Firehose.  Amazon CloudWatch Vended logs can deliver to Amazon S3 or a CloudWath log group, Amazon Data Firehose can deliver to Amazon S3 and other products such as OpenSearch, and 3P SIEM type tools.  </p>
+<ul>
+<li><strong>CloudWatch Vended Logs</strong> - WAF logs send to S3 follow CloudWatch Vended Logs (Delivery Destination Amazon S3).  AWS WAF provides a credit covering 500 MB Vended Log Ingestion per 1 million WAF requests.  Vended Logs to S3 start at $0.25 per GB and tier down to $0.05 per GB over 50 TB (calculated against raw WAF log size).  Vended Logs to a CloudWatch log group starts at $0.50 per GB and tiers down to $0.05 per GB over 50 TB.  </li>
+</ul>
+<ul>
+<li><strong>Kinesis Data Firehose</strong> — WAF logs can be delivered via Amazon Data Firehose.  Firehose billing imposes a minimum item (WAF log) size of 5 kb.  For almost all WAF customers, this means you should consider each WAF logs to be 5 KB when calculating log delivery.  Firehose log delivery starts at $0.075 per GB and tiers down to $0.053 per GB above 1 PB (calculated against raw WaF log size, with a minimum of 5kb)</li>
+</ul>
+<h4 id="log-storage">Log Storage</h4>
+<ul>
+<li><strong>CloudWatch Logs Groups</strong> - CloudWatch Log groups on creation can select a storage tier of either Standard ($0.50 per GB/month) or Infrequent Access ($0.25 per GB/Month).  Note, if you store in Infrequent Access, there is an additional cost to query that data.  Consider the additioanl cost to query before selecing Infrequent Access as it can result in more TCO if you end up querying logs.   </li>
+</ul>
+<ul>
+<li><strong>Amazon S3</strong> — S3 is the most common destination for WAF logs, S3 Storage starts at $0.023 per GB.  S3 POSTs have a small API costs  ($0.005 per 1,000).  While this is technical a cost, compared to the storage and delivery costs, this is almost always trivia (less than 1%) and when creating a cost estimate safely ignored.  </li>
+</ul>
+<p><strong>Cost specific Storage recommendations</strong>
+When using KMS for S3 storage, use Amazon S3 Bucket Keys.  Without this feature, <em>every single</em> POST (i.e. WAF log beign uploaded to S3) results in a KMS API costs.  With this feature enabled, S3 generates a short-lived bucketlevel key from KMS.  All data creating for a period of a limited period of use the same key, resulting in an API all every so often vs for every single WAF log uploaded.  </p>
+<p><strong>Enable LifeCycle/Retention</strong><br />
+Both AWS native storage services offer a lifecycle/retention policy allow you to either change the storage tier or outright delete older data automatically.  Unless you have a compliance requirements, consider keeping WAF logs for ~30 days at least or whatever your Organziation has decided for operational and security needs.  This setting is configurable after creation of the CLoudWatch Log group or S3 bucket.  </p>
+<h4 id="logging-cost-examples">Logging Cost Examples</h4>
+<p>The scale of your logging and per log average size impacts the cost based on you log delivery choice.  On the log delivery front, smaller average WAF log size and truely massive workloads (tens or hundreds of billions+) are most cost effective with Vended Logs.  For larger average WAF object size and most workloads until you are in the tens of billions, Firehose is usually most cost effective.  On the storage front, while cost is certainly a factor, validate your technical requirements for WAF logs before deciding which logging approach makes the most sense.  See <a href="../../waf-logging/docs/">WAF Logging</a></p>
+<p><strong>Log Delivery Cost Examples</strong><br />
+<strong>Example 1 — 1.4 KB average WAF log size, 10 million requests</strong></p>
+<p><em>Amazon Kinesis Data Firehose</em></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Calculation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw log volume (5 KB minimum per item)</td>
+<td>5 KB × 10,000,000</td>
+<td>50 GB</td>
+</tr>
+<tr>
+<td>Delivery cost</td>
+<td>50 GB × $0.075/GB</td>
+<td>$3.75</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$3.75</strong></td>
+</tr>
+</tbody>
+</table>
+<p><em>Amazon CloudWatch Vended Logs</em></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Calculation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw log volume</td>
+<td>1.4 KB × 10,000,000</td>
+<td>14 GB</td>
+</tr>
+<tr>
+<td>WAF credit (500 MB per 1M requests)</td>
+<td>500 MB × 10</td>
+<td>5 GB</td>
+</tr>
+<tr>
+<td>Billable volume</td>
+<td>14 GB − 5 GB</td>
+<td>9 GB</td>
+</tr>
+<tr>
+<td>Delivery cost</td>
+<td>9 GB × $0.25/GB</td>
+<td>$2.25</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$2.25</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example 2 — 4.6 KB average WAF log size, 10 million requests</strong></p>
+<p><em>Amazon Kinesis Data Firehose</em></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Calculation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw log volume (5 KB minimum per item)</td>
+<td>5 KB × 10,000,000</td>
+<td>50 GB</td>
+</tr>
+<tr>
+<td>Delivery cost</td>
+<td>50 GB × $0.075/GB</td>
+<td>$3.75</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$3.75</strong></td>
+</tr>
+</tbody>
+</table>
+<p><em>Amazon CloudWatch Vended Logs</em></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Calculation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw log volume</td>
+<td>4.6 KB × 10,000,000</td>
+<td>46 GB</td>
+</tr>
+<tr>
+<td>WAF credit (500 MB per 1M requests)</td>
+<td>500 MB × 10</td>
+<td>5 GB</td>
+</tr>
+<tr>
+<td>Billable volume</td>
+<td>46 GB − 5 GB</td>
+<td>41 GB</td>
+</tr>
+<tr>
+<td>Delivery cost</td>
+<td>41 GB × $0.25/GB</td>
+<td>$10.25</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$10.25</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example 3 — 4.6 KB average WAF log size, 10 billion requests</strong></p>
+<p><em>Amazon Kinesis Data Firehose</em></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Calculation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw log volume (5 KB minimum per item)</td>
+<td>5 KB × 10,000,000,000</td>
+<td>50,000 GB</td>
+</tr>
+<tr>
+<td>Delivery cost</td>
+<td>50,000 GB × $0.075/GB</td>
+<td>$3,750.00</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$3,750.00</strong></td>
+</tr>
+</tbody>
+</table>
+<p><em>Amazon CloudWatch Vended Logs</em></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Calculation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw log volume</td>
+<td>4.6 KB × 10,000,000,000</td>
+<td>46,000 GB (46 TB)</td>
+</tr>
+<tr>
+<td>WAF credit (500 MB per 1M requests)</td>
+<td>500 MB × 10,000</td>
+<td>5,000 GB (5 TB)</td>
+</tr>
+<tr>
+<td>Billable volume</td>
+<td>46,000 GB − 5,000 GB</td>
+<td>41,000 GB (41 TB)</td>
+</tr>
+<tr>
+<td>Tier 1 (First 10 TB)</td>
+<td>10,000 GB × $0.25/GB</td>
+<td>$2,500.00</td>
+</tr>
+<tr>
+<td>Tier 2 (Next 20 TB)</td>
+<td>20,000 GB × $0.15/GB</td>
+<td>$3,000.00</td>
+</tr>
+<tr>
+<td>Tier 3 (Next 20 TB)</td>
+<td>11,000 GB × $0.075/GB</td>
+<td>$825.00</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$6,325.00</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example 4 — 4.6 KB average WAF log size, 500 billion requests</strong></p>
+<p><em>Amazon Kinesis Data Firehose</em></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Calculation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw log volume (5 KB minimum per item)</td>
+<td>5 KB × 500,000,000,000</td>
+<td>2,500,000 GB (2.5 PB)</td>
+</tr>
+<tr>
+<td>Tier 1 (Fist 250 TB)</td>
+<td>250,000 GB × $0.075/GB</td>
+<td>$18,750.00</td>
+</tr>
+<tr>
+<td>Tier 2 (Next 750 TB)</td>
+<td>750,000 GB × $0.064/GB</td>
+<td>$48,000.00</td>
+</tr>
+<tr>
+<td>Tier 3 (Beyond 1 PB)</td>
+<td>1,500,000 GB × $0.053/GB</td>
+<td>$79,500.00</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$146,250.00</strong></td>
+</tr>
+</tbody>
+</table>
+<p><em>Amazon CloudWatch Vended Logs</em></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Calculation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw log volume</td>
+<td>4.6 KB × 500,000,000,000</td>
+<td>2,300,000 GB (2.3 PB)</td>
+</tr>
+<tr>
+<td>WAF credit (500 MB per 1M requests)</td>
+<td>500 MB × 500,000</td>
+<td>250,000 GB</td>
+</tr>
+<tr>
+<td>Billable volume</td>
+<td>2,300,000 GB − 250,000 GB</td>
+<td>2,050,000 GB (~2.05 PB)</td>
+</tr>
+<tr>
+<td>Tier 1 (First 10 TB)</td>
+<td>10,000 GB × $0.25/GB</td>
+<td>$2,500.00</td>
+</tr>
+<tr>
+<td>Tier 2 (Next 20 TB)</td>
+<td>20,000 GB × $0.15/GB</td>
+<td>$3,000.00</td>
+</tr>
+<tr>
+<td>Tier 3 (Next 20 TB)</td>
+<td>20,000 GB × $0.075/GB</td>
+<td>$1,500.00</td>
+</tr>
+<tr>
+<td>Tier 4 (Beyond 50 TB)</td>
+<td>2,000,000 GB × $0.05/GB</td>
+<td>$100,000.00</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Total</strong></td>
+<td><strong>$107,000.00</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="filtered-logging">Filtered Logging</h4>
+<p>WAF log filtering reduces cost significantly. You can configure logging to only capture requests that match specific rules, are blocked, or carry specific labels — rather than logging every request. See <a href="../../waf-logging/docs/">WAF Logging</a> for filtering guidance.</p>
+<p>There is no cost to configure this and beyond changing the number of requests you end up logging, does not change the logging cost formulas.</p>
+<h3 id="partner-managed-rules">Partner Managed Rules</h3>
+<p>Partner managed rules (available in AWS Marketplace) have their own subscription pricing set by the partner, plus standard WAF per-request costs still apply. These do not include Challenge or Captcha as part of their subscription — any Challenge or Captcha actions from partner rules are billed as standard paid Challenge/Captcha events.</p>
+<h2 id="estimating-cost">Estimating Cost</h2>
+<div class="admonition warning">
+<p class="admonition-title">Future Content Updates in progress</p>
+</div>
+<p>We are revamping the AWS WAF best practices guide.  This section is not yet created/completed.</p>
+<h3 id="protecting-existing-aws-resources">Protecting Existing AWS Resources</h3>
+<p><We will go into how to do this in a single account, as well as at scale using AWS Config/other org wide aggregation mechanisms.></p>
+<h3 id="protection-non-aws-origins-or-workloads-moving-onto-aws">Protection Non-AWS Origins or Workloads moving onto AWS</h3>
+<p><focus on the data points that matter in with non-AWS terminology></p>
+<h2 id="cost-optimization">Cost Optimization</h2>
+<h3 id="shield-advanced">Shield Advanced</h3>
+<p>If you subscribe to AWS Shield Advanced, standard WAF costs + the AntiDDoS AMR are waived for Shield Advanced protected resources. This covers:</p>
+<ul>
+<li>$5 per Protection pack per month</li>
+<li>$1 per rule per month</li>
+<li>$0.60 per million requests of WAF usage</li>
+<li>AntiDDoS AMR - Flat fee and Usage fee are waived</li>
+</ul>
+<p>Shield Advanced does not cover Bot Control Targeted, ATP, ACFP, or Challenge/Captcha per-use fees.  </p>
+<h3 id="scope-down-statements">Scope-Down Statements</h3>
+<p>Scope-down statements are one of the most effective/important cost optimization Premium Managed rules; specifically BotControl Premium Managed rules.  While other Premium rules (Fraud Control, AntiDDoS) support can see cost reductions from scope down, they are not usually applicable due to Fraud Controls requiring configuration to specific URI and HTTP methods and AntiDDoS for techincal reasons is not recommended to be scoped down.</p>
+<ul>
+<li><strong>Bot Control</strong> — Scope to paths that are targets of automation (login, API, search, checkout). Exclude static assets, health checks, and internal-only paths.</li>
+<li><strong>ATP/ACFP</strong> — These are already path-scoped by configuration, but ensure your login/registration path definitions are precise and do not accidentally match broader URL patterns.</li>
+</ul>
+<p>Scope-down statement do not reduce the effective WCU for requests that would be out of scope.</p>
+<h3 id="javascript-integration">JavaScript Integration</h3>
+<p>If you need to use WAF challenge to protect some or all of your application, implementing the JavaScript for async/deferred challenge can dramatically reduce the number of Protection Pack triggered Challenges resulting in a cost reduction.  Captcha does not however see any cost optimization, the benefits for integration are all technical.</p>
+<h3 id="cloudfront-flat-rate-plans">CloudFront Flat-Rate Plans</h3>
+<p>CloudFront offers flat rate plans, these cover far more than AWS WAF however include varying degrees of WAF usage and features.  If you use a Flat-rate plan, all WAF features included in that plan do <strong>NOT</strong> have any of the above mentioned WAF related costs.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
