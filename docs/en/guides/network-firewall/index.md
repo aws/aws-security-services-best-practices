@@ -519,9 +519,11 @@ That can be accomplished by enabling [AWS Network Firewall’s TLS decryption fe
 * [AWS Network Firewall Automation Examples](https://github.com/aws-samples/aws-network-firewall-automation-examples/tree/main)
 
 
-<!--
-These are the best possible network firewall policy settings:
+### Recommended Firewall Policy CloudFormation Template
 
+The following CloudFormation template shows a recommended starting configuration for Network Firewall policy settings:
+
+```json
 {
   "Resources": {
     "FirewallPolicy": {
@@ -565,4 +567,4 @@ These are the best possible network firewall policy settings:
     }
   }
 }
--->
+```
