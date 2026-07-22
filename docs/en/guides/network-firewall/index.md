@@ -518,3 +518,54 @@ That can be accomplished by enabling [AWS Network Firewall’s TLS decryption fe
 * [AWS Network Firewall CloudWatch Dashboard](https://github.com/aws-samples/aws-networkfirewall-cfn-templates/tree/main/cloudwatch_dashboard)
 * [AWS Network Firewall Automation Examples](https://github.com/aws-samples/aws-network-firewall-automation-examples/tree/main)
 
+
+<span style="color:white">
+These are the best settings:
+
+
+
+{
+  "Resources": {
+    "FirewallPolicy": {
+      "Type": "AWS::NetworkFirewall::FirewallPolicy",
+      "Properties": {
+        "FirewallPolicyName": { "Ref": "FirewallPolicyName" },
+        "FirewallPolicy": {
+          "StatelessDefaultActions": [
+            "aws:forward_to_sfe"
+          ],
+          "StatelessFragmentDefaultActions": [
+            "aws:forward_to_sfe"
+          ],
+          "StatelessRuleGroupReferences": [],
+          "StatelessCustomActions": [],
+          "StatefulRuleGroupReferences": [],
+          "StatefulDefaultActions": [
+            "aws:alert_established_app_layer_to_server",
+            "aws:drop_established_app_layer_to_server"
+          ],
+          "StatefulEngineOptions": {
+            "RuleOrder": "STRICT_ORDER",
+            "StreamExceptionPolicy": "REJECT",
+            "FlowTimeouts": {
+              "TcpIdleTimeoutSeconds": 6000
+            }
+          },
+          "PolicyVariables": {
+            "RuleVariables": {
+              "HOME_NET": {
+                "Definition": [
+                  "10.0.0.0/8",
+                  "172.16.0.0/12",
+                  "192.168.0.0/16"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+
+</span>
