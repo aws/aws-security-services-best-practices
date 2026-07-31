@@ -215,7 +215,6 @@ This applies Targeted-level Bot Control to high-value endpoints where sophistica
 ```
 
 
-
 ## WBA for AI Bot Monetization
 !!! warning "Future Content Updates in progress"
   The sections below this point are actively being updated and may be incomplete.  Please come back soon or reference public docs for AWS WAF in the meantime.  

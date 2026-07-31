@@ -389,7 +389,7 @@ ACFP configured for `/register`, 20,000 requests/month hit the registration path
 
 #### Anti-DDoS
 
-The Anti-DDoS managed rule group has a flat fee per Protection Pack plus per-request cost. It uses Challenge as a default action on some rules — when the AMR terminates the request, these Challenge events are included at no additional cost.  Requests that are blocked by this AMR do NOT result in a usage based charge from the Anti-DDoS AMR.  Note, Shield Advanced customers can use this Premium Managed Rule on Shield Advanced protected resources for no additional cost.  See [Shield Advanced & WAF Costs for full details](index.md#shield-advanced-waf-costs)
+The Anti-DDoS managed rule group has a flat fee per Protection Pack plus per-request cost. It uses Challenge as a default action on some rules — when the AMR terminates the request, these Challenge events are included at no additional cost.  Requests that are blocked by this AMR do NOT result in a usage based charge from the Anti-DDoS AMR.  Note, Shield Advanced customers can use this Premium Managed Rule on Shield Advanced protected resources for no additional cost.  See [Shield Advanced & WAF Costs for full details](index.md#shield-advanced)
 
 **Feature Example:** Anti-DDoS evaluates 100% of traffic. 3% of traffic (300,000 requests) is served a Challenge by Anti-DDoS as its default action.
 
@@ -451,14 +451,24 @@ AWS WAF supports log delivery via Amazon CloudWatch Vended Logs and Amazon Data 
 - **Amazon S3** — S3 is the most common destination for WAF logs, S3 Storage starts at $0.023 per GB.  S3 POSTs have a small API costs  ($0.005 per 1,000).  While this is technical a cost, compared to the storage and delivery costs, this is almost always trivia (less than 1%) and when creating a cost estimate safely ignored.  
 
 **Cost specific Storage recommendations**
-When using KMS for S3 storage, use Amazon S3 Bucket Keys.  Without this feature, *every single* POST (i.e. WAF log beign uploaded to S3) results in a KMS API costs.  With this feature enabled, S3 generates a short-lived bucketlevel key from KMS.  All data creating for a period of a limited period of use the same key, resulting in an API all every so often vs for every single WAF log uploaded.  
+When using KMS for S3 storage, use Amazon S3 Bucket Keys.  Without this feature, *every single* POST (i.e. WAF log beign uploaded to S3) results in a KMS API costs.  With this feature enabled, S3 generates a short-lived bucket level data key.  All data creating for a period of a limited period of use the same key, resulting in an API all every so often instead of every single WAF log object.  
 
 **Enable LifeCycle/Retention**  
 Both AWS native storage services offer a lifecycle/retention policy allow you to either change the storage tier or outright delete older data automatically.  Unless you have a compliance requirements, consider keeping WAF logs for ~30 days at least or whatever your Organziation has decided for operational and security needs.  This setting is configurable after creation of the CLoudWatch Log group or S3 bucket.  
 
 #### Logging Cost Examples
 
-The scale of your logging and per log average size impacts the cost based on you log delivery choice.  On the log delivery front, smaller average WAF log size and truely massive workloads (tens or hundreds of billions+) are most cost effective with Vended Logs.  For larger average WAF object size and most workloads until you are in the tens of billions, Firehose is usually most cost effective.  On the storage front, while cost is certainly a factor, validate your technical requirements for WAF logs before deciding which logging approach makes the most sense.  See [WAF Logging](../../waf-logging/docs/index.md)
+The scale of your logging and per log average size impacts the cost based on you log delivery choice.  
+
+On the log delivery front:  
+
+* Smaller average WAF log size and truely massive workloads (tens or hundreds of billions+) are usually most cost effective with Vended Logs.  
+* For larger average WAF object size and most workloads until you are in the tens of billions, Firehose is usually most cost effective.  
+
+On the storage front:  
+* S3 is the cheapest native AWS storage option  
+* CloudWatch Log Groups are relatively more expesive per GB  
+* While cost is certainly a factor, usually you decide where to store logs for non-cost reasons.  Review the various logging approaches to determine where WAF logs make sense to you.  See [WAF Logging](../../waf-logging/docs/index.md)  
 
 
 **Log Delivery Cost Examples**  

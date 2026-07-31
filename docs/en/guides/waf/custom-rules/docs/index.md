@@ -12,9 +12,23 @@ Most WAF deployments benefit from the following types of custom rules.
 
 Rate-based rules are one of the most common and valuable custom rules for any type of application or endpoint. They limit the number of requests a single client can make over a time window, protecting against volumetric abuse, brute force, and DDoS. See [Recommended WAF Rule Order](../../recommended-waf-rule-order/docs/index.md) for where to place rate-based rules in your protection pack.
 
-**Blanket rate-based rule** — Limits the total request rate from any single IP across all endpoints. This is your first line of defense against volumetric abuse.
+#### Choosing a threshold
 
-<!-- TODO: Add screenshot of blanket rate-based rule in the console -->
+To set an appropriate threshold, start by analyzing your existing traffic patterns using the rate-based rule queries in [Querying and Visualizing WAF Logs](../../monitoring-waf-rules/docs/index.md#rate-based-rules-identifying-the-right-threshold). Those queries show you the peak request rates per source IP across your normal traffic.
+
+Once you know your normal peak, add a 50–100% buffer as your starting threshold. For example, if your highest legitimate source IP sends 1,000 requests in a 5-minute window, start with a threshold of 1,500–2,000. The goal when getting started is to start larger and avoid blocking legitimate traffic — you can tighten the threshold over time as you gain confidence in your traffic patterns.
+
+To safely experiment with lower thresholds without impacting traffic, create multiple rate-based rules with different values. Set the lowest threshold rule to *Count* mode so it logs matches without blocking, while your higher threshold rule remains in *Block* mode. Monitor the Count rule's metrics over days or weeks — if it isn't matching legitimate traffic, you can lower your blocking threshold to that value. This approach lets you iterate toward an optimal threshold with zero risk to production traffic.
+
+#### Choosing an evaluation window
+
+The `EvaluationWindowSec` parameter controls how long WAF accumulates requests before comparing the count to your threshold. AWS WAF supports windows of 60, 120, 300, and 600 seconds. A shorter window detects bursts faster but is more sensitive to normal traffic spikes; a longer window smooths out short bursts but takes longer to react to sustained abuse.
+
+**When to use a shorter window (60–120 seconds):** Use a shorter window when you need to detect and stop short, intense bursts quickly. Attackers targeting sensitive endpoints often send hundreds of requests in under a minute and move on. A 300-second window would accumulate those requests across a longer period, potentially diluting the burst below the threshold or reacting too late after the damage is done.
+
+**When to use a longer window (300–600 seconds):** Use a longer window when your application has legitimate traffic that arrives in short bursts — for example, a client that loads a page and fires many API calls in a few seconds, then goes idle. A 60-second evaluation window might trigger on this normal burst, while a 300-second evaluation window sees it as a small fraction of the total allowed requests only triggering once there is a sustained burst beyond what your application usually does.
+
+**Blanket rate-based rule** — Limits the total request rate from any single IP across all endpoints. This is your first line of defense against volumetric abuse.
 
 ```json
 {
@@ -39,8 +53,6 @@ Rate-based rules are one of the most common and valuable custom rules for any ty
 ```
 
 **URI-specific rate-based rule** — Applies a stricter rate limit to a sensitive endpoint like `/login`. Attackers frequently target authentication endpoints with credential stuffing or brute force at rates well below a blanket threshold.
-
-<!-- TODO: Add screenshot of URI-specific rate-based rule in the console -->
 
 ```json
 {
@@ -79,9 +91,8 @@ Rate-based rules are one of the most common and valuable custom rules for any ty
 }
 ```
 
-**Composite key rate-based rule (IP + WAF token)** — Aggregates requests by both source IP and the AWS WAF token cookie. This is useful when multiple users share the same IP (e.g., behind a corporate NAT) — the WAF token differentiates individual clients so legitimate users aren't penalized by a neighbor's behavior.
+**Composite key rate-based rule (IP + cookie)** — Aggregates requests by both source IP and a cookie value. This is useful when multiple users share the same IP (e.g., behind a corporate NAT) — the cookie differentiates individual clients so legitimate users aren't penalized by a neighbor's behavior. This works with any cookie your application sets; the example below uses the `aws-waf-token` cookie but you can replace the cookie name with your own session cookie.
 
-<!-- TODO: Add screenshot of composite key rate-based rule in the console -->
 
 ```json
 {

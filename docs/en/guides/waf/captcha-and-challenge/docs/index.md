@@ -82,9 +82,9 @@ Challenge and Captcha are paid features of AWS WAF. The exception is when an AWS
 
 For this exception to apply, the AMR itself must be what terminates the request with a Challenge or Captcha action. If you override a default action, or use a custom rule that acts on a label from a rule whose default action is Challenge or Captcha, these *are* paid Challenge/Captcha events and are not included as part of the AMR subscription.
 
-Partner Managed Rules, custom rules, or overrides of any WAF rule or managed rule all have standard usage-based costs per [Challenge and Captcha costs](../../waf-cost/docs/index.md#challenge_and_captcha_costs).
+Partner Managed Rules, custom rules, or overrides of any WAF rule or managed rule all have standard usage-based costs per [Challenge and Captcha costs](../../waf-cost/docs/index.md#challenge-and-captcha-costs).
 
 
 ## Rule Order for Captcha & Challenge  
 
-See [Recommended WAF Rule Order](../../recommended-waf-rule-order/docs/index.md) for where to position CAPTCHA and Challenge rules in your protection pack. See [Bot Management — Web Browser Automation Detection](../../bot-management/docs/index.md#web-browser-automation-wba-detection) for how Challenge interacts with WBA detection. See [Custom Rules](../../custom-rules/docs/index.md) for writing label-based rules that trigger CAPTCHA or Challenge actions conditionally.
+See [Recommended WAF Rule Order](../../recommended-waf-rule-order/docs/index.md) for where to position CAPTCHA and Challenge rules in your protection pack. See [Bot Management — Web Browser Automation Detection](../../bot-management/docs/index.md#web-bot-authentication-wba) for how Challenge interacts with WBA detection. See [Custom Rules](../../custom-rules/docs/index.md) for writing label-based rules that trigger CAPTCHA or Challenge actions conditionally.

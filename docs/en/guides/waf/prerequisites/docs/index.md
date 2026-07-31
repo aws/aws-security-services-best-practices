@@ -38,7 +38,7 @@ AWS WAF custom rule group must define a WCU max capacity; this capacity cannot b
 
 If you for some reason require more than 5,000 WCU worth of WAF rule evaluations, you would need to have two resources inspecting that support AWS WAF.  For example, CloudFront with a Protection Pack with an origin of an Application Load Balancer (also with WAF). **Note:** this usually represents an anti-pattern and there is likely some way to optimize your WCU needs.
 
-WCU is also used when determining AWS WAF request based costs; standard WAF costs covers the first 1,500 WCU with an additional usage based cost per 500 WCU above 1,500. See [WAF Costs](../../waf-cost/docs/index.md#protection-pack-capacity-units-wcu) for more details.
+WCU is also used when determining AWS WAF request based costs; standard WAF costs covers the first 1,500 WCU with an additional usage based cost per 500 WCU above 1,500. See [WAF Costs](../../waf-cost/docs/index.md#wcu-overage) for more details.
 
 ### WAF Labels
 When a WAF rule matches, that rule can add one or more labels. When a rule adds a label but does not terminate the request (i.e. action = *COUNT*), these labels can be referenced by other rules such as AND/OR statements or scope down statements.  Amazon Managed Rules always add one or more label when a rule matches. Custom rules can but do not need to attach labels when a rule matches. By default, WAF labels are only available for a reqeust being evaluated by WAF and are a part of your WAF log.  YOur application will *not* receive WAF labels unless you configure a custom WAF rule to inject them as a header.

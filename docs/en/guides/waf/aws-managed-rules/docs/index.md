@@ -230,9 +230,6 @@ Fraud prevention is a deep topic with significant application specific context a
 
 ## Managed Rules from AWS Partners
 
-!!! warning "Future Content Updates in progress"
-    The sections below this point are actively being updated and may be incomplete.  Please come back soon or reference public docs for AWS WAF in the meantime.  
-
 You can subscribe to [managed rules provided by AWS partners](https://docs.aws.amazon.com/waf/latest/developerguide/marketplace-managed-rule-groups.html) using AWS Marketplace.  Marketplace AWS Partner rules are always paid rules and have a flat and/or usage cost above and beyond AWS WAF itself.
 
 **Considerations**  
@@ -250,7 +247,7 @@ The recommended AWS WAF [protection pack](../../aws-managed-rules/docs/index.md#
 !!! warning "Future Content Updates in progress"
     The sections below this point are actively being updated and may be incomplete.  Please come back soon or reference public docs for AWS WAF in the meantime.  
 
-Over time, Amazon Managed Rules change signature definitions and/or add new capabilities to existing AMRs.  AWS releases these changes as versions of these AMRs, giving you control over when these new signatures and/or capabilites become active.  IP based rules including [IP Reputation](./index.md#### IP Reputation List) and [Anonymous IP](./index.md#### Anonymous IP List) update frequently with IP only changes, this is NOT versioned.  Updates to these AMRs such as the addition of a new rule or change in default action would result in a version as a new capability.
+Over time, Amazon Managed Rules change signature definitions and/or add new capabilities to existing AMRs.  AWS releases these changes as versions of these AMRs, giving you control over when these new signatures and/or capabilites become active.  IP based rules including [IP Reputation](#amazon-ip-reputation-list) and [Anonymous IP](#anonymous-ip-list) update frequently with IP only changes, this is NOT versioned.  Updates to these AMRs such as the addition of a new rule or change in default action would result in a version as a new capability.
 
 ### Default vs. Static Versioning
 

@@ -49,7 +49,7 @@ nav:
       - CAPTCHA and Challenge: guides/waf/captcha-and-challenge/docs/index.md
       - WAF Costs: guides/waf/waf-cost/docs/index.md
       - Logging Approaches: guides/waf/waf-logging/docs/index.md
-      - Monitoring WAF Rules: guides/waf/monitoring-waf-rules/docs/index.md
+      - Querying and Visualizing WAF Logs: guides/waf/monitoring-waf-rules/docs/index.md
       - Using WAF with Other AWS Services: guides/waf/using-waf-with-other-services/docs/index.md
       - Additional References: guides/waf/additional-references/docs/index.md
   - AWS Network Firewall Best Practices: guides/network-firewall/index.md

@@ -2,3 +2,4 @@
 .venv/
 site/
 .claude/
+docs/en/guides/waf/.vscode/settings.json

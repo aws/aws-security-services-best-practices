@@ -26,7 +26,7 @@ This guide is geared towards security practitioners, solutions architects, and a
 * [Deployment Strategy](#deployment-strategy) — Safely deploy WAF for the first time and update managed rule versions
 * [WAF Costs](#waf-cost) — Understand AWS WAF pricing, WCU capacity, and Shield Advanced cost protection
 * [Logging Approaches](#waf-logging) — Configure log destinations, filtering, and cost optimization for AWS WAF logs
-* [Monitoring WAF Rules](#monitoring-waf-rules) — Observe rule behavior with CloudWatch metrics and WAF log analysis
+* [Querying and Visualizing WAF Logs](#monitoring-waf-rules) — Query WAF logs and build dashboards across supported destinations
 * [Using WAF with Other AWS Services](#using-waf-with-other-aws-services) — Integrate with Firewall Manager and Shield Advanced
 * [Additional References](#additional-references) — Supplementary topics including known differences from WAF Classic
 
@@ -63,7 +63,7 @@ AWS WAF gives you control over how traffic reaches your applications by enabling
 * [CAPTCHA and Challenge](./captcha-and-challenge/docs/index.md)
 * [WAF Costs](./waf-cost/docs/index.md)
 * [Logging Approaches](./waf-logging/docs/index.md)
-* [Monitoring WAF Rules](./monitoring-waf-rules/docs/index.md)
+* [Querying and Visualizing WAF Logs](./monitoring-waf-rules/docs/index.md)
 * [Using WAF with Other AWS Services](./using-waf-with-other-services/docs/index.md)
 * [Additional References](./additional-references/docs/index.md)
 

@@ -40,7 +40,7 @@ It is recommended to use both the AWS-Managed Prefix list for CLoudfront as well
 
 API Gateway REST APIs can be placed behind CloudFront to gain edge WAF inspection. To ensure your API Gateway only accepts requests from your CloudFront distribution, configure CloudFront to inject an `x-api-key` header with a value that maps to an [API key](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-setup-api-key-with-console.html) configured on your API Gateway. API Gateway natively validates API keys, so requests that bypass CloudFront and reach the API Gateway directly will be rejected without a valid key. See [Protecting your API using Amazon API Gateway and AWS WAF](https://aws.amazon.com/blogs/compute/protecting-your-api-using-amazon-api-gateway-and-aws-waf-part-2/) for a detailed walkthrough.
 
-Unlike ALBs, API Gateway REST APIs do use security groups, so the API key approach is the primary mechanism for origin verification.
+Unlike ALBs, API Gateway REST APIs do *not* have security groups, so the API key approach is the primary mechanism for origin verification.
 
 ### IP-Based Rule Limitations with Forwarded IPs
 
@@ -54,7 +54,7 @@ Use [origin access control](https://docs.aws.amazon.com/AmazonCloudFront/latest/
 
 ## AWS WAF on other WAF supported resources
 
-If CloudFront is not an option for your architecture, AWS WAF can be used on other [supported regional resources](../../prerequisites/docs/#aws-resources-that-support-aws-waf) such as Application Load Balancers, API Gateway (REST), AWS AppSync, and Amazon Cognito. You still benefit from L7 inspection on these resources — just with the limitations noted above (smaller body inspection, slower scaling, no inherent L3/L4 protection at the CDN layer).
+If CloudFront is not an option for your architecture, AWS WAF can be used on other [supported regional resources](../../prerequisites/docs/index.md#aws-resources-that-support-aws-waf) such as Application Load Balancers, API Gateway (REST), AWS AppSync, and Amazon Cognito. You still benefit from L7 inspection on these resources — just with the limitations noted above (smaller body inspection, slower scaling, no inherent L3/L4 protection at the CDN layer).
 
 Example reasons CloudFront may not be feasible:
 
