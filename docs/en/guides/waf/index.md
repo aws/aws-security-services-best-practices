@@ -1,9 +1,6 @@
 # AWS WAF Best Practices
 > As of July 2025, AWS WAF released a new console experience which renamed web ACls to [protection packs](https://aws.amazon.com/blogs/security/introducing-the-new-console-experience-for-aws-waf/). APIs, ARNs, and CLI commands still use the term web_acl/webacl, as does the legacy console. This was a UI and documentation change only — the terms are interchangeable. The only distinction is that the new console introduces concepts that are exclusive to the new UI and only refer to protection packs.
 
-!!! warning "Future Content Updates in progress"
-    We are actively working to revamp the AWS WAF best practices.  Most of the content has been updated but we are still working on several sections.  Content that is incomplete or not yet updated has been marked as such
-
 ## Introduction
 
 Welcome to the AWS WAF Best Practices Guide. The purpose of this guide is to provide prescriptive guidance for deploying, configuring, and managing AWS WAF to protect your web applications and APIs. Publishing this guidance via GitHub will allow for quick iterations to enable timely recommendations that include service enhancements, as well as, the feedback of the user community. This guide is designed to provide value whether you are deploying AWS WAF for the first time on a single resource, or looking for ways to optimize AWS WAF in an existing multi-account deployment managed by AWS Firewall Manager.
