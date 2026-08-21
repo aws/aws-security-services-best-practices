@@ -144,7 +144,346 @@ For example, you might create a production policy that enables all essential cap
 
 ![Configuration Policies vs Deployments](../../images/security-hub/security-hub-policies-vs-deployments.png)
 
+If you prefer to manage this in code rather than the console, it helps to understand that the console's single **Configure Security Hub (essential and add-on capabilities)** button is client-side orchestration over several independent mechanisms. There is no single API or Terraform resource that turns everything on at once. The faithful infrastructure-as-code equivalent is a composite: enable Security Hub itself for essentials, a `SECURITYHUB_POLICY` organization policy for essentials plus network scanning, an `INSPECTOR_POLICY` organization policy for vulnerability management, GuardDuty organization enablement for threat analytics, and a Security Hub CSPM central configuration policy for posture management. The example below shows that composite as a single Terraform template you run from the organization management account.
 
+??? example "Terraform: Security Hub essentials and add-on capabilities for an organization"
+
+    This template reproduces the console's one-button configuration as infrastructure as code. Review the inline notes before applying, particularly the prerequisites and the provider version requirement.
+
+    > **Note:** At the time of writing, the `feature = "SecurityHubV2"` argument on `aws_securityhub_organization_admin_account` is not yet in a released version of the AWS provider (pending PR). Until it ships, either use a development build of the provider or designate the Security Hub V2 delegated administrator out-of-band, as noted in Section 1 of the template.
+
+    ```terraform
+    ###############################################################################
+    # Security Hub V2 — "Essential and add-on capabilities" for an AWS Organization
+    #
+    # This template reproduces, in Terraform, what the Security Hub console's single
+    # "Configure Security Hub (essential and add-on capabilities)" button does.
+    # That button is CLIENT-SIDE ORCHESTRATION over four independent AWS mechanisms;
+    # there is no single API/resource that turns everything on. So the faithful
+    # Terraform equivalent is this composite:
+    #
+    #   1. Security Hub V2 (essentials)  -> delegated admin + enable the service
+    #   2. Security Hub org policy       -> SECURITYHUB_POLICY (essentials + network scanning)
+    #   3. Amazon Inspector org policy   -> INSPECTOR_POLICY (vulnerability management)
+    #   4. Amazon GuardDuty              -> org admin + detector + org auto-enable (threat)
+    #   5. Security Hub CSPM             -> central configuration policy (posture)
+    #
+    # Run from the ORGANIZATION MANAGEMENT account. A second provider alias points at
+    # the DELEGATED ADMINISTRATOR (security) account.
+    ###############################################################################
+
+    terraform {
+      required_providers {
+        aws = {
+          source = "hashicorp/aws"
+          # NOTE: `feature = "SecurityHubV2"` on aws_securityhub_organization_admin_account
+          # is NOT in a released provider yet (pending PR). Until it merges, either use a
+          # dev build or designate the V2 delegated admin out-of-band (see Section 1 note).
+          version = ">= 6.0"
+        }
+      }
+    }
+
+    ############################ Variables ########################################
+
+    variable "region" {
+      description = "Home Region to enable capabilities in."
+      type        = string
+      default     = "us-east-1"
+    }
+
+    variable "enabled_regions" {
+      description = "Regions to enable in the SECURITYHUB_POLICY / INSPECTOR_POLICY."
+      type        = list(string)
+      default     = ["us-east-1"]
+    }
+
+    variable "management_profile" {
+      description = "AWS profile/credentials for the organization management account."
+      type        = string
+    }
+
+    variable "delegated_admin_profile" {
+      description = "AWS profile/credentials for the delegated administrator (security) account."
+      type        = string
+    }
+
+    variable "delegated_admin_account_id" {
+      description = "Account ID of the delegated administrator (security) account."
+      type        = string
+    }
+
+    variable "organization_root_id" {
+      description = "Organization root ID (r-xxxx) to attach org policies to."
+      type        = string
+    }
+
+    ############################ Providers ########################################
+
+    # Organization MANAGEMENT account.
+    provider "aws" {
+      region  = var.region
+      profile = var.management_profile
+    }
+
+    # DELEGATED ADMINISTRATOR (security) account.
+    provider "aws" {
+      alias   = "delegated_admin"
+      region  = var.region
+      profile = var.delegated_admin_profile
+    }
+
+    ###############################################################################
+    # PREREQUISITES (do once, outside this template):
+    #   * Trusted access for the services below is enabled (managed here via the
+    #     organization resource, or already enabled in your org).
+    #   * The SECURITYHUB_POLICY and INSPECTOR_POLICY *policy types* are enabled on
+    #     the org root. There is no first-class TF resource for this; enable once:
+    #       aws organizations enable-policy-type --root-id <root> --policy-type SECURITYHUB_POLICY
+    #       aws organizations enable-policy-type --root-id <root> --policy-type INSPECTOR_POLICY
+    ###############################################################################
+
+    # Enable trusted access for all four services (safe to manage centrally).
+    # If you already manage aws_organizations_organization elsewhere, remove this
+    # and enable trusted access there instead.
+    resource "aws_organizations_organization" "this" {
+      aws_service_access_principals = [
+        "securityhub.amazonaws.com",
+        "inspector2.amazonaws.com",
+        "guardduty.amazonaws.com",
+        "malware-protection.guardduty.amazonaws.com",
+      ]
+      feature_set = "ALL"
+    }
+
+    ###############################################################################
+    # 1. SECURITY HUB V2 (ESSENTIALS): delegated admin + enable the service
+    ###############################################################################
+
+    # Designate the Security Hub V2 delegated administrator (management account).
+    #
+    # Requires the `feature` argument (pending provider PR). Until it is released,
+    # comment this out and designate the DA out-of-band instead, e.g.:
+    #   aws securityhub enable-organization-admin-account \
+    #     --admin-account-id <security-account> --feature SecurityHubV2
+    resource "aws_securityhub_organization_admin_account" "v2" {
+      admin_account_id = var.delegated_admin_account_id
+      feature          = "SecurityHubV2"
+
+      depends_on = [aws_organizations_organization.this]
+    }
+
+    # Enable Security Hub V2 in the delegated administrator account. Enabling the
+    # service IS "essentials" — the essential capabilities are included at the base
+    # per-resource price. (This resource calls EnableSecurityHubV2, which takes no
+    # capability parameters; add-ons are configured by the sections below.)
+    resource "aws_securityhub_account_v2" "da" {
+      provider = aws.delegated_admin
+
+      depends_on = [aws_securityhub_organization_admin_account.v2]
+    }
+
+    ###############################################################################
+    # 2. SECURITY HUB ORG POLICY: essentials + network scanning across the org
+    ###############################################################################
+
+    resource "aws_organizations_policy" "securityhub" {
+      name = "securityhub-essentials"
+      type = "SECURITYHUB_POLICY"
+
+      content = jsonencode({
+        securityhub = {
+          enable_in_regions  = { "@@assign" = var.enabled_regions }
+          disable_in_regions = { "@@assign" = [] }
+          features = {
+            # network_scanning is the only opt-in SECURITYHUB_POLICY feature.
+            network_scanning = {
+              enable_in_regions  = { "@@assign" = var.enabled_regions }
+              disable_in_regions = { "@@assign" = [] }
+            }
+          }
+        }
+      })
+    }
+
+    resource "aws_organizations_policy_attachment" "securityhub" {
+      policy_id = aws_organizations_policy.securityhub.id
+      target_id = var.organization_root_id
+
+      depends_on = [aws_securityhub_account_v2.da]
+    }
+
+    ###############################################################################
+    # 3. AMAZON INSPECTOR ORG POLICY: vulnerability management across the org
+    ###############################################################################
+
+    # Delegated administrator for Inspector (so findings aggregate to the security account).
+    resource "aws_inspector2_delegated_admin_account" "this" {
+      account_id = var.delegated_admin_account_id
+
+      depends_on = [aws_organizations_organization.this]
+    }
+
+    resource "aws_organizations_policy" "inspector" {
+      name = "inspector-vulnerability-management"
+      type = "INSPECTOR_POLICY"
+
+      content = jsonencode({
+        inspector = {
+          enablement = {
+            ec2_scanning = {
+              enable_in_regions  = { "@@assign" = var.enabled_regions }
+              disable_in_regions = { "@@assign" = [] }
+            }
+            ecr_scanning = {
+              enable_in_regions  = { "@@assign" = var.enabled_regions }
+              disable_in_regions = { "@@assign" = [] }
+            }
+            lambda_standard_scanning = {
+              enable_in_regions  = { "@@assign" = var.enabled_regions }
+              disable_in_regions = { "@@assign" = [] }
+              lambda_code_scanning = {
+                enable_in_regions  = { "@@assign" = var.enabled_regions }
+                disable_in_regions = { "@@assign" = [] }
+              }
+            }
+            code_repository_scanning = {
+              enable_in_regions  = { "@@assign" = var.enabled_regions }
+              disable_in_regions = { "@@assign" = [] }
+            }
+          }
+        }
+      })
+    }
+
+    resource "aws_organizations_policy_attachment" "inspector" {
+      policy_id = aws_organizations_policy.inspector.id
+      target_id = var.organization_root_id
+
+      depends_on = [aws_inspector2_delegated_admin_account.this]
+    }
+
+    ###############################################################################
+    # 4. AMAZON GUARDDUTY: threat analytics (Deployment-type in the console)
+    #    GuardDuty is NOT an org policy — it is enabled via these resources.
+    ###############################################################################
+
+    resource "aws_guardduty_organization_admin_account" "this" {
+      admin_account_id = var.delegated_admin_account_id
+
+      depends_on = [aws_organizations_organization.this]
+    }
+
+    # Detector in the delegated administrator account.
+    resource "aws_guardduty_detector" "da" {
+      provider = aws.delegated_admin
+      enable   = true
+    }
+
+    # Auto-enable GuardDuty for all accounts in the organization.
+    resource "aws_guardduty_organization_configuration" "this" {
+      provider = aws.delegated_admin
+
+      auto_enable_organization_members = "ALL"
+      detector_id                      = aws_guardduty_detector.da.id
+
+      depends_on = [aws_guardduty_organization_admin_account.this]
+    }
+
+    ###############################################################################
+    # 5. SECURITY HUB CSPM: posture management (Deployment-type in the console)
+    #    CSPM is the "classic" Security Hub, managed via central configuration.
+    ###############################################################################
+
+    # Designate the CSPM (SecurityHub) delegated administrator. Same security account.
+    resource "aws_securityhub_organization_admin_account" "cspm" {
+      admin_account_id = var.delegated_admin_account_id
+      feature          = "SecurityHub" # CSPM (default)
+
+      depends_on = [aws_organizations_organization.this]
+    }
+
+    # Enable Security Hub CSPM in the delegated administrator account.
+    resource "aws_securityhub_account" "cspm" {
+      provider = aws.delegated_admin
+    }
+
+    # Cross-Region finding aggregation (required before CENTRAL configuration).
+    resource "aws_securityhub_finding_aggregator" "this" {
+      provider = aws.delegated_admin
+
+      linking_mode = "ALL_REGIONS"
+
+      depends_on = [aws_securityhub_account.cspm]
+    }
+
+    # Switch org configuration to CENTRAL so configuration policies can be used.
+    resource "aws_securityhub_organization_configuration" "cspm" {
+      provider = aws.delegated_admin
+
+      auto_enable           = false
+      auto_enable_standards = "NONE"
+
+      organization_configuration {
+        configuration_type = "CENTRAL"
+      }
+
+      depends_on = [
+        aws_securityhub_organization_admin_account.cspm,
+        aws_securityhub_finding_aggregator.this,
+      ]
+    }
+
+    # The CSPM configuration policy: enable Security Hub CSPM + FSBP standard/controls.
+    resource "aws_securityhub_configuration_policy" "posture" {
+      provider = aws.delegated_admin
+
+      name        = "posture-management"
+      description = "Enables Security Hub CSPM standards and controls (posture management)."
+
+      configuration_policy {
+        service_enabled = true
+        enabled_standard_arns = [
+          "arn:aws:securityhub:${var.region}::standards/aws-foundational-security-best-practices/v/1.0.0",
+        ]
+        security_controls_configuration {
+          disabled_control_identifiers = []
+        }
+      }
+
+      depends_on = [aws_securityhub_organization_configuration.cspm]
+    }
+
+    # Apply the CSPM configuration policy to the whole organization (root).
+    resource "aws_securityhub_configuration_policy_association" "posture_root" {
+      provider = aws.delegated_admin
+
+      target_id = var.organization_root_id
+      policy_id = aws_securityhub_configuration_policy.posture.id
+    }
+
+    ############################ Outputs ##########################################
+
+    output "securityhub_v2_hub_arn" {
+      value = aws_securityhub_account_v2.da.arn
+    }
+
+    output "securityhub_org_policy_id" {
+      value = aws_organizations_policy.securityhub.id
+    }
+
+    output "inspector_org_policy_id" {
+      value = aws_organizations_policy.inspector.id
+    }
+
+    output "guardduty_detector_id" {
+      value = aws_guardduty_detector.da.id
+    }
+
+    output "cspm_configuration_policy_id" {
+      value = aws_securityhub_configuration_policy.posture.id
+    }
+    ```
 
 ### Essential Capabilities
 
