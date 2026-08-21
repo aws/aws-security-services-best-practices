@@ -57,6 +57,10 @@ nav:
   - Contributors: contributors.md
 markdown_extensions:
     - admonition
+    - pymdownx.details
+    - pymdownx.superfences
+    - pymdownx.highlight:
+        anchor_linenums: true
     - mdx_truly_sane_lists:
         truly_sane: true
         nested_indent: 2
