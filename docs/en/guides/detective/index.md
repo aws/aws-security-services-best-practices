@@ -11,6 +11,7 @@ This guide is geared towards security practitioners who are responsible for moni
 * [What is Amazon Detective](#what-is-amazon-detective)
 * [Who is Amazon Detective for](#who-is-amazon-detective-for)
 * [What are the benefits of enabling Amazon Detective](#what-are-the-benefits-of-enabling-amazon-detective)
+* [Where Detective fits](#where-detective-fits)
 * [Getting started](#getting-started)
     * [Enable GuardDuty](#enable-guardduty)
     * [Where to enable Detective](#where-to-enable-detective)
@@ -19,6 +20,7 @@ This guide is geared towards security practitioners who are responsible for moni
     * [Enablement](#enablement)
     * [Enroll other AWS account in your organization](#enroll-other-aws-accounts-in-your-organization)
     * [Enable optional data feeds](#enable-optional-data-feeds)
+    * [Enable Amazon Security Lake integration](#enable-amazon-security-lake-integration)
 * [Operationalizing](#operationalizing)
     * [Providing access](#providing-access)
     * [Investigating a finding](#investigating-a-finding)
@@ -39,13 +41,25 @@ Amazon Detective works well for customers who want to take advantage of a manage
 
 ## What are the benefits of enabling Amazon Detective?
 
-Detective aids incident responders and security engineers in determining what resources are associated with a given security event. It uses data feeds from GuardDuty findings, VPC Flow Logs, CloudTrail, EKS audit logs, and Security Hub findings, to build a behavior graph to help customers understand resource associations, abnormal activity like newly observed geo locations, understanding when roles were assumed by other roles, along with many other use cases in your environment. Many customers may not have the log and telemetry collection correlation tooling built, or the knowledge or resources, and this makes Amazon Detective a perfect fit.
+Detective aids incident responders and security engineers in determining what resources are associated with a given security event. It uses data feeds from GuardDuty findings, VPC Flow Logs, CloudTrail, EKS audit logs, and AWS Security Hub CSPM findings, to build a behavior graph to help customers understand resource associations, abnormal activity like newly observed geo locations, understanding when roles were assumed by other roles, along with many other use cases in your environment. Many customers may not have the log and telemetry collection correlation tooling built, or the knowledge or resources, and this makes Amazon Detective a perfect fit.
 
 Many customers that have the tools, knowledge, and people already in place, are able to successfully navigate security events and discover related logs within an acceptable response time. Typically this requires third party tooling to be installed, configured, operated, and monitored to collect VPC Flow logs, CloudTrail logs, EKS Audit logs, and shipped to a log aggregation tool. Consider the cost tradeoff, and time saved, by using Amazon Detective where visibility into these data feeds is built-in vs aggregated and stored separately. Most customers have found Detective effective in shortening investigation times because they do not have to write queries into a log aggregation tool and instead rely on Detective provided insights.
 
 Many customers observe that using Detective and GuardDuty together provides the ability to investigate natively in AWS after an event. GuardDuty tells you about the threat, but Detective tells you the story around that threat. Often we hear from customers that the amount of security findings from any given service overwhelm their teams and leave them without a clear priority. Detective enables teams to focus on true security events.
 
 Detective is well suited Amazon EKS workloads to assist in runtime investigations. Detective allows you to view inside EKS workloads to examine pod configuration, pod image, image source, VPC flows within an EKS cluster, and activity by Kubernetes user within a cluster. If you run Amazon EKS across many AWS accounts, Detective’s ability to ingest data from the backend and centralize in a centralized Security Account helps reduce time to root cause during a security event. Take a closer look at our [Container Security Workshop](https://catalog.workshops.aws/containersecurity) for more in-depth walkthroughs on how to use Detective for container based workloads.
+
+## Where Detective fits
+
+AWS has added investigation capabilities in several places, so the most common question we now get is not how to use Detective but when to reach for it. Use this section to decide where Detective belongs in your process before you deploy it.
+
+**Reach for Detective when the question is "what exactly happened."** Detective's differentiator is depth over raw log data. It maintains up to a year of aggregated activity from CloudTrail, VPC Flow Logs, EKS audit logs, and security findings in a behavior graph you can traverse interactively. When you need to follow a specific IP to an instance, to its instance profile, to the role that created it, to the federated user behind that role, and then check whether that user's behavior was normal three months ago, that is Detective. No summary answers that question, because the next pivot depends on what you found in the last one.
+
+**Reach for Detective for EKS investigations.** This is where the depth advantage is largest. Detective lets you examine pod configuration, pod image and image source, VPC flows inside a cluster, and activity by Kubernetes user, correlated across accounts. If you run EKS at scale, this visibility is difficult to reconstruct from raw logs under time pressure.
+
+**Start elsewhere when you need a fast first assessment.** If you want a structured disposition on a specific GuardDuty finding, with a confidence rating, MITRE ATT&CK classification, and recommended actions, [GuardDuty Investigation](../guardduty/index.md#guardduty-investigation) produces that in minutes and is the more efficient first step. If you are trying to understand which risks in your environment matter most, or how an attacker could chain misconfigurations and vulnerabilities together to reach something important, the exposure findings and attack path graph in [AWS Security Hub](../security-hub/index.md) are built for that question and Detective is not.
+
+A reasonable operating model for teams running all three: triage and prioritize in Security Hub, get a fast first read on a specific threat finding with GuardDuty Investigation, and bring in Detective when the assessment raises a question that only the underlying activity data can answer. Detective is the depth tool at the end of that sequence rather than the entry point, and scoping it that way also keeps its cost proportionate to how often you actually need that depth.
 
 ## Getting started
 
@@ -70,6 +84,8 @@ Amazon Detective is a regional service. This means that to use Amazon Detective 
 A question that is often asked is “Should I use a security service in a region that my company is not actively using?” Detective’s costs are based on the amount of data ingested in a given account and region. If an AWS account or region has no activity, Detective will not incur a cost. It’s recommended to review the Usage section in Detective to determine if the estimated costs are acceptable. We recommend enabling Detective in every AWS account and region that you plan to make available in your AWS Organization. This ensures that if someone attempts to create resources in a region, you will have visibility if needed for any subsequent security issues.
 
 You can use the AWS console, AWS CLI, or the Amazon Detective python scripts to enable Detective across accounts in an AWS Organization. [Review the scripts and their contents here](https://docs.aws.amazon.com/detective/latest/adminguide/detective-github-scripts.html).
+
+If your organization requires that access to AWS services stay on the AWS network, Detective is integrated with AWS PrivateLink and supports [interface VPC endpoints](https://docs.aws.amazon.com/detective/latest/userguide/detective-security-vpc-endpoints-privatelink.html). This matters for incident response specifically, because responders often work from a hardened environment with restricted internet egress, and requiring a public endpoint to reach your investigation tool is a poor constraint to discover mid-incident.
 
 ## Implementation
 
@@ -124,7 +140,7 @@ Optionally, you can configure Detective to integrate with Amazon Security Lake t
 
 ### Providing Access
 
-Amazon Detective works by consuming VPC Flow Logs, Cloudtrail Logs, EKS Audit Logs, and Security Hub findings and correlating resource IDs with events from GuardDuty into a behavior graph. This graph is what you can follow in Detective when performing an investigation to see which IP relates to which EC2 instance to which EC2 instance profile to which IAM role that created the instance profile, for example.
+Amazon Detective works by consuming VPC Flow Logs, Cloudtrail Logs, EKS Audit Logs, and AWS Security Hub CSPM findings and correlating resource IDs with events from GuardDuty into a behavior graph. This graph is what you can follow in Detective when performing an investigation to see which IP relates to which EC2 instance to which EC2 instance profile to which IAM role that created the instance profile, for example.
 
 ![Detective flow](../../images/DT-Flow.png)
 
@@ -145,7 +161,9 @@ There are four primary ways to start an investigation using Detective. We'll cov
 1. Using the **Investigate with Detective** option from GuardDuty
 2. Examining a **Finding Group** in Detective
 3. Threat hunting using Detective's Search and geography graphs
-4. Using embedded links in Splunk
+4. Pivoting into Detective from a SIEM using an embedded URL
+
+Detective supports GuardDuty [attack sequence findings](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-attack-sequence-finding-types.html) from Extended Threat Detection, which are the Critical findings GuardDuty generates when it correlates a multi-stage attack. Those are usually the highest-value findings to bring into Detective, because an attack sequence tells you a chain of events occurred and Detective is where you establish exactly which resources and identities were involved at each step.
 
 #### Start your investigation from GuardDuty
 
@@ -206,6 +224,8 @@ The Finding Group is represented by this generated graph that provides a visuali
 
 Use these Finding Groups to investigate other IPs, EC2s, or AWS accounts from where an attack originated or continued onto.
 
+The visualization also offers a [timeline layout](https://docs.aws.amazon.com/detective/latest/userguide/group-visual-finding-group.html) in addition to the graph layout, with a play control that steps through events in sequence and filtering by severity. The graph view answers what is connected to what. The timeline answers what happened in what order, which is usually the harder question during an investigation and the one you need for an incident writeup. If you are trying to establish whether the privilege escalation preceded or followed the initial access, start in the timeline rather than the graph.
+
 The data correlating events to resources is available in raw data if you are collecting these data sources individually, but security analysts need to know how to craft individual queries to crawl through logs and then graph to a visualization tool later. Detective short-circuits this investigative effort and query generation activity. While most customers don’t replace their traditional SIEM tools with Detective, the use of Detective with a SIEM is effective at reducing investigation times.
 
 Compare Detective's effectiveness to collecting and aggregating your logs separately. If you are collecting data sources individually and storing in a log aggregation tool, your security analysts will need the expertise to craft queries to find the data they need, and graph to a visualization tool separately. Detective short-circuits this alert --> log --> query --> visualize process by providing you a visualization using built-in AWS data feeds. While most customers don’t replace their traditional SIEM tools with Detective, the use of Detective with a SIEM is effective at reducing investigation times.
@@ -241,7 +261,11 @@ Once the investigation has run, new information will be available including TTPs
 
 #### Crafting Detective Embedded URLs
 
-The fourth way to start investigating a security event with Detective is to use embedded links in Splunk through the Splunk Trumpet project. The Splunk Trumpet project allows you send data from AWS services to Splunk. You can configure the Trumpet project to generate Detective URLs for Amazon GuardDuty findings. You can then use these URLs to pivot directly from Splunk to the corresponding Detective finding profiles. The Trumpet project is available from [GitHub](https://github.com/splunk/splunk-aws-project-trumpet).
+The fourth way to start an investigation is to construct a Detective URL and embed it wherever your analysts already work. Detective profile pages are addressable by URL, so if your SIEM or ticketing system holds the finding, you can attach a link that opens the corresponding Detective profile scoped to the right entity and time window. Analysts then move from alert to investigation in one click instead of switching consoles and re-finding the resource by hand.
+
+This is worth setting up because it removes the most common reason Detective goes unused in organizations that own it. When the alert lives in a SIEM and Detective requires a separate console login and manual lookup, analysts skip it under time pressure. A link in the alert changes that default.
+
+If Splunk is your SIEM, the [Splunk Trumpet project](https://github.com/splunk/splunk-aws-project-trumpet) sends data from AWS services to Splunk and can be configured to generate Detective URLs for GuardDuty findings, giving you this pattern without building it. For other tools, apply the same approach using your own alert enrichment.
 
 ![Detective URLs](../../images/DT-URLs.png)
 
@@ -249,11 +273,12 @@ The fourth way to start investigating a security event with Detective is to use 
 
 ## Cost Considerations
 
-Amazon Detective pricing is thoroughly covered in the [pricing page](https://aws.amazon.com/detective/pricing/), including dimensions used for pricing and some pricing examples. In this guide, we'll cover some options to control your Detective spend.
+Amazon Detective pricing is thoroughly covered in the [pricing page](https://aws.amazon.com/detective/pricing/), including dimensions used for pricing and some pricing examples. Detective is billed on the volume of data ingested into your behavior graph, and it is billed separately from the AWS Security Hub essentials plan. That makes account scope your primary lever, since cost tracks the accounts and Regions you enroll rather than the number of investigations you run.
 
 1. Take advantage of the 30-day free trial to get an idea of how pricing works with Detective. After enabling Detective, come back in a few days and check the Usage tab on the left.
-2. In the Detective usage page you can view the estimated costs under the **This account’s projected costs** and **All accounts’ projected costs**. You can further understand which accounts are driving costs by using the **Ingested volume by member account** option.
-3. Some customers choose to exclude AWS accounts that are classified as sandbox or non-production as a way to control their cost. Also consider if you have supplementary tools that ingest VPC Flow Logs and AWS CloudTrail data separately that could be scaled down and augmented with Detective.
+2. In the Detective usage page you can view the estimated costs under the **This account’s projected costs** and **All accounts’ projected costs**. You can further understand which accounts are driving costs by using the **Ingested volume by member account** option. Because pricing follows ingestion, a small number of high-traffic accounts usually accounts for most of the bill, so start there rather than trimming broadly.
+3. Consider excluding accounts classified as sandbox or non-production. This is the most common scoping decision, and it is a real tradeoff rather than a free saving, since an excluded account is one you cannot investigate later. Weigh it against how likely that account is to be part of an incident.
+4. Look for duplicate ingestion. If you already pay a separate tool to collect VPC Flow Logs, CloudTrail, and EKS audit logs purely to support investigations, you are paying twice for the same telemetry. Either scale that collection down and lean on Detective for investigation, or scope Detective to the accounts where you do not already have that coverage. Deciding which of the two is cheaper depends on what else consumes those logs, so check with the teams that own the pipeline before changing either side.
 
 ![Detective usage page](../../images/DT-Usage.png)
 
@@ -274,7 +299,7 @@ Amazon Detective pricing is thoroughly covered in the [pricing page](https://aws
 * [AWS re:Inforce 2023 - Streamline security analysis with Amazon Detective (TDR210)](https://www.youtube.com/watch?v=TWJtvq8pgw8&t)
 * [How to use Amazon Detective for security investigations](https://www.youtube.com/watch?v=AtUZgdtZCYo)
 * [Detective Finding Groups include Amazon Inspector findings](https://www.youtube.com/watch?v=U5xu6Dy3Pb0&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=9&pp=iAQB)
-[* Investigations for Amazon GuardDuty threat detections](https://www.youtube.com/watch?v=dFR4Dk4h1Go&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=15&pp=iAQB)
+* [Investigations for Amazon GuardDuty threat detections](https://www.youtube.com/watch?v=dFR4Dk4h1Go&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=15&pp=iAQB)
 * [Using Amazon Detective to perform root cause analysis for security findings](https://www.youtube.com/watch?v=nuYHzN02f60&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=31&pp=iAQB)
 * [Amazon Detective Visualizations demo](https://www.youtube.com/watch?v=TZZuQrC8ZtA&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=43&pp=iAQB)
 * [Reduce time to investigate GuardDuty findings by grouping related findings](https://www.youtube.com/watch?v=rPnpPBIRRv8&list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&index=63&pp=iAQB)

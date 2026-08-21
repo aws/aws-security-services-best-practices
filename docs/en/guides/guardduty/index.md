@@ -15,17 +15,22 @@ This guide is geared towards security practitioners who are responsible for moni
         * [Configuring auto-enable preferences for organization](#configuring-auto-enable-preferences-for-organization)
         * [Add accounts as members to your organization](#add-accounts-as-members-to-your-organization)
     * [GuardDuty protection plans](#guardduty-protection-plans)
-        * [Enabling S3 malware protection](#S3-Malware-Protection)
-        * [Runtime Monitoring](#runtime-monitoring-deployment-for-ec2)
+        * [AI Protection](#ai-protection)
+        * [Malware Protection for Backup](#malware-protection-for-backup)
+        * [Enabling S3 malware protection](#s3-malware-protection)
+        * [Runtime Monitoring](#runtime-monitoring)
             * [Enabling runtime monitoring for EC2](#runtime-monitoring-deployment-for-ec2)
             * [Enabling runtime monitoring for ECS](#runtime-monitoring-deployment-for-ecs)
-            * [Enabling runtime monitoring for EKS](#runtime-monitoring-deployment-for-eks) 
+            * [Enabling runtime monitoring for EKS](#runtime-monitoring-deployment-for-eks)
 * [Operationalizing GuardDuty findings](#operationalize-guardduty-findings)
+    * [Extended Threat Detection](#amazon-guardduty-extended-threat-detection)
+    * [GuardDuty Investigation](#guardduty-investigation)
     * [Filtering findings](#filtering-findings)
     * [Reducing potential noise](#reducing-potential-noise)
     * [Custom trusted and threat entity lists](#custom-trusted-and-threat-entity-lists)
     * [Automated notification for high priority findings](#automated-notification-for-high-priority-findings)
     * [Automated remediation for common finding types](#automated-remediation-for-common-finding-types)
+    * [S3 Malware Protection automation workflow](#s3-malware-protection-automation-workflow)
 * [Cost optimization](#cost-optimization)
     * [CloudTrail and/or S3 data event utilization is high](#cloudtrail-andor-s3-data-event-utilization-is-high)
     * [VPC Flow Logs](#vpc-flow-logs)
@@ -49,13 +54,20 @@ In addition to the foundational data sources, GuardDuty can use additional data 
 * [Amazon S3](https://docs.aws.amazon.com/guardduty/latest/ug/s3-protection.html) – GuardDuty monitors AWS CloudTrail S3 data events to identify potential threats in your Amazon S3 resources. AWS CloudTrail S3 management events are monitored by default after GuardDuty is enabled.
 * [Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring.html) - Runtime Monitoring observes and analyzes operating system-level, networking, and file events to help you detect potential threats in specific AWS workloads in your environment.
 * [S3 Malware Protection](https://docs.aws.amazon.com/guardduty/latest/ug/gdu-malware-protection-s3.html) - Malware Protection for S3 helps you detect potential presence of malware by scanning newly uploaded objects to your selected Amazon Simple Storage Service (Amazon S3) bucket. When an S3 object or a new version of an existing S3 object gets uploaded to your selected bucket, GuardDuty automatically starts a malware scan. In addition to automatic scanning on upload, GuardDuty supports [on-demand scanning](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-s3-on-demand.html) of existing S3 objects via the `SendObjectMalwareScan` API. This is valuable for scanning objects that were uploaded before Malware Protection was enabled, or for re-scanning objects against updated threat signatures. It is important to note that S3 malware protection is not intended to be deployed across your entire S3 estate. S3 Malware protection is purpose built to provide a cost effective solution that will scan objects that are uploaded to untrusted buckets. For example, in a scenario where you have third parties sending you documents or files and you need to ensure there is no malware before processing them in an application.
-* [Malware Protection for AWS Backup](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-backup.html) - Malware Protection for Backup scans AWS Backup–protected resources such as Amazon EBS snapshots, Amazon EC2 AMIs, and Amazon S3 Recovery Points for malware. This helps you verify that your backups are clean before using them for recovery, which is critical in ransomware scenarios where you need to identify the last known clean recovery point. Scans can be triggered automatically after each backup completes or initiated on-demand, and the feature can be enabled independently from the rest of GuardDuty.
+* [Malware Protection for AWS Backup](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-backup.html) - Malware Protection for Backup scans AWS Backup protected resources such as Amazon EBS snapshots, Amazon EC2 AMIs, and Amazon S3 Recovery Points for malware. This helps you verify that your backups are clean before using them for recovery, which is critical in ransomware scenarios where you need to identify the last known clean recovery point. Scans can be triggered automatically after each backup completes or initiated on-demand, and the feature can be enabled independently from the rest of GuardDuty.
+* [AI Protection](https://docs.aws.amazon.com/guardduty/latest/ug/ai-protection.html) - AI Protection analyzes AWS CloudTrail data events from Amazon Bedrock, Amazon Bedrock AgentCore, and Amazon SageMaker AI to detect threats to AI workloads, including anomalous model invocations, cost harvesting attacks, and direct prompt injection attempts. GuardDuty creates and manages the CloudTrail service-linked channel for you, so no trail configuration is required in the monitored accounts.
 
 ## What are the benefits of enabling GuardDuty?
 
 GuardDuty is designed to operate completely independently from your resources and have no performance or availability impact to your workloads. The service is fully managed with integrated threat intelligence, machine learning (ML) anomaly detection, and malware scanning. GuardDuty delivers detailed and actionable alerts that are designed to be integrated with existing event management and workflow systems. There are no upfront costs and you pay only for the events analyzed, with no infrastructure to manage or threat intelligence feed subscriptions required.
 
 ## Deploying GuardDuty
+
+Before you follow the per-service steps below, note that you may not need them. If you have adopted the unified [AWS Security Hub](../security-hub/index.md), you can enable and configure GuardDuty centrally from the Security Hub console using configuration policies and deployments, alongside Amazon Inspector and Security Hub CSPM. For organizations standing up several security services at once, that is usually the faster path and it keeps enablement consistent as accounts are added. GuardDuty threat detection is then billed through the Security Hub threat analytics plan.
+
+The rest of this section covers deploying GuardDuty directly, which remains fully supported and is the right approach if you are adopting GuardDuty on its own, if you need protection plan settings that configuration policies do not yet cover, or if you are working in accounts not managed by Security Hub. The two approaches coexist, so a mixed estate is fine.
+
+A note on permissions before you start. The `AmazonGuardDutyFullAccess` policy has been deprecated in favor of `AmazonGuardDutyFullAccess_v2`, which is scoped down to restrict administrative actions to GuardDuty service principals. Use the v2 policy for new administrator roles, and review any existing roles still attached to the original.
 
 ### Single account deployment
 
@@ -132,7 +144,33 @@ The accounts table displays all of the accounts that are added either Via Organi
 
 ### GuardDuty protection plans
 
-After enabling GuardDuty in your account(s), choosing additional protection types is highly recommended. GuardDuty protection plans are [additional features](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-features-activation-model.html) that add focused threat detection for Amazon EKS, Amazon S3, Amazon Aurora, Amazon EC2, Amazon ECS, and AWS Lambda. To learn more about the benefits of what each GuardDuty protection provides, refer to the protection section of the [Amazon GuardDuty User Guide](https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html).
+After enabling GuardDuty in your account(s), choosing additional protection types is highly recommended. GuardDuty protection plans are [additional features](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-features-activation-model.html) that add focused threat detection for Amazon EKS, Amazon S3, Amazon Aurora, Amazon EC2, Amazon ECS, AWS Lambda, AWS Backup, and AI workloads built on Amazon Bedrock and Amazon SageMaker AI. To learn more about the benefits of what each GuardDuty protection provides, refer to the protection section of the [Amazon GuardDuty User Guide](https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html).
+
+#### AI Protection
+
+[GuardDuty AI Protection](https://docs.aws.amazon.com/guardduty/latest/ug/ai-protection.html) extends threat detection to AI workloads. When enabled, GuardDuty analyzes AWS CloudTrail data events from Amazon Bedrock, Amazon Bedrock AgentCore, and Amazon SageMaker AI along with management events, and detects three classes of threat:
+
+* **Anomalous model invocations** that deviate from the established baseline for an identity or account, such as invocations from an unusual IP address, through an unusual API, or against an unusual model.
+* **Cost harvesting**, where a threat actor sends deliberately expensive inputs to inflate token consumption and operating costs. This is a genuinely new attack pattern that most existing monitoring does not cover, because the workload looks like it is functioning correctly while the bill climbs.
+* **Direct prompt injection**, where a crafted prompt attempts to make a model ignore its original instructions.
+
+The corresponding finding types are `Impact:IAMUser/AnomalousModelInvocation`, `Impact:IAMUser/CostHarvesting`, and `Impact:IAMUser/PromptInjection.Direct`.
+
+Two things make this easier to adopt than it first appears. You do not need to create a trail or turn on data event logging, because GuardDuty creates and manages a CloudTrail service-linked channel in each monitored account and configures the data event settings itself. Account owners cannot modify those settings, which means detection does not depend on an application team maintaining a trail correctly. Each account can confirm the channel is active in the CloudTrail console under **Settings**, **Service-linked channels**.
+
+The one real prerequisite is on the Bedrock side. Prompt injection detection depends on Amazon Bedrock Guardrails, so `Impact:IAMUser/PromptInjection.Direct` is only generated where a prompt attack guardrail is enforced. If you want that detection to work across the organization rather than in the accounts that happened to configure it, enforce guardrails centrally using [AWS Organizations Bedrock policies](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-enforcements.html). This is the same pattern as the rest of this guide, which is that central enforcement beats hoping each account configures itself correctly.
+
+Note that finding type availability varies by Region depending on which AI services are present. Where Amazon Bedrock is not available, GuardDuty generates the anomalous invocation and cost harvesting findings from SageMaker AI activity only, and prompt injection findings require Regions where Bedrock Guardrails is supported. Pricing is based on the volume of CloudTrail data events analyzed, measured in GB, and the service-linked channel itself adds no CloudTrail charge.
+
+There is a related detection worth knowing about even if you do not enable AI Protection. The `DefenseEvasion:IAMUser/BedrockLoggingDisabled` finding type alerts you when Bedrock model invocation logging is turned off, which is a common precursor to activity someone does not want recorded.
+
+#### Malware Protection for Backup
+
+[Malware Protection for Backup](https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection-backup.html) scans AWS Backup protected resources, including Amazon EBS snapshots, Amazon EC2 AMIs, and Amazon S3 recovery points, using full and incremental scans. It can run automatically after each backup completes or on demand, and it can be enabled independently from the rest of GuardDuty.
+
+The use case that justifies this is ransomware recovery. When you are restoring after an incident, the question that determines your recovery time is which recovery point is clean, and the failure mode teams fear most is restoring from a backup that reintroduces the malware. Without scanning, answering that question means restoring candidate backups into an isolated environment and inspecting them one at a time, under time pressure, during an incident. Scanning backups continuously as they are created moves that work out of the incident and into normal operations, so the answer is already available when you need it.
+
+Because it can be enabled on its own, this is also a reasonable entry point for organizations that have a mature backup program but have not yet adopted GuardDuty broadly. Practically, we suggest enabling it for the backup vaults protecting your recovery-critical workloads first, then expanding, since the value is concentrated in the resources you would actually restore during an incident.
 
 #### S3 Malware Protection
 
@@ -200,7 +238,7 @@ Remember, it normally takes 30 minutes for hosts to show in SSM after enabling D
 9. Under **Runtime Monitoring configuration**, click **Enable**. Click **Confirm** when prompted.
 10. Under **Automated agent configuration**, click **Enable** for all accounts (recommended).
 11. Toggle to the tab **Runtime coverage** and then open the tab, **EC2 instance runtime coverage**. Within 5 minutes, EC2 instances will start to show a "Healthy" status. It may take up to 10 minutes for runtime monitoring to be "Healthy" on EC2 instances already meeting the prerequisite configuration.
-12. Repeat steps 3-5 for all Regions enabled for your AWS Organization.
+12. Repeat steps 7 through 11 for every Region enabled for your AWS Organization.
 
 
 
@@ -255,7 +293,7 @@ In a multiple-account environments, only the delegated GuardDuty administrator a
 
 After GuardDuty has been enabled in your account(s), GuardDuty will begin monitoring the [foundational data sources](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html) and analyzing features associated with optionally enabled resource protection types. A best practice recommendation after enabling GuardDuty is to leverage the 30-day trial (enabled per account) to understand the baseline of normal activity, derived by machine learning, for your accounts and resources. During the trial period GuardDuty will also use threat-based and rules-based intelligence to generate [findings](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings.html) in near-real time.
 
-Potential security issues are presented as findings in the GuardDuty console. All GuardDuty findings are assigned a [severity level](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings.html#guardduty_findings-severity) (low, medium, high) and corresponding value (1.0 – 8.9) based on potential risks. Higher value findings indicate a greater security risk. The severity level assigned to a finding is provided to help you determine a response to a potential security issue that is highlighted by a finding.
+Potential security issues are presented as findings in the GuardDuty console. All GuardDuty findings are assigned a [severity level](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings.html#guardduty_findings-severity) and a corresponding value based on potential risk, and higher values indicate greater risk. Most finding types fall into low, medium, or high. Attack sequence findings from [Extended Threat Detection](#amazon-guardduty-extended-threat-detection) are always Critical, because by definition they represent a correlated multi-stage attack rather than a single suspicious event. If your triage process was built when GuardDuty only produced low, medium, and high, make sure Critical is wired into your highest-urgency path rather than falling through to a default.
 ![GuardDuty Severity levels](../../images/GD-Severity-Levels.png)
 *Figure 9: GuardDuty severity levels*
 
@@ -271,13 +309,31 @@ A single finding can encompass an entire attack sequence. For example, it might 
 2. The actor then performing a series of actions such as privilege escalation and establishing persistence. 
 3. Finally, the actor exfiltrating data from an Amazon S3 resource.
 
-Extended Threat Detection covers threat scenarios involving AWS credentials misuse, data compromise attempts in Amazon S3, Amazon EKS cluster compromise, Amazon EC2 instance group compromise, and Amazon ECS cluster compromise. ETD correlates signals including runtime activity, malware detections, VPC Flow Logs, DNS queries, and CloudTrail events to identify multi-stage attack patterns across these resource types. Because of the nature of these threat scenarios, GuardDuty considers all attack sequence finding types as Critical.
+Extended Threat Detection covers threat scenarios involving AWS credentials misuse, data compromise attempts in Amazon S3, Amazon EKS cluster compromise, Amazon EC2 instance group compromise, and Amazon ECS cluster compromise. The coverage has grown over time, with [AttackSequence:EKS/CompromisedCluster](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-attack-sequence-finding-types.html), [AttackSequence:EC2/CompromisedInstanceGroup](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-attack-sequence-finding-types.html), and [AttackSequence:ECS/CompromisedCluster](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-attack-sequence-finding-types.html) joining the original credential and S3 data scenarios. ETD correlates signals including runtime activity, malware detections, VPC Flow Logs, DNS queries, and CloudTrail events to identify multi-stage attack patterns across these resource types. Because of the nature of these threat scenarios, GuardDuty considers all attack sequence finding types as Critical.
 
 ### Key considerations for Extended Threat Detection
 
-ETD is automatically enabled for all GuardDuty accounts at no additional cost. No manual activation is required. You can verify that ETD is enabled by visiting the Extended Threat Detection page under Protection plans in the GuardDuty console. To maximize ETD's detection coverage, enable Runtime Monitoring for your EC2, ECS, and EKS workloads — this provides the operating system–level signals that ETD correlates with network and API activity to detect multi-stage attacks.
+ETD is automatically enabled for all GuardDuty accounts at no additional cost. No manual activation is required. You can verify that ETD is enabled by visiting the Extended Threat Detection page under Protection plans in the GuardDuty console.
 
-It is important to note that S3 Protection remains a separate feature from ETD. S3 Protection must be enabled independently and is not automatically activated when ETD is turned on. ETD works alongside other GuardDuty features, including optional S3 Protection, to enhance your overall threat detection capabilities.
+What ETD can actually detect depends on what else you have enabled, and this is the part teams underestimate. Runtime Monitoring supplies the operating system level signals that ETD correlates with network and API activity, so without it, EC2, ECS, and EKS attack sequences are built from a thinner set of evidence. S3 Protection is a separate feature that must be enabled independently and is not activated when ETD is turned on, so S3 data compromise sequences depend on it.
+
+ETD has also grown beyond GuardDuty's own telemetry. Attack sequence findings now include indicator types drawn from the wider security portfolio, specifically `VULNERABILITY`, `MALICIOUS_PACKAGE`, `MISCONFIGURATION`, `REACHABILITY`, and `SENSITIVE_DATA`. The `SENSITIVE_DATA` indicator, for example, tells you that an S3 bucket involved in the sequence contains sensitive data as identified by Amazon Macie through AWS Security Hub CSPM. This is a meaningful shift in how you should think about enablement. A GuardDuty attack sequence is now richer if you also run Amazon Inspector, Amazon Macie, and Security Hub CSPM, because those services contribute the context that turns "an instance was compromised and data moved" into "an instance with a known exploitable vulnerability was compromised and data moved out of a bucket holding sensitive data." The services are not just aggregated in one console, they improve each other's output.
+
+The practical recommendation: treat ETD coverage as a reason to close gaps in your wider deployment rather than as a standalone feature to verify. If you are deciding where to spend effort, enabling Runtime Monitoring on your container and EC2 estate and confirming S3 Protection is on will do more for ETD quality than anything you can configure in ETD itself.
+
+### GuardDuty Investigation
+
+[GuardDuty Investigation](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty-investigation.html) provides AI-powered analysis of findings and accounts, and it changes the first step of triage for many teams. When you create an investigation, GuardDuty examines the finding context, related activity from the last 90 days, affected resources, threat intelligence, and threat indicators, then returns a structured assessment. Each investigation produces a risk level from Info through Critical, a confidence rating, a summary of key observations, supporting investigation detail, MITRE ATT&CK technique classification, and recommended actions that include the CLI commands to carry them out.
+
+This feature is in preview at the time of writing and is available in ten commercial Regions: US East (N. Virginia), US East (Ohio), US West (Oregon), Canada (Central), Europe (Frankfurt), Europe (Ireland), Europe (London), Europe (Paris), Europe (Stockholm), and Asia Pacific (Tokyo).
+
+There are three analysis types. **Finding analysis** takes a specific finding ID, and during preview covers all Extended Threat Detection findings plus selected findings from the foundational, S3, and Runtime plans. **Account analysis** assesses the threat posture of a single account. **Organization analysis** assesses your organization, covering up to 100 accounts during preview.
+
+To enable it, choose **Settings** in the GuardDuty console and enable **AI powered investigations**, or call `UpdateDetector` with the `AI_ANALYST` feature. Investigators need `guardduty:CreateInvestigation`, `guardduty:GetInvestigation`, and `guardduty:ListInvestigations`. Note the access model: administrator accounts can create, get, and list investigations for themselves and their members, while member accounts can only get and list investigations for their own account and cannot create them. If you want application teams triaging their own findings, that constraint shapes your operating model, and during preview you should plan around the quotas of 10 investigations per account per day and 100 total per account.
+
+Two things worth understanding before you build a process around it. First, investigations run asynchronously, so you create one and then retrieve results by investigation ID rather than waiting on a response. That makes it straightforward to trigger from an EventBridge rule on high severity findings and attach the result to a ticket. Second, GuardDuty Investigation uses cross-Region inference, which means your investigation data stays stored in the originating Region but may be processed in another Region within the same geography. For the United States that means the US Regions, for Europe the European Regions, and for Japan the Japan and Osaka Regions. All transfer is encrypted, but if you have data processing constraints, confirm this is acceptable before enabling it.
+
+Where this fits alongside existing tooling: use GuardDuty Investigation when you want a fast, structured first pass on a specific finding or an account's overall posture, with a disposition and next actions. It is not a replacement for log-level investigation. When you need to pivot across raw CloudTrail, VPC flow, and EKS audit data to reconstruct exactly what happened, [Amazon Detective](../detective/index.md) remains the tool for that depth.
 
 ### Filtering findings
 
@@ -298,7 +354,7 @@ Note: Frequently used filters can be saved to reduce future efforts. To save the
 
 As accounts and workloads grow within an AWS Organization, it is possible there will be an increase in GuardDuty findings because of certain configurations. Some of the findings may be deemed low value or threats not intended to be acted upon. To make it easier to recognize security threats that are most impactful to your environment, enabling quick remediation actions, it is recommended to deploy suppression rules. A [suppression rule](https://docs.aws.amazon.com/guardduty/latest/ug/findings_suppression-rule.html) is a set of criteria, consisting of a filter attribute paired with a value, used to filter findings by automatically archiving new findings that match the specified criteria.
 
-After creating a suppression rule, new findings that match the criteria defined in the rule are automatically archived as long as the suppression rule is in place. Existing filters can be used to create suppression rules. Suppression rules can be configured to suppress entire finding types, or define more granular filter criteria to suppress only specific instances of a particular finding type. Suppression rules can be edited at any time. It is recommended to suppress with as much granularity as possible. This will help with reducing findings for only certain circumstances without losing total coverage of a finding type. Suppression rule filter conditions also support wildcard characters (`*` and `?`) in Matches and NotMatches conditions, making it easier to write flexible rules that cover variations of resource names, tags, or other attributes without needing to create multiple individual rules.
+After creating a suppression rule, new findings that match the criteria defined in the rule are automatically archived as long as the suppression rule is in place. Existing filters can be used to create suppression rules. Suppression rules can be configured to suppress entire finding types, or define more granular filter criteria to suppress only specific instances of a particular finding type. Suppression rules can be edited at any time. It is recommended to suppress with as much granularity as possible. This will help with reducing findings for only certain circumstances without losing total coverage of a finding type. Suppression rule filter conditions also support wildcard characters (`*` and `?`) in Matches and NotMatches conditions, making it easier to write flexible rules that cover variations of resource names, tags, or other attributes without needing to create multiple individual rules. GuardDuty now supports filtering on any finding field when you create or update a suppression rule, with timestamp fields accepting values in Unix Epoch millisecond format. Combined with wildcards, this means you can usually express the precise condition you want rather than approximating it with a broader rule, which is the difference between suppressing one scanner's port probes and suppressing all port probe findings.
 
 Suppressed findings are not sent to AWS Security Hub, Amazon S3, Amazon Detective, or Amazon CloudWatch, reducing finding noise level if you consume GuardDuty findings via Security Hub, a third-party SIEM, or other alerting and ticketing applications.
 
@@ -308,7 +364,7 @@ A common use case for a suppression rule is filtering out a known resource that 
 
 ### Custom trusted and threat entity lists
 
-GuardDuty supports [custom entity lists](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_upload-lists.html) that enable you to bring your own threat intelligence into GuardDuty. Entity lists support both IP addresses and domain names, allowing you to feed domain-based indicators of compromise (IOCs) from your own threat intelligence sources directly into GuardDuty. When GuardDuty observes activity involving an indicator on your threat entity list, it generates a finding — effectively extending GuardDuty's built-in threat intelligence with indicators specific to your industry, threat landscape, or internal investigations.
+GuardDuty supports [custom entity lists](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_upload-lists.html) that enable you to bring your own threat intelligence into GuardDuty. Entity lists support both IP addresses and domain names, allowing you to feed domain-based indicators of compromise (IOCs) from your own threat intelligence sources directly into GuardDuty. When GuardDuty observes activity involving an indicator on your threat entity list, it generates a finding, effectively extending GuardDuty's built-in threat intelligence with indicators specific to your industry, threat landscape, or internal investigations.
 
 This is particularly valuable for organizations that subscribe to commercial threat feeds, participate in industry ISACs, or maintain internal threat intelligence from past incidents. For example, if your threat intelligence team identifies a set of command-and-control domains associated with a campaign targeting your sector, adding those domains to a threat entity list means GuardDuty will immediately alert on any DNS queries or network connections to those domains across your entire AWS environment. GuardDuty also continues to support trusted IP lists for reducing noise from known safe infrastructure such as corporate VPN egress points or penetration testing hosts. Entity lists can be managed via the console, API, or infrastructure as code.
 
@@ -318,7 +374,7 @@ After creating suppression rule filters to allow for surfacing only the most imp
 
 Every GuardDuty finding is assigned a finding ID. GuardDuty creates an EventBridge event for every finding with a unique finding ID.  By using Amazon EventBridge with GuardDuty, you can automate tasks to help you respond to security issues related to GuardDuty findings. One such task is sending notifications to a preferred notification channel. Commonly used notification channels are email and Enterprise messaging applications that support incoming messages via Webhook.
 
-Another common scenario is to send GuardDuty findings to a ticketing system or SIEM solution for tracking and event correlation. It is recommended to leverage Security Hub as a central aggregation point in AWS for security findings before [sending these findings to a ticketing system or SIEM solution](https://docs.aws.amazon.com/securityhub/latest/partnerguide/prepare-receive-findings.html). You can also leverage EventBridge to send GuardDuty findings directly to a ticketing system or SIEM solution. Please refer to your solutions documentation for guidance on how to send information via EventBridge.
+Another common scenario is to send GuardDuty findings to a ticketing system or SIEM solution for tracking and event correlation. We recommend using the unified [AWS Security Hub](../security-hub/index.md) as your central aggregation point for security findings before [sending them onward to a ticketing system or SIEM](https://docs.aws.amazon.com/securityhub/latest/partnerguide/prepare-receive-findings.html), because it normalizes findings across services into OCSF and offers native ITSM integrations. If you aggregate in Security Hub CSPM today, that continues to work, but avoid maintaining both aggregation paths for the same downstream consumer. You can also use EventBridge to send GuardDuty findings directly to a ticketing system or SIEM. Please refer to your solutions documentation for guidance on how to send information via EventBridge.
 
 When leveraging email as a preferred notification channel, GuardDuty is integrated with Amazon Simple Notification Services (Amazon SNS) via EventBridge. Amazon Simple Notification Service (Amazon SNS) is a fully managed messaging service for both application-to-application (A2A) and application-to-person (A2P) communication. The notification workflow is as depicted in the image below.
 ![GuardDuty Notification workflow](../../images/GD-Notification-Workflow.png)
@@ -497,6 +553,10 @@ def lambda_handler(event, context):
 
 When GuardDuty is enabled for the first time in an account, that account will be automatically provided with a 30-day free trial period for each region. Subsequently each feature also has a free trial too. For more information on pricing and free trials please refer to the [GuardDuty pricing page](https://aws.amazon.com/guardduty/pricing/). This is an important first step in understanding monthly GuardDuty costs in a given account. During the trial an administrator can view cost estimations based on Account ID, Data source, Feature and S3 buckets. If enabling GuardDuty in an AWS organization, the administrator can monitor cost metrics for all of the member accounts.
 
+**If you have enabled AWS Security Hub**, GuardDuty threat detection is billed through the Security Hub threat analytics plan rather than directly through GuardDuty. The underlying cost drivers are the same, since the plan is priced per event and per GB of logs analyzed, so everything in this section still applies to understanding and reducing your consumption. What changes is where you see the usage and how it appears on your bill. See [Cost Considerations](../security-hub/index.md#cost-considerations) in the Security Hub guide for the pricing model, the console Cost Estimator, and the Usage page.
+
+Before you get into investigating a cost surprise, set up something that warns you first. GuardDuty publishes usage metrics to Amazon CloudWatch for every protection plan, so you can create alarms that fire when usage for a specific plan crosses a threshold you choose. This is the cheapest control available here, it takes minutes to configure, and it moves you from reconstructing last month's bill to catching the change while it is happening. For more information, see [Monitoring GuardDuty usage and estimating costs](https://docs.aws.amazon.com/guardduty/latest/ug/monitoring_costs.html).
+
 AWS account administrators may be required to investigate charges related to GuardDuty if an increase in costs occurs. Some common reason for increased monthly GuardDuty costs includes:
 
 ### CloudTrail and/or S3 data event utilization is high
@@ -510,7 +570,7 @@ An increase in CloudTrail charges could be attributed to multiple reasons depend
 ```SQL
 SELECT eventName,count(eventName) AS eventVolume,eventSource
 FROM your_athena_tablename
-WHERE eventtime between '2021-01-24' AND '2021-01-25'
+WHERE eventtime between '2026-01-24' AND '2026-01-25'
 GROUP BY eventName, eventSource
 ORDER BY eventVolume DESC limit 10;
 ```
@@ -534,7 +594,7 @@ SELECT COUNT(version) AS Flows,
         SUM(numpackets) AS Packetcount,
          sourceaddress
 FROM vpc_flow_logs
-WHERE date = DATE('2021-01-31')
+WHERE date = DATE('2026-01-31')
 GROUP BY  sourceaddress
 ORDER BY  Flows DESC LIMIT 10;
 ```
@@ -607,8 +667,8 @@ SELECT count(version) AS numRequests,
         query_name
 FROM route53query
 WHERE query_timestamp
-    BETWEEN '2021-01-14'
-        AND '2021-01-15'
+    BETWEEN '2026-01-14'
+        AND '2026-01-15'
 GROUP BY  srcids,query_name
 ORDER BY  numRequests DESC limit 10;
 ```
@@ -624,10 +684,10 @@ ORDER BY  numRequests DESC limit 10;
 * It is not recommended to rely on the CloudTrail event history's CSV download to compare event volumes because it may have event filters or incomplete data. This feature is more suited for smaller CSV downloads.
 * CloudTrail insights can be useful to augment these investigations. CloudTrail Insights continuously monitors CloudTrail write management events, and uses mathematical models to determine the normal levels of API and service event activity for an account.
 * If a new member account is added or if a GuardDuty service is resumed after being disabled for an extended time those costs may also be perceived as surges.
-* S3 protection can be disabled but GuardDuty does not allow you to remove any additional data sources. However, if DNS is disabled at the VPC level, those logs are not processed by GuardDuty. Accounts will not be charged or have DNS-based results.
+* Every optional protection plan can be disabled, including S3 Protection, EKS Protection, RDS Protection, Lambda Protection, Runtime Monitoring, Malware Protection, and AI Protection. What you cannot remove are the foundational data sources, which are AWS CloudTrail management events, Amazon VPC Flow Logs, and Route 53 DNS query logs. GuardDuty pulls independent streams of those directly from the services and they are part of the base offering rather than something you toggle. There is one indirect exception worth knowing: if DNS resolution is disabled at the VPC level, GuardDuty does not process those logs, so the account is not charged for DNS analysis and will not produce DNS-based findings. Disabling a protection plan is a real cost lever, but treat it as a coverage decision first, since several protection plans also feed [Extended Threat Detection](#amazon-guardduty-extended-threat-detection) and turning one off narrows what attack sequences GuardDuty can correlate.
 * GuardDuty is optimized for security value and will not charge customers for processing some low-risk events that would otherwise be delivered to a customer's CloudTrail. Therefore, the event counts may not exactly match.
 * If Runtime Monitoring is enabled for your account, you will not be charged for analysis of VPC Flow Logs from instances where the GuardDuty agent is deployed and active.
-* GuardDuty publishes usage metrics to Amazon CloudWatch for all protection plans. These metrics can be used to set up CloudWatch alarms that alert you when usage for a specific protection plan exceeds a threshold you define, helping you catch unexpected cost increases before they appear on your bill.
+* Enabling a new protection plan introduces a new billable dimension, and each one carries its own free trial. GuardDuty AI Protection is a common recent example, since it analyzes CloudTrail data events from Amazon Bedrock and Amazon SageMaker AI. Teams standing up their first generative AI workload frequently enable AI Protection and Bedrock data event logging in the same change, then attribute the resulting cost increase to the wrong service. Turn new plans on deliberately, note the date, and let the trial tell you the real number before you roll out organization wide.
 
 ## Troubleshooting
 ### Troubleshooting AWS Systems Manager (SSM) Agent Issues
