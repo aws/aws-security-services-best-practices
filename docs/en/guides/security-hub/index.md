@@ -12,27 +12,31 @@ This guide is geared towards security practitioners who are responsible for moni
 
 * [What is Security Hub](#what-is-security-hub)
 * [What are the benefits of enabling Security Hub](#what-are-the-benefits-of-enabling-security-hub)
-* [Getting Started](#getting-started)
-* [Deployment](#deployment)
-* [Region considerations](#region-considerations)
+* [Getting started](#getting-started)
+    * [Deployment](#deployment)
+    * [Region considerations](#region-considerations)
 * [Implementation](#implementation)
-* [Configuration](#configuration)
-* [Essential capabilities](#essential-capabilities)
-* [Threat analytics plan](#threat-analytics-plan)
-* [Integrate your security tools](#integrate-your-security-tools)
-* [Enable security standards](#enable-security-standards)
-* [Operationalize Security Hub Findings](#operationalize-security-hub-findings)
-* [Investigating exposure findings](#investigating-exposure-findings)
-* [Understanding attack paths](#understanding-attack-paths)
-* [Analyzing traits and signals](#analyzing-traits-and-signals)
-* [Resource investigation](#resource-investigation)
-* [Automated response and remediation](#automated-response-and-remediation)
-* [Monitoring and trending](#monitoring-and-trending)
-* [Automation rules](#automation-rules)
-* [3rd party integrations](#3rd-party-integrations)
+    * [Configuration](#configuration)
+    * [Essential capabilities](#essential-capabilities)
+    * [Threat analytics plan](#threat-analytics-plan)
+    * [Network Scanning](#network-scanning)
+    * [Security Hub Extended](#security-hub-extended)
+* [Operationalize Security Hub findings](#operationalize-security-hub-findings)
+    * [Investigate critical risks](#investigate-critical-risks)
+    * [Understanding attack paths](#understanding-attack-paths)
+    * [Analyzing traits and signals](#analyzing-traits-and-signals)
+    * [Resource investigation](#resource-investigation)
+    * [AI inventory](#ai-inventory)
+    * [Automated response and remediation](#automated-response-and-remediation)
+    * [Monitoring and trending](#monitoring-and-trending)
+    * [Automation](#automation)
+    * [3rd party integrations](#3rd-party-integrations)
+    * [Multi-cloud coverage](#multi-cloud-coverage)
 * [Cost considerations](#cost-considerations)
-* [Understanding the pricing model](#understanding-the-pricing-model)
-* [Cost optimization strategies](#cost-optimization-strategies)
+    * [Understanding the pricing model](#understanding-the-pricing-model)
+    * [Comparing individual service and Security Hub pricing](#comparing-individual-service-and-security-hub-pricing)
+    * [Monitoring usage after enablement](#monitoring-usage-after-enablement)
+    * [Cost optimization strategies](#cost-optimization-strategies)
 * [Resources](#resources)
 
 ## What is Security Hub?
@@ -54,10 +58,25 @@ Security Hub reduces the complexity and effort of managing and improving the sec
 * **Continuous security monitoring:** Detect deviations from security best practices with automated security checks against industry standards and AWS best practices.
 * **Accelerate solution adoption:** Deploy curated partner solutions across endpoint, identity, email, network, data, browser, cloud, AI, and security operations in weeks, reducing procurement delays and accelerating coverage. 
 
-Security Hub provides near real-time exposure findings that automatically correlate signals across multiple AWS security services to identify toxic combinations of threats, vulnerabilities, and misconfiguration. Security Hub calculates exposure finding severity by analyzing and correlating multiple security traits across AWS services, using a contextual approach that assigns severity ratings based on five key factors: ease of discovery, ease of exploit, likelihood of exploit using EPSS scores and internal threat intelligence, awareness of publicly available exploits, and impact of potential harm from successful exploitation including data loss, corruption, or system unavailability.
+Security Hub provides near real-time exposure findings that automatically correlate signals across multiple AWS security services to identify toxic combinations of threats, vulnerabilities, and misconfiguration. Security Hub calculates exposure finding severity using a Likelihood and Impact risk matrix aligned with NIST guidance. Likelihood reflects how readily an exposure could be exploited, drawing on factors such as ease of discovery, ease of exploit, EPSS scores combined with internal threat intelligence, and whether a public exploit is known to exist. Impact reflects the potential blast radius if the resource is compromised.
+
+If you built prioritization runbooks against an earlier version of this model, revisit them. The move to a Likelihood and Impact matrix changes how some findings sort, and the addition of Impact means a vulnerability on a resource with broad permissions now rates higher than the same vulnerability on a tightly scoped one. That is the intended behavior, but it will reorder a queue your team may have grown used to.
 
 
-**Attack path** visualization helps you understand how an adversary could chain together vulnerabilities and misconfiguration to compromise critical resources. By mapping these connections, Security Hub shows possible routes an adversary could take through your environment and identifies which critical resources could be impacted. The visualization displays resource relationships, contributing factors at each stage, and trait classifications including internet reachability, vulnerabilities, sensitive data presence, misconfiguration, and assumability of IAM roles. Refer to the [Security Hub documentation](https://docs.aws.amazon.com/securityhub/latest/userguide/exposure-findings-supported-traits.html) for more information on supported traits.
+**Attack path** visualization helps you understand how an adversary could chain together vulnerabilities and misconfiguration to compromise critical resources. By mapping these connections, Security Hub shows possible routes an adversary could take through your environment and identifies which critical resources could be impacted. The visualization displays resource relationships, contributing factors at each stage, and trait classifications. Security Hub supports six trait types:
+
+| Trait | What it indicates | Where the signal comes from |
+| --- | --- | --- |
+| Reachability | Open network paths to a resource | Security Hub CSPM controls, GuardDuty findings, Inspector network reachability findings |
+| Vulnerability | A weakness that could be exploited | Inspector package vulnerability findings, GuardDuty EC2 malware findings |
+| Misconfiguration | A misconfigured resource | Security Hub CSPM controls, GuardDuty findings, AWS Config |
+| Sensitive Data | The resource contains sensitive data | Macie sensitive data findings |
+| Assumability | The resource has vended IAM permissions | Resource configuration from AWS Config |
+| Impact | Potential blast radius if the resource is compromised | Effective permissions analysis of associated IAM principals |
+
+This table is worth studying, because it shows why enabling more of the portfolio improves Security Hub's output rather than just adding more findings. Sensitive Data only appears if you run Macie. Vulnerability depends on Inspector. Without them, exposure findings still work but they carry less context, and severity is calculated from a thinner picture.
+
+The **Impact** trait deserves particular attention because it is the newest and the least intuitive. Security Hub determines impact by analyzing the *effective permissions* of the IAM principals attached to a resource, meaning the permissions that remain after evaluating identity-based policies together with the resource-based policies of the resources those principals can reach. Using effective permissions, Security Hub traces privilege escalation paths from the primary resource outward and surfaces concrete paths to real resources in your environment. This is what turns "this instance has a vulnerability" into "this instance has a vulnerability and its role can reach these three other resources." You can review those paths in the [potential attack path graph](https://docs.aws.amazon.com/securityhub/latest/userguide/potential-attack-path-graph.html) and shrink your blast radius by removing permissions the workload does not use. Refer to the [supported trait types documentation](https://docs.aws.amazon.com/securityhub/latest/userguide/exposure-findings-supported-traits.html) for the full detail.
 
 ![Attack Path Visualization Example](../../images/security-hub/security-hub-attack-path-graph.png)
 
@@ -80,7 +99,9 @@ Choose which account in your AWS Organization will serve as the Security Hub del
 
 **AWS Config**
 
-AWS Config is not a requirement for Security Hub itself. However, Security Hub CSPM a core capability that runs security checks against best practices and compliance standards requires AWS Config to be enabled and configured to record resource configuration changes. AWS Config tracks these changes so Security Hub CSPM can identify potential misconfigurations in your resources. Enable AWS Config in all accounts and Regions where you plan to use Security Hub 
+Security Hub CSPM runs security checks against best practices and compliance standards, and those checks need resource configuration data from AWS Config. You no longer have to set that up yourself. When both Security Hub and Security Hub CSPM are enabled in an account and Region, CSPM automatically creates and manages a service-linked configuration recorder named `AWSConfigurationRecorderForSecurityHubCSPM`, keeps its recording scope aligned to the resources that supported controls need, and creates one for each new account as you enable it. In this state Security Hub does not use your customer-managed configuration recorder, and the `Config.1` control always passes.
+
+This is a change worth flagging if you are working from older runbooks, which typically told you to enable AWS Config in every account and Region before enabling Security Hub. You only need to manage AWS Config yourself if you run Security Hub CSPM standalone, or if you use AWS Config for purposes beyond CSPM such as a CMDB, custom Config rules, or conformance packs. See [Cost Considerations](../security-hub-cspm/index.md#aws-config) in the Security Hub CSPM guide for how this affects Config costs in each case. 
 For more information see [Enabling Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-enable.html) documentation.
 
 
@@ -132,11 +153,25 @@ Security Hub Essential capabilities provide comprehensive security coverage thro
 
 ### Threat Analytics Plan
 
-The Threat Analytics plan embeds GuardDuty's threat detection capabilities directly into the Security Hub console. This means that threat findings such as privilege escalation, suspicious API calls, network anomalies, data exfiltration appear alongside resource misconfigurations, and vulnerabilities in a single unified view. A suspicious IAM action surfaces next to the configuration gap that enabled it, eliminating the need to manually pivot between services. Security Hub's native integrations with EventBridge and automated response workflows allow teams to act on these findings immediately—triggering remediation playbooks, normalizing severity across sources, and prioritizing what matters most. Without this plan, threat detection lives in isolation. When you enable threat analytics plan, Security Hub becomes a complete threat-aware security operations hub.
+The Threat Analytics plan embeds GuardDuty's threat detection capabilities directly into the Security Hub console. This means that threat findings such as privilege escalation, suspicious API calls, network anomalies, data exfiltration appear alongside resource misconfigurations, and vulnerabilities in a single unified view. A suspicious IAM action surfaces next to the configuration gap that enabled it, eliminating the need to manually pivot between services. Security Hub's native integrations with EventBridge and automated response workflows allow teams to act on these findings immediately by triggering remediation playbooks, normalizing severity across sources, and prioritizing what matters most. Without this plan, threat detection lives in isolation. When you enable threat analytics plan, Security Hub becomes a complete threat-aware security operations hub.
+
+### Network Scanning
+
+Network Scanning is an opt-in capability that performs active network reachability testing against your internet-facing resources from AWS-owned IP addresses. Rather than inferring exposure from security group and route table configuration, Network Scanning attempts TCP port connections, identifies applications and protocols, and collects service banners, HTTP headers, and TLS certificate metadata. The result is evidence of what is actually reachable from the internet rather than what your configuration suggests should be reachable.
+
+This distinction matters in practice. Configuration analysis tells you a security group allows 0.0.0.0/0 on port 22. Network Scanning tells you whether something is answering on port 22 and what it is. Teams working through a large backlog of open security group findings use this to separate the genuinely exposed from the theoretically exposed, which is usually a much shorter list.
+
+Network Scanning covers EC2 instances with a public IP, Elastic IPs, Network Load Balancers, Application Load Balancers, Classic Load Balancers, and Azure Public IP Addresses where you have configured an Azure connector. It scans each resource type independently. For load balancers it resolves and scans the DNS name, and it only scans instances behind a load balancer if those instances have their own public IP or Elastic IP.
+
+Once enabled, Network Scanning scans existing resources within roughly 24 hours, picks up new resources shortly after Security Hub is notified they were created, rescans when eligible control plane changes occur, and rescans active resources roughly every 12 hours to catch reachability changes. Short-lived resources may terminate before they are ever scanned, so do not treat it as a complete inventory of everything that was ever exposed.
+
+Two operational notes. First, enable it through a configuration policy rather than per account. When enabled that way, member accounts cannot turn it off, which matters because active scanning is exactly the kind of setting an application team disables when it looks unfamiliar. Second, you will need an exclusion path. Add the tag key `SecurityHubNetworkScanExclusion` to a resource to stop future scans and close its active findings. Tag the resource that actually holds the public IP, which means the Elastic IP rather than the instance when an EIP is attached, and the load balancer plus any individually addressable targets for load balanced services. Agree the exclusion process with your network and application teams before you enable scanning, not after the first escalation.
+
+Be aware that enabling Network Scanning authorizes AWS to actively scan your environment. Some organizations need to record that authorization or notify internal teams who monitor for scanning activity, so check whether that applies to you before turning it on.
 
 ### Security Hub Extended
 
-Security Hub Extended is a curated marketplace of enterprise-grade partner security solutions delivered directly through AWS Security Hub. It covers nine security categories — Endpoint, Identity, Email, Network, Data, Browser, Cloud, AI, and Security Operations with integrated partner offerings from providers such as CrowdStrike, Splunk, Zscaler, SailPoint, Okta, Proofpoint, Cyera, and others. AWS acts as the seller of record, which means you get pre-negotiated pay-as-you-go pricing, a single consolidated bill, and no long-term commitments. For AWS Enterprise Support customers, unified Level 1 support is also included. AWS Security Hub Extended expands Security Hub beyond AWS-native services into a full-stack enterprise security solution. It addresses one of the most common challenges security teams face: managing a fragmented portfolio of tools across multiple vendors, contracts, and consoles. Refer to the [Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-extended-plan.html) documentation for an updated list of supported partner solutions.
+Security Hub Extended is a curated marketplace of enterprise-grade partner security solutions delivered directly through AWS Security Hub. It covers nine security categories, which are Endpoint, Identity, Email, Network, Data, Browser, Cloud, AI, and Security Operations, with integrated partner offerings from providers such as CrowdStrike, Splunk, Zscaler, SailPoint, Okta, Proofpoint, Cyera, and others. AWS acts as the seller of record, which means you get pre-negotiated pay-as-you-go pricing, a single consolidated bill, and no long-term commitments. For AWS Enterprise Support customers, unified Level 1 support is also included. AWS Security Hub Extended expands Security Hub beyond AWS-native services into a full-stack enterprise security solution. It addresses one of the most common challenges security teams face: managing a fragmented portfolio of tools across multiple vendors, contracts, and consoles. Refer to the [Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-extended-plan.html) documentation for an updated list of supported partner solutions.
 
 ![Security Hub Extended Plan](../../images/security-hub/security-hub-extended-plan.png)
 
@@ -179,6 +214,18 @@ When investigating resources associated with exposure findings, select the Resou
 
 For each resource, you can view detailed configuration information including instance type, AMI ID, launch time, and network configuration. Associated findings show all security issues related to the resource, not just those contributing to the current exposure. Network connectivity information displays public IP addresses, security groups, and network ACLs. Tags provide business context such as application name, environment, and ownership. This comprehensive resource view enables you to understand the full security context of each resource and make informed decisions about remediation priorities.
 
+### AI Inventory
+
+The AI inventory gives you a unified view of AI and machine learning resources across your environment, split into two discovery types. **Managed** resources are the AI services AWS operates, covering a supported subset of Amazon Bedrock, Amazon Bedrock AgentCore, and Amazon SageMaker, discovered from AWS Config configuration items. **Self-hosted** resources are the ones that do not appear in any service console, such as open source models, inference servers, and agents running on your own compute.
+
+The self-hosted side is the reason this capability matters. Security Hub detects these from contributing signals rather than from an API that lists them, correlating Amazon Inspector SBOM findings on EC2 instances and ECR images with Amazon GuardDuty DNS activity. It covers Hugging Face and Ollama models, a broad set of model-serving software including vLLM, TorchServe, Triton, TGI, and llama.cpp, agents, and external AI endpoints your instances call such as OpenAI, Anthropic, Cohere, and Mistral. Detection is confidence-based, anchored to a primary signal and corroborated by additional ones before a resource appears, which keeps false positives down.
+
+For most organizations the immediate value is answering a question security teams have struggled to answer since generative AI adoption accelerated: where is AI actually running in our environment, including the parts nobody told us about. Shadow AI is difficult to find through governance processes because it takes minutes to deploy a model on an instance a team already owns. Detecting it from software inventory and DNS behavior sidesteps the need for anyone to self-report.
+
+Two prerequisites are worth calling out, because the inventory silently under-reports without them. Managed AI discovery needs nothing beyond Security Hub. Self-hosted discovery requires Amazon Inspector for the SBOMs and GuardDuty for the DNS signals. For EC2 specifically, Inspector must be running agent-based scanning with enhanced scanning mode, agentless, or hybrid. Agent-based scanning without enhanced mode does not produce the deep software inventory that AI detection depends on. Self-hosted models are also only detected in default model-cache directories and in custom paths you have configured for Inspector, so if your teams stage models somewhere unusual, add those paths.
+
+Administrator accounts see AI resources across all enabled accounts in the organization. Member accounts see only their own. On the **Resources** page, managed AI resources carry an AI icon and hosts running self-hosted AI carry a count badge, with a quick filter to show only those hosts.
+
 ### Automated Response and Remediation
 
 Security Hub helps streamline the incident management process through its native integrations with popular service management systems such as Atlassian's Jira Service Management and ServiceNow. This integration minimizes the need for manual ticket creation and reduces the time between finding and fixing security issues. Organizations can use Security Hub Automation Rules to automatically create and track tickets for security findings directly from the Security Hub console, helping to ensure that no critical security exposure goes unaddressed.
@@ -196,7 +243,7 @@ Use the Security Hub dashboard to monitor trends in your security posture over t
 
 ![Trends dashboard](../../images/security-hub/security-hub-trends.png)
 
-### Automation 
+### Automation
 
 Security Hub includes features that automatically modify and act on findings based on your specifications. Security Hub currently supports the following types of automations:
 
@@ -221,22 +268,70 @@ Integration with 3rd party supported partners is available within Security Hub. 
 
 ![Third-Party Integrations](../../images/security-hub/security-hub-third-party-integrations.png)
 
+### Multi-Cloud Coverage
+
+Security Hub is no longer AWS-only. You can connect a Microsoft Azure environment through a Security Hub connector and get posture management, vulnerability management, exposure correlation, and asset inventory for Azure resources without enabling any Azure security services. Posture management runs automated checks against CIS Microsoft Azure Foundations Benchmark v4.0 and Azure Foundational Best Practices, covering identity, networking, storage, logging, and database controls. Amazon Inspector scans Azure VMs, Function Apps, and Azure Container Registry images through the service-linked connector. If you configure Azure Defender continuous export to an Event Hub, Security Hub also ingests Microsoft Defender for Cloud threat alerts and normalizes them to OCSF so they sit alongside everything else.
+
+For organizations running workloads in both clouds, this changes the calculus on whether you need a separate third-party CSPM to get a single view. Two details make the difference in practice. Azure findings arrive in OCSF like AWS findings, so your existing automation rules, EventBridge patterns, and SIEM pipelines generally work without modification. And AWS Config usage for Azure posture management is handled internally and included in Security Hub pricing, so unlike AWS posture management you do not enable a recorder or pay for Config separately on the Azure side.
+
+Setting up the connector requires work on the Azure side first, including an application registration, federated identity credentials, role assignments, and Event Hub infrastructure, so plan for a joint effort with whoever owns your Azure tenant. Security Hub also creates matching service-linked integrations in Security Hub CSPM and Amazon Inspector automatically as part of connector creation. For the full procedure, see [Integrating Security Hub with Microsoft Azure](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-v2-azure.html).
+
 ## Cost Considerations
+
+This section is the reference for Security Hub pricing across this set of guides. The GuardDuty, Inspector, Macie, and Security Hub CSPM guides each cover the cost levers specific to that service, and they point back here for how those levers change once Security Hub is enabled.
 
 ### Understanding the Pricing Model
 
-Security Hub offers predictable, resource based pricing that replaces multiple separate bills for GuardDuty, Inspector, and Security Hub CSPM, with a single consolidated billing model. The Essentials Plan provides comprehensive security coverage with per resource pricing, while the optional Threat Analytics Plan adds advanced threat detection capabilities with usage based pricing. AWS Security Hub provides a 30-day free trial that includes essentials plan capabilities. Every AWS account in each Region enabled with Security Hub receives a free trial, even if you previously used AWS Security Hub CSPM or Amazon Inspector free trials. Add-on capabilities (threat analytics powered by Amazon GuardDuty and AWS Lambda code scanning powered by Amazon Inspector) and the Extended plan are not included in the Security Hub free trial, though individual service free trials still apply if you have not used them previously. To help you plan ahead, use the [Security Hub pricing page](https://aws.amazon.com/security-hub/pricing/) and Security Hub [Cost Estimator](https://github.com/aws-samples/sample-AWS-Security-Hub-Cost-Estimation-Tool) to calculate your expected costs before enabling the service. During the free trial, you can monitor your usage through the AWS billing console to estimate your ongoing costs based on actual usage during the free trial.
+Security Hub replaces separate bills for GuardDuty, Inspector, and Security Hub CSPM with a single consolidated model built from three pricing plans.
+
+**Essentials plan.** Priced per resource, covering your EC2 instances, ECR container images, Lambda functions, IAM users, and IAM roles. The plan includes risk and exposure analytics, vulnerability management powered by Amazon Inspector, security posture management powered by Security Hub CSPM, and security response. You do not separately enable or pay for Amazon Inspector or Security Hub CSPM in accounts covered by the essentials plan, and you are not double-charged for the underlying service usage.
+
+**Threat analytics plan.** Priced per event and per GB of logs analyzed, covering threat detection powered by Amazon GuardDuty across CloudTrail management and data events, network activity, and other log sources.
+
+**Lambda code scanning.** An optional per-resource add-on powered by Amazon Inspector that analyzes Lambda function application code for vulnerabilities.
+
+Two things sit outside this model. The [Security Hub Extended](#security-hub-extended) plan for partner solutions is billed separately through AWS Marketplace. Amazon Macie is also billed separately and is not included in the essentials plan, so sensitive data discovery costs continue to follow [Macie pricing](https://aws.amazon.com/macie/pricing/) even after you enable Security Hub.
+
+When you count resources for an estimate, remember that IAM users and roles are billable resources under the essentials plan. If your organization provisions a role per workload or per pipeline, IAM can be your largest resource category, and it is the one teams most often leave out of a first estimate.
+
+Security Hub provides a 30-day free trial covering essentials plan capabilities. Every AWS account in each Region receives the trial, even if the account previously used a Security Hub CSPM or Amazon Inspector free trial. The threat analytics plan, Lambda code scanning, and the Extended plan are not included in the Security Hub free trial, though the individual service free trials still apply if you have not used them.
+
+### Comparing Individual Service and Security Hub Pricing
+
+Before you migrate an organization onto Security Hub pricing, model the change. The Security Hub console includes a **Cost Estimator** that shows your current individual service costs across Security Hub CSPM, Amazon Inspector, and Amazon GuardDuty side by side with what those same capabilities would cost under Security Hub simplified pricing, including a pricing comparison table. You can adjust the usage and resource counts to model different scenarios and export the result as a PDF for stakeholder review.
+
+A few practical notes on using it:
+
+* The estimator pulls from AWS Cost Explorer on a 30-day lookback where that data is available, and lets you enter usage manually where it is not. Cost Explorer must be enabled, and there is a 24-hour processing delay after you enable it.
+* Management and standalone accounts open in view mode with data auto-populated. Delegated administrator and member accounts open in edit mode and need a cross-account IAM role configured in the management account to auto-populate.
+* Your principal needs `ce:GetCostAndUsage`, `pricing:GetProducts`, `organizations:ListAccounts`, `organizations:DescribeOrganization`, and `securityhub:ListOrganizationAdminAccounts`, plus `iam:GetRole` for management accounts or `sts:AssumeRole` for delegated administrator and member accounts.
+* All estimates use us-east-1 rates. Figures you modify by hand do not reflect enterprise discounts, so only the values drawn directly from Cost Explorer reflect your negotiated pricing.
+
+Changes you make in the estimator do not affect your live Security Hub or service configuration, so it is safe to model aggressively.
+
+### Monitoring Usage After Enablement
+
+Once Security Hub is enabled, use the **Usage** page under **Settings** in the console rather than reconstructing costs from the billing console. The **Capability view** organizes usage into the three plan groups, and each usage type maps directly to a corresponding usage type in AWS Cost Explorer so you can reconcile the two. For each usage type you see current usage and cost for the billing cycle to date, how much of that usage is free trial usage, what the free trial usage would have cost, and a projected monthly cost extrapolated from the last seven days.
+
+What you see depends on the account you are in. Delegated administrator and management accounts get an organization cost summary, usage by capability, usage by account, and the cost optimization strategies page. Member and standalone accounts see only their own account. One detail worth knowing before you go looking: if an account belongs to an organization that has no Security Hub delegated administrator designated, usage data is not available at all. Designating a delegated administrator is what turns usage reporting on.
+
+The console also includes a dedicated **Cost optimization strategies** page that presents each strategy as an independent option, ordered so that options with no security tradeoff appear first. Start there for the current list, then apply the judgment below. Expect any change you make to take 24 to 48 hours to appear in billing.
 
 ### Cost Optimization Strategies
 
-There are several strategies to optimize your Security Hub costs while maintaining comprehensive security coverage 
+The strategies below hold up across most environments. Removing unused resources and eliminating duplicate finding aggregation carry no security tradeoff, so start with those two. The rest trade some coverage or visibility for cost, so decide them per account type rather than applying them organization wide.
 
+* **Remove Unused Resources** - The essentials plan is priced per resource, so reducing your resource count reduces cost directly. Use [AWS Trusted Advisor](https://docs.aws.amazon.com/awssupport/latest/user/cost-optimization-checks.html) to find underutilized EC2 instances and Amazon ECR [lifecycle policies](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html) to expire container images you no longer pull.
 
-* **Remove Unused Resources** - Security Hub esssentials plan is based on per-resource pricing, regularly review your resource inventory and remove unused resources to save costs. You can use [AWS Trusted Advisor](https://docs.aws.amazon.com/awssupport/latest/user/cost-optimization-checks.html) to identify underutilized EC2 instances and Amazon ECR [Lifecycle Policies](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html) to remove ECR images that are not being used to save costs. 
+    Extend the same review to IAM, which teams routinely skip. Because IAM users and roles are billable resources under the essentials plan, retiring stale principals lowers cost and shrinks your identity attack surface at the same time. Security Hub gives you the worklist for free. When you enable Security Hub it creates a service-linked IAM Access Analyzer that evaluates every IAM principal against CloudTrail activity over a 90-day lookback and produces [unused access findings](https://docs.aws.amazon.com/securityhub/latest/userguide/unused-access-findings.html) in four types: `UnusedIAMRole`, `UnusedIAMUserAccessKey`, `UnusedIAMUserPassword`, and `UnusedPermission`. The analyzer and its findings carry no additional charge. For `UnusedPermission` findings, Security Hub can also generate a scoped-down least-privilege replacement policy, so you get the remediation and not just the finding.
+
+    This is the rare optimization where the cost case and the security case point the same direction, which makes it the easiest one to get funded. It also compounds: unused access shows up as contextual traits on exposure findings for EC2 instances, Lambda functions, ECS services, EKS clusters, and IAM users, so cleaning up over-privileged roles lowers the calculated blast radius on findings you have not remediated yet.
 
 * **Optimize Lambda Function Scanning** - Lambda functions vulnerability scanning is included in the Security Essentials plan, customers can optionally enable lambda code scanning to identify enhanced vulnerabilities such as data leaks and injection flaws. To optimize costs, carefully evaluate whether lambda code scanning is necessary for all functions or only for lambda functions in production environments with complex business logic processing sensitive data or exposed to external inputs.
 
-* **Review Container Scanning Patterns** - * Security Hub ECR vulnerability scanning powered by Amazon Inspector is priced based on two dimensions, Per image (on-push) and per rescan for retained images. Inspector provides two scanning modes - Continuous Scanning which automatically rescans images as new vulnerabilities are discovered and On-Push scanning which scans images only when pushed to the registry. With the new Security Hub resource-based pricing, you receive unlimited scanning. However, if your container images are relatively static and you have a robust CI/CD pipeline, switching to on-push scanning maintains security coverage at critical deployment points. We recommend using on-push scanning for production images with infrequent updates, base images that rarely change and development/test images with controlled deployment. Continuous scanning should be used for Internet-facing application, containers Images processing sensitive data and Containers with frequent dependency updates.
+* **Choose Container Scan Mode on Risk, Not Cost** - Amazon Inspector offers two ECR scanning modes. Continuous scanning rescans images as new vulnerabilities are published. On-push scanning evaluates an image only when it is pushed to the registry. Which mode you choose is a cost decision only when you are paying for Inspector directly. In accounts covered by the Security Hub essentials plan, ECR container images are billed per resource and scanning is included, so switching to on-push does not reduce your Security Hub bill. Choose the mode that matches the risk instead. In accounts running Amazon Inspector standalone, ECR is priced per image on push and per rescan of retained images, which makes both scan mode and [re-scan duration](https://docs.aws.amazon.com/inspector/latest/user/scanning_resources_configure_duration_setting_ecr.html) genuine cost levers. See the [Amazon Inspector guide](../inspector/index.md#ecr-scanning) for that side of the decision.
+
+    Use continuous scanning for images backing internet-facing applications, images that process sensitive data, and images with frequently updated dependencies. On-push scanning is a reasonable fit for base images that rarely change and for development or test images with controlled deployment paths, provided you accept that a CVE published after the last push will not surface until the next one.
 
 To change the scan mode for your container images, navigate to the ECR console, select “Features & Settings", then select "configure" under scanning. Use the appropriate filter based on the repository name to update the scan on push and continuous scanning configuration for example to configure continuous scanning for all repositories with prod in the name use the filter *prod*.
 
@@ -256,7 +351,9 @@ To update the re-scan configuration for ECR, Navigate to the Amazon inspector co
     * **Test Updated Integration:** Validate that all downstream systems continue receiving findings after the change
     * **Communicate changes:** Notify security operations and integration owners about the architectural changes
 
-* **Review Security Hub Coverage** - Use configuration policies to apply different capability levels to different account types, enabling full capabilities for production accounts while using essential-only capabilities for development or sandbox accounts. This flexibility enables you to balance security coverage with budget constraints while maintaining the ability to expand coverage as needed. Accounts without Security Hub enabled can continue to use individual service pricing for GuardDuty, Inspector, and Security Hub CSPM, while accounts with Security Hub enabled benefit from streamlined pricing and enhanced capabilities.Leverage the 30-day free trial to evaluate costs and capabilities before organization wide deployment.
+* **Match Coverage to Account Purpose** - Use configuration policies to apply different capability levels to different account types, enabling full capabilities for production accounts while limiting development and sandbox accounts to essential capabilities. Accounts where you do not enable Security Hub continue to be billed under individual service pricing for GuardDuty, Inspector, and Security Hub CSPM, which means a mixed estate is a supported end state rather than a migration you have to finish all at once. Use the 30-day free trial to evaluate real costs before you commit organization wide.
+
+* **Plan for Finding Retention Before You Need It** - Security Hub CSPM retains archived findings for 30 days. This reduces finding noise, and it also means Security Hub is not your compliance retention layer. If you need findings beyond that window for audit or investigation, export them to Amazon S3 using a custom action with an [Amazon EventBridge rule](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-cloudwatch-events.html) and budget for that storage. Teams that discover this after an audit request end up reconstructing history they no longer have.
 
 ## Resources
 
@@ -264,4 +361,7 @@ To update the re-scan configuration for ECR, Navigate to the Amazon inspector co
 * [AWS Security Hub API Reference](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_Operations.html)
 * [Streamline security response at scale with AWS Security Hub automation](https://aws.amazon.com/blogs/security/streamline-security-response-at-scale-with-aws-security-hub-automation/)
 * [AWS Security Hub Extended](https://aws.amazon.com/blogs/security/aws-security-hub-extended-why-enterprise-security-products-should-sell-themselves/)
-* [Cost Estimator](https://github.com/aws-samples/sample-AWS-Security-Hub-Cost-Estimation-Tool)
+* [AWS Security Hub pricing](https://aws.amazon.com/security-hub/pricing/)
+* [AWS Security Hub Cost Estimator](https://docs.aws.amazon.com/securityhub/latest/userguide/security-hub-cost-estimator.html) (console feature)
+* [Monitoring usage and costs in Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/security-hub-usage-page.html)
+* [Security Hub cost estimation sample tool](https://github.com/aws-samples/sample-AWS-Security-Hub-Cost-Estimation-Tool) (for estimating before enablement)

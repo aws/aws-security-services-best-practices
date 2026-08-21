@@ -38,13 +38,13 @@ Macie also automates discovery and reporting of sensitive data to provide you wi
 
 ## What are the benefits of enabling Macie?
 
-Macie is an AWS managed service that automatically provides statistics such as what buckets are publicly accessible, shared outside of your AWS Organization, or amount of buckets that contain sensitive data. These statistics offer insights into the security posture of your Amazon S3 data and where sensitive data might reside in your data estate.  The statistics and data can guide your decisions to perform deeper investigations of specific S3 buckets and objects. Since Macie is a managed service you can spend your time reviewing and analyzing findings, statistics, and other data by using the Amazon Macie console or the Amazon Macie API instead of setting up and managing the infrastructure needed to provide these insights. You can also leverage Macie integration with Amazon EventBridge and AWS Security Hub to monitor, process, and remediate findings by using other services, applications, and systems.
+Macie is an AWS managed service that automatically provides statistics such as what buckets are publicly accessible, shared outside of your AWS Organization, or amount of buckets that contain sensitive data. These statistics offer insights into the security posture of your Amazon S3 data and where sensitive data might reside in your data estate.  The statistics and data can guide your decisions to perform deeper investigations of specific S3 buckets and objects. Since Macie is a managed service you can spend your time reviewing and analyzing findings, statistics, and other data by using the Amazon Macie console or the Amazon Macie API instead of setting up and managing the infrastructure needed to provide these insights. You can also leverage Macie integration with Amazon EventBridge and AWS Security Hub CSPM to monitor, process, and remediate findings by using other services, applications, and systems.
 
 Macie makes it easy to do this across your AWS Organization through automation and AWS Organizations integration Macie provides sensitive data discovery and bucket posture assessments across all of your S3 buckets and objects across all accounts within your organization. Giving you centralized visibility across your entire S3 data estate.
 
 Some of the most common use cases for Macie are listed below:
 
-* Macie automated data discovery and native integration with AWS services such as AWS Security Hub and Amazon EventBridge make discovering and actioning sensitive data more cost effective and time efficient.
+* Macie automated data discovery and native integration with AWS services such as AWS Security Hub CSPM and Amazon EventBridge make discovering and actioning sensitive data more cost effective and time efficient.
 * Company A is being acquired by Company B. As part of the merger, Company A needs to understand the presence of Sensitive data in Company B’s data to ensure they are adhering to compliance mandates.
 * Company A is a data centric company and keeps tons of data for business needs. Company A also wants to ensure that the sensitive data is carefully protected by having an understanding of their sensitive data assets and the access patterns of this data.
 * Your company has had a security issue and you need to understand the type of data that was accessed.
@@ -60,6 +60,8 @@ To deploy Macie across your AWS Organization you will need to enable it in the A
 ### Region Considerations
 
 Amazon Macie is a regional service. This means that to use Macie you will need to enable it in every region that you would like to discover sensitive data. You can enable Macie across all accounts and regions using the AWS API or you can do this by toggling between regions in the console.
+
+If your organization requires that traffic to AWS services stay on the AWS network, Macie supports [VPC interface endpoints and endpoint policies](https://docs.aws.amazon.com/macie/latest/user/vpc-interface-endpoints-macie.html) through AWS PrivateLink in all Regions where Macie is available. This removes a blocker for organizations whose network policy prevents calling public service endpoints, and the endpoint policy gives you a place to restrict which Macie API actions are permitted from inside the VPC.
 
 ## Implementation
 
@@ -106,7 +108,13 @@ It is important to set up an S3 bucket for your discovery results within the fir
 
 ### Publishing to Security Hub
 
-By default Macie automatically publishes policy and sensitive data findings to Amazon EventBridge as events and publishes policy findings to Security Hub. It is recommended to also publish sensitive data findings to Security Hub so that you can take advantage of any workflows or automation that you might have created for other security service findings such as sending findings to a ticketing system or using Lambda to remediate a resource based on a finding in Security Hub.
+By default Macie automatically publishes policy and sensitive data findings to Amazon EventBridge as events, and publishes policy findings to AWS Security Hub CSPM. **We recommend also publishing sensitive data findings**, and this recommendation carries more weight than it used to.
+
+The original reason still applies. Publishing to Security Hub CSPM lets you reuse whatever workflows and automation you have already built for other security findings, such as creating tickets or triggering a Lambda function to remediate a resource.
+
+The newer reason is that sensitive data findings feed the correlation engine in the unified [AWS Security Hub](../security-hub/index.md). Sensitive data presence is one of the traits Security Hub uses when it calculates exposure finding severity, so a Macie finding does not just sit in a queue waiting for someone to action it. It changes how Security Hub scores every exposure involving that bucket. An internet-reachable resource with a vulnerability rates differently once Security Hub knows the data it can reach is sensitive. That signal also surfaces as the `SENSITIVE_DATA` indicator on Amazon GuardDuty attack sequence findings, where it is described as sensitive data identified by Macie through Security Hub CSPM.
+
+The practical consequence: if you do not publish sensitive data findings, you are not only missing them in your ticketing workflow, you are also degrading the prioritization quality of Security Hub and GuardDuty across your whole environment. This is the highest-value configuration change in this guide relative to the effort involved.
 
 ![Macie publishing](../../images/MC-Publishing.png)
 *Figure 6: Macie finding publish settings*
@@ -126,6 +134,8 @@ For more information on how to configure a sensitive data discovery job please r
 
 ### Resource Coverage
 
+Macie performs [preventative control monitoring](https://docs.aws.amazon.com/macie/latest/user/monitoring-s3-how-it-works.html) for up to 10,000 S3 general purpose buckets per account, which is worth knowing if you operate accounts with very large bucket counts, because coverage stops at that ceiling rather than degrading gracefully.
+
 For Macie to scan data in S3 the data needs to be in a [supported file format](https://docs.aws.amazon.com/macie/latest/user/discovery-supported-storage.html) and be in a bucket that has [permissions that allows Macie](https://docs.aws.amazon.com/macie/latest/user/monitoring-restrictive-s3-buckets.html) to scan the data. Most buckets have an explicit allow in the bucket policy but for buckets with explicit deny’s in the bucket policy you will need to add the Macie service linked role to be allowed in the bucket policy. In the resource coverage page Macie lists bucket issues so you can more easily see and address any buckets that Macie is not able to scan.
 
 ![Macie resource coverage](../../images/MC-Coverage.png)
@@ -137,6 +147,14 @@ For Macie to scan data in S3 the data needs to be in a [supported file format](h
 
 The first step we recommend for operationalizing findings from any security service is to understand what details a finding will give you and then understand how you will respond to a finding considering your organizations tooling capabilities and ownership model. For example, do you have a ticketing system you can integrate with to create tickets when a new sensitive data finding is created? Will the account owner automatically receive the ticket and be responsible for remediation? Will triage and alerting be the responsibility of a central security team? These are just a few of the questions that you will need to answer.
 
+There are two ways organizations consume Macie output, and mature programs run both rather than choosing between them.
+
+**Direct triage.** You treat a Macie finding as a work item. Sensitive data was found where it should not be, or a bucket became publicly accessible, and someone needs to act. This is the model the rest of this section covers, and it is the right way to handle the findings that represent a discrete problem with a discrete fix, such as cleaning up a data set or correcting bucket access.
+
+**Prioritization input.** You treat Macie output as context that makes other security decisions better. Sensitive data presence feeds the unified [AWS Security Hub](../security-hub/index.md) as an exposure trait, so it raises the severity of exposures involving those buckets and appears in GuardDuty attack sequences. In this model nobody works a Macie finding directly. Instead, Macie is why an EC2 exposure finding sorted to the top of the queue this morning. This is how Macie earns its value in environments where sensitive data legitimately exists in large volumes and "remove the sensitive data" is not an available answer.
+
+The distinction matters when you are deciding what to alert on. Alerting a central team on every sensitive data finding works in an environment where sensitive data is exceptional. In an environment where it is expected, that alerting produces noise, and the better pattern is to let Macie inform Security Hub prioritization while alerting only on findings that indicate something genuinely unexpected, such as sensitive data appearing in a bucket class or account where policy says it should not exist.
+
 ![Macie findings](../../images/MC-Findings.png)
 *Figure 9: Macie findings*
 
@@ -146,7 +164,9 @@ Macie findings give details such as the bucket and object location of the sensit
 
 Customers often ask how can I tune what Amazon Macie is looking for. To more effectively tune Macie to look for data in your S3 data estate you have the option to create allow lists, custom data identifiers, and specify which managed data identifiers you would like to look for.
 
-Macie has managed data identifiers associated with sensitive data types such as credentials, financial information, personal health information, and personally identifiable information. Custom data identifiers give you the ability to create your own detection criteria that reflects your organization’s particular scenarios, intellectual property, or proprietary data—for example, employee IDs, customer account numbers, or internal data classifications. 
+Macie has managed data identifiers associated with sensitive data types such as credentials, financial information, personal health information, and personally identifiable information. The [managed data identifier list](https://docs.aws.amazon.com/macie/latest/user/managed-data-identifiers.html) grows over time, and the growth has been heavily focused on country-specific identifiers. Recent additions include national identification numbers for Argentina, Chile, Colombia, and Mexico, Sistema Único de Boleto Electrónico (SUBE) card numbers for Argentina, and taxpayer identification and reference numbers for Argentina, Chile, Colombia, and Mexico. If you operate in Latin America and previously built custom data identifiers to cover these types, check whether a managed identifier now handles it, because managed identifiers are maintained for you and generally detect more reliably than a regular expression you wrote against a sample.
+
+Custom data identifiers give you the ability to create your own detection criteria that reflects your organization's particular scenarios, intellectual property, or proprietary data, for example employee IDs, customer account numbers, or internal data classifications. 
 
 Allow lists define specific text and text patterns for Macie to ignore when it inspects S3 objects for sensitive data.
 
@@ -161,11 +181,13 @@ To streamline your analysis of findings, you can create and use suppression rule
 
 ## Cost considerations
 
-For the most cost effective way to use Amazon Macie it is recommended to use the automated data discovery capabilities of Macie. This functionality uses sampling techniques to effectively identify and select representative S3 objects in your bucket making sensitive data discovery cost effective. For example Macie Automated Data Discovery can sample data in a 100TB data estate for only a few hunderd dollars per month.
+Amazon Macie is billed separately and is not included in the AWS Security Hub essentials plan. This surprises teams who have consolidated GuardDuty, Amazon Inspector, and Security Hub CSPM under Security Hub pricing and expect sensitive data discovery to come along with them. Macie costs continue to follow [Macie pricing](https://aws.amazon.com/macie/pricing/) regardless of whether you have enabled Security Hub, so budget for it as its own line item. What you do gain from Security Hub is that Macie results become a prioritization input, since sensitive data presence is one of the traits Security Hub correlates when it calculates exposure severity.
+
+For the most cost effective way to use Amazon Macie it is recommended to use the automated data discovery capabilities of Macie. This functionality uses sampling techniques to effectively identify and select representative S3 objects in your bucket making sensitive data discovery cost effective. For example Macie Automated Data Discovery can sample data in a 100TB data estate for only a few hundred dollars per month.
 
 If you configure a sensitive data discovery job before creating the job Macie shows you an estimate of the potential cost of running the job based on the amount of data that will be scanned. This can help you understand your job costs and understand what your cost implications are. The usage page in the Macie console gives you the ability to understand your monthly Macie cost associated with your entire environment broken down by preventative control monitoring, sensitive data discovery jobs, and automated sensitive data discovery which is further broken down by object analysis and object monitoring.
 
-If you are just getting started with Macie or are enabling it on new accounts Amazon Macie has a 30 day free trialthat covers bucket inventory and up to 150GB per account of automated sensitive data discovery. Keep in mind sensitive data discovery jobs are not included in the [30 day free trial](https://aws.amazon.com/macie/pricing/).
+If you are just getting started with Macie or are enabling it on new accounts, Amazon Macie has a 30 day free trial that covers bucket inventory and up to 150GB per account of automated sensitive data discovery. Keep in mind that sensitive data discovery jobs are not included in the [30 day free trial](https://aws.amazon.com/macie/pricing/). This is the most common source of an unexpected first bill, because a team runs a broad discovery job during the trial period assuming it is covered.
 
 More details and pricing examples can be found on the [Macie pricing page](https://aws.amazon.com/macie/pricing/).
 

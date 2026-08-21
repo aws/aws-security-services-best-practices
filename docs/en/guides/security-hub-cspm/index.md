@@ -16,7 +16,7 @@ This guide is geared towards security practitioners who are responsible for moni
     * [Deployment considerations](#deployment-considerations)
     * [Region considerations](#region-considerations)
 * [Implementations](#implementation)
-    * [Configuration](#Configuration)
+    * [Configuration](#configuration)
     * [Integrate your security tools](#integrate-your-security-tools)
     * [Enable security standards](#enable-security-standards)
 * [Operationalizing](#operationalizing)
@@ -24,22 +24,25 @@ This guide is geared towards security practitioners who are responsible for moni
     * [Create customized insights](#create-customized-insights)
     * [Leverage available remediation instructions](#leverage-available-remediation-instructions)
     * [Fine tuning security standard controls](#fine-tuning-security-standard-controls)
+    * [Understanding finding lifecycle and retention](#understanding-finding-lifecycle-and-retention)
     * [Automation rules](#automation-rules)
-    * [Automated response and remediation](#automated-response-and-remediation)
+    * [Automated security response](#automated-security-response)
     * [3rd party integrations](#3rd-party-integrations)
 * [Cost considerations](#cost-considerations)
+    * [Tuning standards and controls](#tuning-standards-and-controls)
+    * [Removing duplicate aggregation](#removing-duplicate-aggregation)
     * [AWS Config](#aws-config)
 * [Resources](#resources)
 
 ## What is Security Hub?
 
-AWS Security Hub is a cloud security posture management (CSPM) service that performs automated, continuous security best practice checks against your AWS resources to help you identify misconfigurations, and aggregates your security alerts (i.e. findings) in a standardized format so that you can more easily enrich, investigate, and remediate them. Security Hub also serves as a central aggregation point for security findings from other AWS services and third-party tools. This guide focuses on the CSPM capabilities of Security Hub — specifically deploying, operationalizing, and optimizing security standards and controls. Security Hub can be used by security teams, compliance teams, cloud architects, incident response teams, risk management teams, and MSSPs, and is currently used by customers of all sizes ranging from small startups to large enterprises.
+AWS Security Hub is a cloud security posture management (CSPM) service that performs automated, continuous security best practice checks against your AWS resources to help you identify misconfigurations, and aggregates your security alerts (i.e. findings) in a standardized format so that you can more easily enrich, investigate, and remediate them. Security Hub also serves as a central aggregation point for security findings from other AWS services and third-party tools. This guide focuses on the CSPM capabilities of Security Hub, specifically deploying, operationalizing, and optimizing security standards and controls. Security Hub can be used by security teams, compliance teams, cloud architects, incident response teams, risk management teams, and MSSPs, and is currently used by customers of all sizes ranging from small startups to large enterprises.
 
 ## What are the benefits of enabling Security Hub?
 
 Security Hub reduces the complexity and effort of managing and improving the security of your AWS accounts, workloads, and resources. You can enable Security Hub within a particular Region in minutes, and the service helps you answer fundamental security questions you may have on a daily basis. Key benefits include:
 
-* Detect deviations from security best practices with a single click. Security Hub runs continuous and automated account and resource-level configuration checks against the controls in the [AWS Foundational Security Best Practices standard](https://docs.aws.amazon.com/securityhub/latest/userguide/fsbp-standard.html) and other supported industry best practices and standards, including [CIS AWS Foundations Benchmark](https://docs.aws.amazon.com/securityhub/latest/userguide/cis-aws-foundations-benchmark.html) (v1.2.0, v1.4.0, v3.0.0, and v5.0.0), [NIST SP 800-53 Rev. 5](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final), [NIST SP 800-171 Rev. 2](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-reference-nist-800-171.html), [AWS Resource Tagging Standard](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-tagging.html), and [PCI DSS](https://docs.aws.amazon.com/securityhub/latest/userguide/pci-standard.html) (v3.2.1 and v4.0.1). Learn more about [supported standards and controls available in Security Hub](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-reference.html).
+* Detect deviations from security best practices with a single click. Security Hub CSPM runs continuous and automated account and resource-level configuration checks against the controls in the [AWS Foundational Security Best Practices standard](https://docs.aws.amazon.com/securityhub/latest/userguide/fsbp-standard.html) and other supported industry best practices and standards, including [CIS AWS Foundations Benchmark](https://docs.aws.amazon.com/securityhub/latest/userguide/cis-aws-foundations-benchmark.html) (v1.2.0, v1.4.0, v3.0.0, and v5.0.0), [NIST SP 800-53 Rev. 5](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final), [NIST SP 800-171 Rev. 2](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-reference-nist-800-171.html), [AI Security Best Practices](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-ai-security.html), [AWS Resource Tagging Standard](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-tagging.html), and [PCI DSS](https://docs.aws.amazon.com/securityhub/latest/userguide/pci-standard.html) (v3.2.1 and v4.0.1). Learn more about [supported standards and controls available in Security Hub CSPM](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-reference.html).
 * Automatically aggregate security findings in a standardized data format from AWS and partner services. Security Hub collects findings from the security services enabled across your AWS accounts, such as threat detection findings from Amazon GuardDuty, vulnerability findings from Amazon Inspector, and sensitive data findings from Amazon Macie. Security Hub also collects findings from partner security products using a standardized AWS Security Finding Format, eliminating the need for time-consuming data parsing and normalization efforts. Customers can designate an administrator account that can access all findings across their accounts.
 * Accelerate mean time to resolution with automated response and remediation actions. Create custom automated response, remediation, and enrichment workflows using the Security Hub [integration with Amazon EventBridge](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-cloudwatch-events.html), and other [integrations](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-partner-providers.html) to create Security Orchestration Automation and Response (SOAR) and Security Information and Event Management (SIEM) workflows. You can also use Security Hub Automation Rules to automatically update or suppress findings in near-real time.
 
@@ -77,9 +80,15 @@ You can integrate different security tools into Security Hub. This includes inge
 
 ### Enable Security Standards
 
-By default, when you enable Security Hub using the default policy, the AWS Foundational Best Practices is selected. We recommend that you start with the defaults and then enable any other security standards that you need to meet your business needs such as the CIS or NIST standards.
+By default, when you enable Security Hub CSPM using the default policy, the AWS Foundational Security Best Practices standard is selected. We recommend that you start with the default and then enable additional standards that map to obligations you actually have. Enabling standards you are not accountable for is the most common way teams manufacture finding volume they never action.
 
-When choosing CIS AWS Foundations Benchmark versions, note that Security Hub supports v1.2.0, v1.4.0, v3.0.0, and v5.0.0. If you are adopting CIS for the first time, start with v5.0.0 as it reflects the latest guidance. If you are already running an older version, plan a migration to v5.0.0 — you can enable both versions simultaneously during the transition to compare control coverage before disabling the older standard. For organizations that handle payment card data, Security Hub now supports PCI DSS v4.0.1 alongside v3.2.1. Since PCI DSS v3.2.1 has been retired by the PCI SSC, organizations subject to PCI compliance should enable v4.0.1. Additionally, organizations that handle Controlled Unclassified Information (CUI) or work with U.S. federal agencies can now enable the [NIST SP 800-171 Rev. 2](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-reference-nist-800-171.html) standard to assess their AWS environment against those requirements.
+When choosing CIS AWS Foundations Benchmark versions, note that Security Hub CSPM supports v1.2.0, v1.4.0, v3.0.0, and v5.0.0. If you are adopting CIS for the first time, start with v5.0.0 as it reflects the latest guidance. If you are already running an older version, plan a migration to v5.0.0. You can enable both versions simultaneously during the transition to compare control coverage before disabling the older standard. For organizations that handle payment card data, Security Hub CSPM supports PCI DSS v4.0.1 alongside v3.2.1. Since PCI DSS v3.2.1 has been retired by the PCI SSC, organizations subject to PCI compliance should enable v4.0.1. Organizations that handle Controlled Unclassified Information (CUI) or work with U.S. federal agencies can enable the [NIST SP 800-171 Rev. 2](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-reference-nist-800-171.html) standard to assess their AWS environment against those requirements.
+
+If you are deploying generative AI or machine learning workloads, enable the [AI Security Best Practices](https://docs.aws.amazon.com/securityhub/latest/userguide/standards-ai-security.html) standard. It is a curated set of controls covering network isolation, encryption at rest and in transit, VPC placement, AWS KMS key usage, and private registry requirements across Amazon Bedrock, Amazon Bedrock AgentCore, and Amazon SageMaker. Its ARN is `arn:aws:securityhub:region::standards/ai-security-best-practices/v/1.0.0`.
+
+This standard is worth enabling early rather than after the fact. AI workloads tend to be stood up quickly by teams that are optimizing for time to first result, and the defaults that make experimentation easy are frequently the ones this standard flags, such as SageMaker notebook instances with direct internet access, AgentCore runtimes not placed in a VPC, or AgentCore Gateways that do not require authorization on inbound requests. Turning the standard on while the environment is small means a handful of findings on a handful of resources. Turning it on after a year of adoption means a backlog. Pair it with the [AI inventory](../security-hub/index.md#ai-inventory) in Security Hub so you are checking the AI resources you know about against a standard and discovering the ones you do not.
+
+One thing to plan for across every standard: controls are added and retired continuously. Retirements happen when a control stops being meaningful, for example when AWS changes a service default or retires a capability the control depended on. Recent examples include the retirement of `ECS.1`, `RDS.18`, `AppSync.1`, `AppSync.6`, and `MQ.3`, and the removal of `EFS.6` from FSBP while it remains in other standards. The practical implication is that any list of disabled controls you maintain by hand will drift. Use the [controls change log](https://docs.aws.amazon.com/securityhub/latest/userguide/controls-change-log.html) to track changes, and prefer configuration policies over per-account control toggles so that changes are applied in one place.
 
 ![Security Hub Standards](../../images/SH-Standards.png)
 *Figure 3: Security Hub Standards*
@@ -98,7 +107,7 @@ Most customers focus on the critical and high severity findings as a priority to
 
 ### Create Customized Insights
 
-AWS Security Hub Insights allow you to view your findings through different visualizations. Most customers use the default Insights and create custom insights to focus on finding trends that require attention. Below are some best practices of creating insights:
+Security Hub CSPM Insights let you view your findings through different visualizations. If you have also adopted the unified Security Hub, check its dashboard and Trends views before you invest in building custom Insights, because the overlap is significant and the unified views already cover most cross-service trending. Insights remain the better tool when you need a CSPM-specific grouping that the unified dashboard does not offer, or when you are tracking a compliance program against a particular standard. Below are some best practices for creating insights:
 
 * Create insights with the context from your environment.
 * Create insights by using the ‘Group By’ filter, for example use ‘ResourceType’ which groups findings by AWS resource or you can use AWS account ID which groups findings by AWS account in multi-account setup.
@@ -124,6 +133,14 @@ Some Security Hub controls use parameters that affect how the control is evaluat
 ![SH Control parameters](../../images/SH-Control-Parameters.png)
 *Figure 7: Security Hub custom control parameter policy configuration*
 
+### Understanding Finding Lifecycle and Retention
+
+Two behaviors affect how you should build automation and how long you can rely on Security Hub CSPM as a source of history. Both changed recently enough that older integrations may assume the previous behavior.
+
+**Control findings are updated in place.** When the compliance status of a resource changes against a control, Security Hub CSPM updates the existing finding rather than generating a new one. This is helpful because a single finding now carries the compliance history for that resource and control pairing, so you can track whether something has been flapping. It also means automation built on the assumption that every status change produces a new finding will behave differently than expected. If you have downstream logic that creates a ticket per finding, verify it keys on finding ID and handles updates, otherwise you will either miss transitions or reopen tickets you already closed.
+
+**Archived findings are retained for 30 days.** This reduces noise, and it also means Security Hub CSPM is not a compliance retention system. If you need finding history beyond 30 days for audit, export to Amazon S3 using a custom action with an [Amazon EventBridge rule](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-cloudwatch-events.html) and set that up before you need it. Separately, when you disable a control, its existing findings are archived automatically within a few days.
+
 ### Automation Rules
 
 [Automation Rules](https://docs.aws.amazon.com/securityhub/latest/userguide/automation-rules.html) allows you to automatically update or suppress Security Hub findings, without any code. With this feature, rules are created by administrators to streamline cloud security posture management and act on findings in all accounts under the organization. This happens in near-real time as rules run at the time of finding ingestion. This can assist in removing repetitive tasks for security teams and reduce mean time to respond. For example, one of the most common customer uses cases is to elevate findings severity for top production accounts where you need to focus on, rather than the same findings identified on developers account. You can elevate the severity level of findings related to the production account IDs to a higher severity or you can lower the severity of the findings related to developers account IDs so your team can only focus on the important findings. Another use case is to use resource tags to further understand what resources are associated with a finding and what you want the automation rule to do with the finding.
@@ -148,7 +165,7 @@ Here are some considerations when it comes to automation rules:
 * Only the Security Hub admin account can create, delete, edit, and view automation rules.
 * Automated remediation must be created in each region in Security Hub admin account.
 * Define criteria and include member account ids.
-* Security Hub updates control findings every 12-24 hours or when the associated resource changes state.
+* Security Hub CSPM re-evaluates control findings every 12 to 24 hours, or sooner when the associated resource changes state. Those re-evaluations update the existing finding in place rather than creating a new one, so a rule that fires on finding creation will not fire again on a status change.
 * Rule order matters - multiple rules may apply to same finding or finding field. Lowest numerical value first.
 * If multiple findings have the same rule order, Security Hub applies a rule with an earlier value for the UpdatedAt field first (that is, the rule which was most recently edited is applied last).
 * Security Hub currently supports a maximum of 100 automation rules for an administrator account.
@@ -169,31 +186,50 @@ Integration with 3rd party supported partners is available within Security Hub. 
 
 ## Cost Considerations
 
-Security Hub is priced along three dimensions: the quantity of security checks, the quantity of finding ingestion events, and the quantity of rule evaluations processed per month. With AWS Organizations support, Security Hub allows you to connect multiple AWS accounts and consolidate findings across those accounts to enjoy tiered pricing for your entire organization’s security checks, finding ingestion events, and automation rule evaluations.
+Before you optimize anything, confirm which pricing model applies to the accounts you are looking at, because the levers are different and several of them stop existing.
 
-If you are just getting started with Security Hub or are enabling it on new accounts. AWS Security Hub has a [30 day free trial](https://aws.amazon.com/security-hub/pricing/?nc=sn&loc=3). The trial includes the complete Security Hub feature set and security best practice checks. Every AWS account in each Region that is enabled with Security Hub receives a free trial. During the free trial, you will get an estimate of your monthly bill if you were to continue to use Security Hub across the same accounts and Regions.
+**If you have enabled the unified AWS Security Hub**, security posture management is included in the Security Hub essentials plan at a single per-resource price. You do not enable or pay for Security Hub CSPM separately in those accounts, and you are not double-charged for the underlying checks. Control tuning still matters for finding volume and operational noise, but it is no longer how you manage your posture management bill. See [Cost Considerations](../security-hub/index.md#cost-considerations) in the Security Hub guide for the pricing model and the console Cost Estimator.
 
-* AWS Foundational Security Best Practices and CIS standards are on by default
-* When you enable a standard, “all” of the controls for that standard are enabled by default.   You can then disable and enable specific controls within an enabled standard, or disable the entire standard.  
-* Note there is a tradeoff: lowering costs through disabling controls could lead to potential higher risks due to a lack of visibility.
-* Turn off controls that deal with global resources in all regions except for the region that runs global recording. Examples:
-  * You can disable CIS 2.3 and 2.6 controls related to CloudTrail logging in all accounts and Regions except for the account and Region where a centralized S3 bucket is located.
-  * Disable CIS 1.2-1.14, 1.16, 1.22, and 2.5 controls that deal with global resources in all Regions except for the Region that runs global recording.
-* Filter findings from integrations that are not useful and feeding into Security Hub. This will reduce the cost of finding ingestion events.
-* Turn off security checks potentially not relevant to your environment. For example, if you do not plan to use Lambda inside of a VPC because you have compensating controls such as a strict CI/CD process and daily rollouts. But also take into consideration that in this example, you need to have a mechanism in place (Such as allow/deny list SCP) to control the use of services such as Lambda.
+**If you run Security Hub CSPM standalone**, CSPM is priced along three dimensions: the quantity of security checks, the quantity of finding ingestion events, and the quantity of automation rule evaluations processed per month. AWS Organizations support lets you consolidate across accounts so your whole organization benefits from tiered pricing on all three dimensions. The rest of this section applies to you.
 
-If your organization has adopted the full AWS Security Hub (beyond CSPM), finding aggregation from other AWS security services is already handled there. In that scenario, you may be able to reduce CSPM costs by disabling third-party and service finding ingestion in CSPM, since Security Hub is already performing that aggregation. However, approach this carefully — before disabling any finding sources in CSPM, audit your downstream integrations (EventBridge rules, SIEM feeds, ticketing workflows, custom Lambda functions) to confirm they are consuming findings from Security Hub and not from CSPM. Disabling ingestion in CSPM without verifying downstream dependencies can silently break alerting and response workflows.
+A mixed estate is a normal end state. Many organizations enable Security Hub on production accounts and leave lower environments on standalone CSPM pricing, which means both models are live at once and you need to know which accounts fall where before you start cutting.
+
+Security Hub CSPM includes a [30 day free trial](https://aws.amazon.com/security-hub/pricing/?nc=sn&loc=3) covering the full feature set and security best practice checks. Every AWS account in each Region receives the trial, and during it you get an estimate of what your monthly bill would be if you continued at the same usage.
+
+### Tuning Standards and Controls
+
+* When you enable Security Hub CSPM with the default configuration policy, the AWS Foundational Security Best Practices standard is enabled. Other standards such as CIS and NIST are opt-in.
+* Enabling a standard enables all of its controls. You can then disable individual controls within a standard, or disable the standard entirely.
+* Keep the tradeoff in view. Lowering cost by disabling controls lowers visibility, and the savings are rarely worth a blind spot in a production account. Tune lower environments first.
+* Controls that evaluate global resources only need to run in one Region. If you use central configuration, Security Hub CSPM handles this for you and automatically disables controls involving global resources in every Region except your home Region, so there is nothing to maintain by hand. If you are still on local configuration, you need to disable those controls per Region yourself, which is one of the better reasons to move to central configuration. Refer to the [controls reference](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-controls-reference.html) for which controls apply to global resources rather than maintaining your own list, since controls are added and retired regularly.
+* Filter out findings from integrations you are not acting on. Every ingested finding is a billable event, so an integration nobody reads is pure cost.
+* Turn off checks for services you genuinely do not run. If you disable a control because you do not use the service, pair it with a preventative control such as an SCP that keeps the service unused. Otherwise you have disabled the detection and left the door open.
+
+### Removing Duplicate Aggregation
+
+If your organization has adopted the unified Security Hub, finding aggregation from other AWS security services already happens there, and you may be paying for the same aggregation twice. You can reduce CSPM ingestion costs by disabling third-party and AWS service finding ingestion in CSPM.
+
+Approach this carefully. Before you disable any finding source in CSPM, audit your downstream consumers, including EventBridge rules, SIEM feeds, ticketing workflows, and custom Lambda functions, and confirm each one reads from Security Hub rather than from CSPM. Disabling ingestion without checking dependencies breaks alerting quietly, and the failure mode is findings that simply stop arriving rather than an error anyone notices.
 
 ### AWS Config
 
-With AWS Config, you are charged based on the number of configuration items recorded, the number of active AWS Config rule evaluations, and the number of conformance pack evaluations in your account. A configuration item is a record of the configuration state of a resource in your AWS account. An AWS Config rule evaluation is a compliance state evaluation of a resource by an AWS Config rule in your AWS account. A conformance pack evaluation is the evaluation of a resource by an AWS Config rule within the conformance pack.
+How AWS Config affects your bill depends on which configuration recorder is in play. If you last looked at this before Security Hub introduced its service-linked configuration recorder, the guidance below has changed.
 
-* Record global resources only in required region. Which will reduce the number of configuration items recorded
-* Turn off compliance history timeline if you are not using Config outside of Security Hub – tracks the history of each individual resource compliance status. This is on by default if you have enabled recording all resource types in config
-* Disable recording of resources not supported by Security Hub Controls – May introduce risk if using Config as CMDB. Also not recommended to disable recording of resources type you do use in your environment considering Security Hub control expansion
-* There are other tips mentioned in this [AWS Config cost optimization for Security Hub](https://aws.amazon.com/blogs/security/optimize-aws-config-for-aws-security-hub-to-effectively-manage-your-cloud-security-posture/)
+**When both Security Hub and Security Hub CSPM are enabled**, CSPM creates and manages a service-linked configuration recorder named `AWSConfigurationRecorderForSecurityHubCSPM` in each account and Region where both are enabled. You do not enable or configure AWS Config yourself. CSPM keeps the recording scope aligned to the resources its supported controls need, and it does not use your customer-managed configuration recorder. The `Config.1` control always passes in this state. The practical effect is that the manual recorder scoping work below is handled for you, and new accounts get the recorder automatically as you enable them.
 
-Important note to mention here is that AWS Config is NOT part of the 30 days trial version for Security Hub. So when you want to enable Security Standards on Security Hub, you will be charged for any AWS config rules used.
+**When you run Security Hub CSPM standalone**, you own the recorder and its cost. Config charges are based on the number of configuration items recorded, the number of active rule evaluations, and the number of conformance pack evaluations. The levers that matter:
+
+* Record global resources in one Region only, which reduces duplicate configuration items across Regions.
+* Turn off the compliance history timeline if you are not using Config outside of Security Hub CSPM. It tracks per-resource compliance history and is on by default when you record all resource types.
+* Be cautious about disabling recording for resource types CSPM does not currently check. Controls are added regularly, so a scoped-down recorder can silently stop feeding newly released controls.
+
+If AWS Config exists in your environment only to serve Security Hub CSPM, you can turn it off or reduce its scope once CSPM no longer depends on it. Confirm first that no other team is relying on it. Config commonly backs a CMDB, custom Config rules, conformance packs, automated remediation, and audit evidence collection, and those owners are usually in a different part of the organization than the security team making the change. Ask before you scope down, not after.
+
+Whichever recorder you use, Security Hub CSPM generates `WARNING` findings for an enabled control when resource recording is not turned on for the resource type that control checks. Treat those warnings as your safety net for detecting gaps you created while optimizing.
+
+One billing detail that catches people out: AWS Config is not part of the Security Hub CSPM 30 day free trial. As soon as you enable security standards, you are paying for the Config usage behind them even though CSPM itself is still free.
+
+For more detail, see [Optimize AWS Config for AWS Security Hub](https://aws.amazon.com/blogs/security/optimize-aws-config-for-aws-security-hub-to-effectively-manage-your-cloud-security-posture/).
 
 ## Resources
 
