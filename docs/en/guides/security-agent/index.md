@@ -24,6 +24,7 @@ This guide is geared towards security practitioners, application security (AppSe
     * [Testing private applications with a VPC](#testing-private-applications-with-a-vpc)
     * [Logging test activity to CloudWatch](#logging-test-activity-to-cloudwatch)
     * [Storing test credentials](#storing-test-credentials)
+    * [Setting up IAM policies for administrators and users](#setting-up-iam-policies-for-administrators-and-users)
     * [Scoping the service role with least privilege](#scoping-the-service-role-with-least-privilege)
 * [Providing application context](#providing-application-context)
 * [Configuring a penetration test](#configuring-a-penetration-test)
@@ -85,7 +86,7 @@ Confirm that AWS Security Agent on-demand penetration testing is available in th
 
 During first-time setup in the AWS console you make a few organizational decisions that apply to all of your future work. Plan these deliberately:
 
-1. **Access method.** Choose how users access the AWS Security Agent web application. Using [AWS IAM Identity Center](https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html) single sign-on (SSO) is recommended over IAM-only console access, because it lets you centrally manage which team members can create, manage, and view penetration tests and design reviews (role-based access control).
+1. **Access method.** Choose how users access the AWS Security Agent web application. Using [AWS IAM Identity Center](https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html) single sign-on (SSO) is recommended over IAM-only console access, because it lets you centrally manage which team members can create, manage, and view penetration tests and design reviews (role-based access control). For the identity-based IAM permissions to attach to those administrator and user roles — including a gap in the managed policies you need to plan around — see [Setting up IAM policies for administrators and users](#setting-up-iam-policies-for-administrators-and-users).
 2. **Service permissions.** Configure the IAM role the web application uses to access AWS services. Follow least privilege here rather than reusing a broad administrative role (see [Scoping the service role with least privilege](#scoping-the-service-role-with-least-privilege)).
 3. **First agent space.** Create your initial agent space with a name and description. After setup, creating additional agent spaces only requires a name and description.
 
@@ -146,6 +147,23 @@ Most vulnerabilities live behind authentication, so authenticated testing dramat
 * **A credential vendor (AWS Lambda function)** — Use a Lambda function that returns credentials dynamically in the expected format, which is useful for short-lived tokens or credentials that must be generated on demand.
 
 **Create dedicated test credentials with permissions scoped to a realistic user role rather than reusing administrative accounts.** Scoping credentials to the privileges of an ordinary user produces more realistic results and lets the agent surface broken access controls. For example, a test using a standard user's credentials can reveal that the user is able to bypass authorization and access another user's data — a flaw you would miss with an administrative account that can see every user's data by default. Provisioning credentials specifically for penetration testing also makes it easy to rotate or revoke access afterward.
+
+### Setting up IAM policies for administrators and users
+
+Distinguish two separate IAM concerns: the identity-based permissions you grant to the people who administer and use AWS Security Agent, and the [service role](#scoping-the-service-role-with-least-privilege) the web application assumes to reach AWS resources during a test. This subsection covers the former.
+
+AWS Security Agent provides the `AWSSecurityAgentWebAppPolicy` AWS managed policy, which grants the permissions needed for day-to-day use of the web application — creating and running penetration tests, viewing findings, and listing existing agent spaces and target domains. Attach it to the roles your security engineers and testers use for ongoing work.
+
+At the time of writing, there is no AWS managed policy that also covers first-time administrative setup. Actions such as creating agent spaces, managing IAM Identity Center user and group memberships, and listing IAM Identity Center applications are not included in `AWSSecurityAgentWebAppPolicy`. If you attach only that policy to an administrator's role, initial setup fails partway through with access-denied errors for the missing permissions (for example, an action such as `ListApplications`). This differs from peer services — Amazon GuardDuty, AWS Security Hub, Amazon Inspector, and Amazon Detective — which each ship a full-access managed policy alongside a read-only one.
+
+Until a dedicated administrator (full-access) managed policy is available, set up two distinct roles rather than granting broad access:
+
+* **User role** — Attach `AWSSecurityAgentWebAppPolicy`. This is sufficient to run tests and review findings.
+* **Administrator role** — Attach `AWSSecurityAgentWebAppPolicy` plus a customer-managed policy that grants the additional setup actions your administrators need, such as creating and managing agent spaces, IAM Identity Center membership management (for example, `CreateMembership` and `ListApplications`), VPC configuration, and domain verification.
+
+Avoid the blunt workaround of granting `securityagent:*` or account-wide administrator access. It unblocks setup but violates least privilege and is generally unacceptable in production environments with strict IAM governance. If you must use a broad grant temporarily to complete setup, scope it tightly and replace it with a least-privilege customer-managed policy as soon as setup is done.
+
+To build that policy accurately, complete setup with the missing-permission (access-denied) messages and AWS CloudTrail events in hand to capture exactly which actions are required, then grant only those. Re-check periodically: when AWS publishes an administrator or full-access managed policy for AWS Security Agent, adopt it in place of your custom policy.
 
 ### Scoping the service role with least privilege
 
