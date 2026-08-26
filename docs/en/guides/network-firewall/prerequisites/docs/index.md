@@ -40,7 +40,7 @@ Understanding what traffic bypasses Network Firewall is as important as understa
 ***Key insight:*** *DNS is its own dedicated egress path to the internet, separate from the data path that Network Firewall inspects. Network Firewall still sees TLS SNI and HTTP host headers in the actual connections after DNS resolution (which is why domain filtering works), but the DNS resolution itself is invisible to Network Firewall. This means DNS tunneling and domain generation algorithm (DGA) activity can bypass Network Firewall entirely. Deploy DNS Firewall on every VPC to protect this separate egress path.*
 
 !!! tip "Best practice"
-    Deploy Amazon Route 53 Resolver DNS Firewall on every VPC where you have workloads using the VPC .2 Resolver (AmazonProvidedDNS). DNS Firewall protects the DNS egress path at the lowest cost, catching DNS-based exfiltration that Network Firewall cannot see. See the [DNS Firewall Best Practices](../../../../dns-firewall/index.md) guide for configuration guidance.
+    Deploy Amazon Route 53 Resolver DNS Firewall on every VPC where you have workloads using the VPC .2 Resolver (AmazonProvidedDNS). DNS Firewall protects the DNS egress path at the lowest cost, catching DNS-based exfiltration that Network Firewall cannot see. See the [DNS Firewall Best Practices](../../../dns-firewall/index.md) guide for configuration guidance.
 
 ## Network Firewall and complementary services
 

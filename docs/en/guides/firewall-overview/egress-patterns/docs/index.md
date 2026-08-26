@@ -111,7 +111,7 @@ For detailed architecture patterns, see the [AWS Network Firewall Best Practices
 
 ## What to read next
 
-- [East-West Traffic and Segmentation](../segmentation/docs/index.md): Internal traffic controls
-- [Cost Considerations and Reference](../cost-and-reference/docs/index.md): Cost comparison across services
+- [East-West Traffic and Segmentation](../../segmentation/docs/index.md): Internal traffic controls
+- [Cost Considerations and Reference](../../cost-and-reference/docs/index.md): Cost comparison across services
 - [AWS Network Firewall Best Practices](../../../network-firewall/index.md): Detailed Network Firewall configuration guidance
 - [Outbound Controls](https://aws.github.io/aws-networking-best-practices/security/outbound/) in the AWS Networking Best Practices Guide

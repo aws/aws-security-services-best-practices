@@ -42,7 +42,7 @@ The stateless engine default action is set to forward all traffic to the statefu
 
 ### HOME_NET variable
 
-HOME_NET is set to all RFC 1918 private IP address ranges at the policy level: 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16. This ensures all private IP traffic flowing through the firewall matches correctly against rules using $HOME_NET, regardless of which VPCs you add in the future. See [$HOME_NET and $EXTERNAL_NET variables](../../firewall-policy-configuration/docs/index.md#home_net-and-external_net-variables) for the full explanation.
+HOME_NET is set to all RFC 1918 private IP address ranges at the policy level: 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16. This ensures all private IP traffic flowing through the firewall matches correctly against rules using $HOME_NET, regardless of which VPCs you add in the future. See [$HOME_NET and $EXTERNAL_NET variables](../../firewall-policy-configuration/docs/index.md#home-net-and-external-net-variables) for the full explanation.
 
 ### Managed rule groups (all in alert mode)
 
@@ -119,7 +119,7 @@ The custom rule group is deployed at the lowest priority (evaluated last, after 
 
 The custom rules included are:
 
-**HOME_NET validation** - Alerts on traffic where neither source nor destination matches $HOME_NET. If this rule fires, your HOME_NET configuration is incomplete. See [Detecting misconfigured $HOME_NET](../../firewall-policy-configuration/docs/index.md#detecting-misconfigured-home_net).
+**HOME_NET validation** - Alerts on traffic where neither source nor destination matches $HOME_NET. If this rule fires, your HOME_NET configuration is incomplete. See [Detecting misconfigured $HOME_NET](../../firewall-policy-configuration/docs/index.md#detecting-misconfigured-home-net).
 
 **Plaintext HTTP detection** - Alerts on any plaintext HTTP traffic leaving your network. All outbound traffic from server workloads should be TLS encrypted. Plaintext HTTP may indicate misconfigured applications or potential data exposure. The default action will also log this, but a dedicated rule makes it easy to search for and alert on specifically.
 

@@ -101,8 +101,8 @@ Use AWS Firewall Manager to deploy Shield Advanced protections consistently acro
 
 ## What to read next
 
-- [Egress Patterns](../egress-patterns/docs/index.md): Layered egress defense strategy
-- [East-West Traffic and Segmentation](../segmentation/docs/index.md): Internal traffic controls
+- [Egress Patterns](../../egress-patterns/docs/index.md): Layered egress defense strategy
+- [East-West Traffic and Segmentation](../../segmentation/docs/index.md): Internal traffic controls
 - [AWS WAF Best Practices](../../../waf/index.md): Detailed AWS WAF configuration guidance
 - [AWS Network Firewall Best Practices](../../../network-firewall/index.md): Detailed Network Firewall configuration guidance
 - [Perimeter Controls](https://aws.github.io/aws-networking-best-practices/security/perimeter-inbound/) in the AWS Networking Best Practices Guide

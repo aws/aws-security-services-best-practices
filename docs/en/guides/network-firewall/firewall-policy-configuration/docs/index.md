@@ -100,9 +100,9 @@ By setting $HOME_NET to all RFC 1918 ranges, rules tagged for internal deploymen
 ### Detecting misconfigured $HOME_NET
 
 !!! tip "Best practice"
-    Deploy the [$HOME_NET detection rule](../../sample-suricata-rules/docs/index.md#detect-home_net-misconfiguration) in every Network Firewall policy. It alerts on traffic where neither the source nor the destination matches $HOME_NET, indicating your variable configuration may be incomplete. Investigate any alerts from this rule by verifying that all expected CIDR ranges are included in your $HOME_NET variable.
+    Deploy the [$HOME_NET detection rule](../../sample-suricata-rules/docs/index.md#detect-home-net-misconfiguration) in every Network Firewall policy. It alerts on traffic where neither the source nor the destination matches $HOME_NET, indicating your variable configuration may be incomplete. Investigate any alerts from this rule by verifying that all expected CIDR ranges are included in your $HOME_NET variable.
 
-The rule uses flowbits to record whether a flow matched $HOME_NET in either direction, then alerts on flows where neither bit was set. Because it matches on `ip` rather than `tcp`, it covers every IP protocol, so a misconfigured variable shows up on UDP and ICMP traffic too. See [Detect $HOME_NET misconfiguration](../../sample-suricata-rules/docs/index.md#detect-home_net-misconfiguration) for the rules and an explanation of how they work together.
+The rule uses flowbits to record whether a flow matched $HOME_NET in either direction, then alerts on flows where neither bit was set. Because it matches on `ip` rather than `tcp`, it covers every IP protocol, so a misconfigured variable shows up on UDP and ICMP traffic too. See [Detect $HOME_NET misconfiguration](../../sample-suricata-rules/docs/index.md#detect-home-net-misconfiguration) for the rules and an explanation of how they work together.
 
 ## Stream exception policy
 

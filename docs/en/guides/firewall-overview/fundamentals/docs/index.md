@@ -67,8 +67,8 @@ The following topics are important for overall network security but are covered 
 
 ## What to read next
 
-- [Ingress Patterns](../ingress-patterns/docs/index.md): How to protect inbound traffic
-- [Egress Patterns](../egress-patterns/docs/index.md): Layered egress defense strategy (including VPC endpoints as step zero)
-- [East-West Traffic and Segmentation](../segmentation/docs/index.md): Internal traffic controls
-- [Cost Considerations and Reference](../cost-and-reference/docs/index.md): Cost comparison and FAQ
+- [Ingress Patterns](../../ingress-patterns/docs/index.md): How to protect inbound traffic
+- [Egress Patterns](../../egress-patterns/docs/index.md): Layered egress defense strategy (including VPC endpoints as step zero)
+- [East-West Traffic and Segmentation](../../segmentation/docs/index.md): Internal traffic controls
+- [Cost Considerations and Reference](../../cost-and-reference/docs/index.md): Cost comparison and FAQ
 - [AWS Network Security](https://aws.github.io/aws-networking-best-practices/security/) in the AWS Networking Best Practices Guide: perimeter controls, outbound controls, and segmentation patterns
