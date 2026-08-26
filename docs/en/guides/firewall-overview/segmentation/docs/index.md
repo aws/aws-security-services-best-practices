@@ -78,4 +78,4 @@ For detailed coverage of VPC Lattice architecture, service networks, and best pr
 
 - [Cost Considerations and Reference](../cost-and-reference/docs/index.md): Cost comparison and FAQ
 - [Core concepts](../fundamentals/docs/index.md): Services overview and decision matrix
-- [AWS Network Firewall Best Practices: Customer Managed Rules](../../network-firewall/customer-managed-rules/docs/index.md): Rule writing best practices
+- [AWS Network Firewall Best Practices: Customer Managed Rules](../../../network-firewall/customer-managed-rules/docs/index.md): Rule writing best practices

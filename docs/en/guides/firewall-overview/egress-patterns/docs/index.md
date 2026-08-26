@@ -105,7 +105,7 @@ Use cases for the proxy mode:
 * Centralizing egress from networks with overlapping CIDRs (the no-source-preservation mode handles this natively)
 * When you want the same security policy to apply to both transparently inspected traffic and explicitly proxied traffic
 
-For detailed architecture patterns, see the [AWS Network Firewall Best Practices: Deployment Architecture](../../network-firewall/deployment-architecture/docs/index.md#aws-network-firewall-proxy) section on the proxy.
+For detailed architecture patterns, see the [AWS Network Firewall Best Practices: Deployment Architecture](../../../network-firewall/deployment-architecture/docs/index.md#aws-network-firewall-proxy) section on the proxy.
 
 ---
 
@@ -113,5 +113,5 @@ For detailed architecture patterns, see the [AWS Network Firewall Best Practices
 
 - [East-West Traffic and Segmentation](../segmentation/docs/index.md): Internal traffic controls
 - [Cost Considerations and Reference](../cost-and-reference/docs/index.md): Cost comparison across services
-- [AWS Network Firewall Best Practices](../../network-firewall/index.md): Detailed Network Firewall configuration guidance
+- [AWS Network Firewall Best Practices](../../../network-firewall/index.md): Detailed Network Firewall configuration guidance
 - [Outbound Controls](https://aws.github.io/aws-networking-best-practices/security/outbound/) in the AWS Networking Best Practices Guide

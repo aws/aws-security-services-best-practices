@@ -25,7 +25,7 @@ Internet → CloudFront (+ WAF) → ALB (+ WAF optional) → Application
 
 The recommended HTTP architecture places Amazon CloudFront at the edge, with AWS WAF attached to the CloudFront distribution. CloudFront provides global TLS termination, caching, and automatic DDoS absorption at the edge, ensuring attack traffic is absorbed before it reaches your VPC. AWS WAF inspects every HTTP/HTTPS request for application-layer threats (SQLi, XSS, bot activity, rate abuse). Behind CloudFront, an Application Load Balancer routes traffic to your application with an origin-restricted security group that only allows traffic from CloudFront. Attaching WAF only at the ALB without CloudFront in front means attack traffic still reaches and consumes your VPC capacity before being inspected. This architecture provides the strongest ingress protection for web applications on AWS.
 
-For the complete recommended HTTP architecture, including ALB origin restriction, security group configuration, and WAF rule ordering, see the [Recommended HTTP Architecture](../../waf/recommended-http-architecture/docs/index.md) page in the AWS WAF Best Practices guide.
+For the complete recommended HTTP architecture, including ALB origin restriction, security group configuration, and WAF rule ordering, see the [Recommended HTTP Architecture](../../../waf/recommended-http-architecture/docs/index.md) page in the AWS WAF Best Practices guide.
 
 Centralized ingress through a shared VPC is an on-premises pattern that is rarely the right choice on AWS. CloudFront + AWS WAF + per-VPC security delivers the same central protection (managed through Firewall Manager) without load-balancer chaining, shared-VPC failure scope, or cross-team operational dependencies.
 
@@ -86,7 +86,7 @@ AWS Shield Standard automatically protects all public-facing endpoints against c
 For L7 DDoS protection, CloudFront is the first line of defense. Its distributed edge capacity absorbs volumetric L7 floods that would exhaust a regional load balancer before it can scale to respond, and blocks malicious requests before they consume any origin compute. Placing CloudFront in front of your workloads also enables WAF body inspection at 64 KB per request, versus 16 KB on regional resources.
 
 !!! tip "Best practice"
-    Deploy the `AWSManagedRulesAntiDDoSRuleSet` WAF managed rule group on every CloudFront distribution and Application Load Balancer. It uses machine learning to establish traffic baselines and automatically mitigates L7 DDoS attacks within seconds. Place it **first** in your WAF rule evaluation order so it can respond before any other rule terminates evaluation. For API clients, mobile apps, or SPAs that cannot respond to browser challenges triggered during an event, see the [Anti-DDoS managed rule group](../../waf/aws-managed-rules/docs/index.md#anti-ddos) guidance for tuning action overrides.
+    Deploy the `AWSManagedRulesAntiDDoSRuleSet` WAF managed rule group on every CloudFront distribution and Application Load Balancer. It uses machine learning to establish traffic baselines and automatically mitigates L7 DDoS attacks within seconds. Place it **first** in your WAF rule evaluation order so it can respond before any other rule terminates evaluation. For API clients, mobile apps, or SPAs that cannot respond to browser challenges triggered during an event, see the [Anti-DDoS managed rule group](../../../waf/aws-managed-rules/docs/index.md#anti-ddos) guidance for tuning action overrides.
 
 For revenue-generating or business-critical workloads, AWS Shield Advanced adds:
 
@@ -95,7 +95,7 @@ For revenue-generating or business-critical workloads, AWS Shield Advanced adds:
 - Cost protection that credits back scaling charges incurred during a DDoS event
 - The Anti-DDoS managed rule group at no additional WAF cost for Shield Advanced-protected resources
 
-Use AWS Firewall Manager to deploy Shield Advanced protections consistently across all accounts in your organization. For full configuration guidance see [AWS Shield Advanced](../../waf/using-waf-with-other-services/docs/index.md#aws-shield-advanced) in the AWS WAF Best Practices guide.
+Use AWS Firewall Manager to deploy Shield Advanced protections consistently across all accounts in your organization. For full configuration guidance see [AWS Shield Advanced](../../../waf/using-waf-with-other-services/docs/index.md#aws-shield-advanced) in the AWS WAF Best Practices guide.
 
 ---
 
@@ -103,6 +103,6 @@ Use AWS Firewall Manager to deploy Shield Advanced protections consistently acro
 
 - [Egress Patterns](../egress-patterns/docs/index.md): Layered egress defense strategy
 - [East-West Traffic and Segmentation](../segmentation/docs/index.md): Internal traffic controls
-- [AWS WAF Best Practices](../../waf/index.md): Detailed AWS WAF configuration guidance
-- [AWS Network Firewall Best Practices](../../network-firewall/index.md): Detailed Network Firewall configuration guidance
+- [AWS WAF Best Practices](../../../waf/index.md): Detailed AWS WAF configuration guidance
+- [AWS Network Firewall Best Practices](../../../network-firewall/index.md): Detailed Network Firewall configuration guidance
 - [Perimeter Controls](https://aws.github.io/aws-networking-best-practices/security/perimeter-inbound/) in the AWS Networking Best Practices Guide
