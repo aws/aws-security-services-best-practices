@@ -53,7 +53,27 @@ nav:
       - Querying and Visualizing WAF Logs: guides/waf/monitoring-waf-rules/docs/index.md
       - Using WAF with Other AWS Services: guides/waf/using-waf-with-other-services/docs/index.md
       - Additional References: guides/waf/additional-references/docs/index.md
-  - AWS Network Firewall Best Practices: guides/network-firewall/index.md
+  - AWS Network Security Fundamentals:
+      - Introduction: guides/firewall-overview/index.md
+      - Core concepts: guides/firewall-overview/fundamentals/docs/index.md
+      - Ingress Patterns: guides/firewall-overview/ingress-patterns/docs/index.md
+      - Egress Patterns: guides/firewall-overview/egress-patterns/docs/index.md
+      - East-West Traffic and Segmentation: guides/firewall-overview/segmentation/docs/index.md
+      - Cost Considerations and Reference: guides/firewall-overview/cost-and-reference/docs/index.md
+  - AWS Network Firewall Best Practices:
+      - Introduction: guides/network-firewall/index.md
+      - Prerequisites and fundamentals: guides/network-firewall/prerequisites/docs/index.md
+      - Deployment architecture: guides/network-firewall/deployment-architecture/docs/index.md
+      - Firewall policy configuration: guides/network-firewall/firewall-policy-configuration/docs/index.md
+      - Customer managed rules: guides/network-firewall/customer-managed-rules/docs/index.md
+      - Sample Suricata rules: guides/network-firewall/sample-suricata-rules/docs/index.md
+      - AWS Managed Rules: guides/network-firewall/aws-managed-rules/docs/index.md
+      - TLS inspection: guides/network-firewall/tls-inspection/docs/index.md
+      - Logging and monitoring: guides/network-firewall/logging-and-monitoring/docs/index.md
+      - Getting started policy: guides/network-firewall/getting-started-policy/docs/index.md
+      - Cost considerations: guides/network-firewall/cost-considerations/docs/index.md
+      - Additional references: guides/network-firewall/additional-references/docs/index.md
+      - Quick reference: guides/network-firewall/quick-reference/docs/index.md
   - Amazon Route 53 Resolver DNS Firewall Best Practices: guides/dns-firewall/index.md
   - Contributors: contributors.md
 markdown_extensions:

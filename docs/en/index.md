@@ -17,3 +17,4 @@ Often in this documentation we will be referring back to the full service docume
 * [AWS Observability Best Practices](https://aws-observability.github.io/observability-best-practices/)
 * [ELB Best Practices Guides](https://aws.github.io/aws-elb-best-practices/)
 * [Cloud Operations Best Practices Guide](https://aws-samples.github.io/cloud-operations-best-practices/)
+* [AWS Networking Best Practices Guide](https://aws.github.io/aws-networking-best-practices/)
