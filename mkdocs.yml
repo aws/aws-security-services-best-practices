@@ -37,6 +37,13 @@ nav:
   - AWS Security Hub Best Practices: guides/security-hub/index.md
   - AWS Security Hub CSPM Best Practices: guides/security-hub-cspm/index.md
   - Amazon Security Lake Best Practices: guides/security-lake/index.md
+  - AWS Network Security Fundamentals:
+      - Introduction: guides/firewall-overview/index.md
+      - Core concepts: guides/firewall-overview/fundamentals/docs/index.md
+      - Ingress Patterns: guides/firewall-overview/ingress-patterns/docs/index.md
+      - Egress Patterns: guides/firewall-overview/egress-patterns/docs/index.md
+      - East-West Traffic and Segmentation: guides/firewall-overview/segmentation/docs/index.md
+      - Cost Considerations and Reference: guides/firewall-overview/cost-and-reference/docs/index.md
   - AWS WAF Best Practices:
       - Home: guides/waf/index.md
       - Prerequisites and Fundamentals: guides/waf/prerequisites/docs/index.md
@@ -53,13 +60,6 @@ nav:
       - Querying and Visualizing WAF Logs: guides/waf/monitoring-waf-rules/docs/index.md
       - Using WAF with Other AWS Services: guides/waf/using-waf-with-other-services/docs/index.md
       - Additional References: guides/waf/additional-references/docs/index.md
-  - AWS Network Security Fundamentals:
-      - Introduction: guides/firewall-overview/index.md
-      - Core concepts: guides/firewall-overview/fundamentals/docs/index.md
-      - Ingress Patterns: guides/firewall-overview/ingress-patterns/docs/index.md
-      - Egress Patterns: guides/firewall-overview/egress-patterns/docs/index.md
-      - East-West Traffic and Segmentation: guides/firewall-overview/segmentation/docs/index.md
-      - Cost Considerations and Reference: guides/firewall-overview/cost-and-reference/docs/index.md
   - AWS Network Firewall Best Practices:
       - Introduction: guides/network-firewall/index.md
       - Prerequisites and fundamentals: guides/network-firewall/prerequisites/docs/index.md
