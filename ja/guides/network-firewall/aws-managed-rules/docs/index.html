@@ -1,0 +1,948 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ja/guides/network-firewall/aws-managed-rules/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/network-firewall/aws-managed-rules/docs/" hreflang="en">
+        
+          <link rel="alternate" href="../../../../../ko/guides/network-firewall/aws-managed-rules/docs/" hreflang="ko">
+        
+          <link rel="alternate" href="./" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>AWS Managed Rules - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#aws-managed-rules" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              AWS Managed Rules
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/network-firewall/aws-managed-rules/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ko/guides/network-firewall/aws-managed-rules/docs/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dns-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Route 53 Resolver DNS Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#active-threat-defense-atd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Active Threat Defense (ATD)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Active Threat Defense (ATD)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-atd-protects-against" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What ATD protects against
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#atd-and-amazon-guardduty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ATD and Amazon GuardDuty
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#domain-and-ip-rule-groups-free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain and IP rule groups (free)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managed-threat-signature-rule-groups-free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managed threat signature rule groups (free)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Managed threat signature rule groups (free)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#understanding-deployment-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding deployment tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-threat-signature-rule-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended threat signature rule groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selecting-rule-groups-by-deployment-scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selecting rule groups by deployment scenario
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploying-managed-rules-in-alert-mode-vs-drop-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploying managed rules in alert mode vs drop mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#home_net-is-critical-for-managed-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        $HOME_NET is critical for managed rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#partner-managed-rule-groups-paid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Partner managed rule groups (paid)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtered-managed-rule-groups-with-suricata-rule-generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtered managed rule groups with Suricata Rule Generator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Filtered managed rule groups with Suricata Rule Generator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-synchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic synchronization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-east-west-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: East-West inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key benefits
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-read-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to read next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="aws-managed-rules">AWS Managed Rules</h1>
+<div class="admonition info">
+<p class="admonition-title">Prerequisites</p>
+<p>This section assumes familiarity with <a href="../../firewall-policy-configuration/docs/">Firewall policy configuration</a>, particularly the $HOME_NET and $EXTERNAL_NET variable configuration. Review that topic first if you have not configured your network variables.</p>
+</div>
+<p>AWS Network Firewall provides AWS Managed Rule Groups that deliver baseline threat detection without requiring you to write and maintain your own IPS signatures. These rule groups are maintained and updated by AWS and cover domain/IP reputation, threat signatures, and active threat intelligence. This page covers which managed rule groups to prioritize, how to configure them effectively, and how they complement your custom rules.</p>
+<h2 id="active-threat-defense-atd">Active Threat Defense (ATD)</h2>
+<p><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/aws-managed-rule-groups-atd.html">Active Threat Defense</a> is a managed rule group that uses Amazon threat intelligence from <a href="https://www.aboutamazon.com/news/aws/amazon-madpot-stops-cybersecurity-crime">MadPot</a> to block communication with known malicious infrastructure. AWS continuously updates the rules based on threats observed across its global network, protecting against active threats and cloud-specific attack patterns.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Enable Active Threat Defense on every firewall policy. It provides high-confidence threat blocking using verified indicators sourced from AWS's own threat intelligence. AWS automatically removes indicators when there is no evidence of related threat activity, which helps minimize false positives.</p>
+</div>
+<h3 id="what-atd-protects-against">What ATD protects against</h3>
+<p>ATD matches traffic against IP address, domain name, and URL indicators associated with known threats. AWS groups these indicators into categories based on observed attack patterns:</p>
+<ul>
+<li><strong>Command and control</strong> - Infrastructure that malicious actors use to remotely control compromised systems (IPs and domains, egress direction)</li>
+<li><strong>Malware staging</strong> - Infrastructure that facilitates the distribution of malware and attack tooling (URLs, ingress and egress)</li>
+<li><strong>Crypto-mining pools</strong> - Infrastructure used by crypto-miners (IPs and domains, egress direction)</li>
+<li><strong>Sinkholes</strong> - Previously abused infrastructure used for malicious purposes (domains, egress direction)</li>
+<li><strong>Out-of-band application security testing</strong> - Infrastructure where injected payloads make outbound connections to validate the existence of a vulnerability (IPs and domains, egress direction)</li>
+</ul>
+<p>For full details on indicator types and categories, see <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/atd-indicators.html">Understanding active threat defense managed rule group indicators</a>.</p>
+<h3 id="atd-and-amazon-guardduty">ATD and Amazon GuardDuty</h3>
+<p>If you use Amazon GuardDuty, ATD strengthens your security posture by automatically blocking the threats that GuardDuty detects. GuardDuty generates findings when it observes suspicious activity, but it does not take action to stop the traffic. Network Firewall with ATD enabled automatically blocks traffic to and from the same malicious infrastructure that GuardDuty would generate findings about, turning detection into prevention.</p>
+<p>GuardDuty findings that ATD can proactively block include:</p>
+<ul>
+<li>Command and control activity (Backdoor:EC2/C&amp;CActivity.B, Backdoor:Runtime/C&amp;CActivity.B)</li>
+<li>Cryptocurrency mining (CryptoCurrency:EC2/BitcoinTool.B, Impact:EC2/BitcoinDomainRequest.Reputation)</li>
+<li>Trojan activity (Trojan:EC2/BlackholeTraffic)</li>
+<li>Malicious IP communication (UnauthorizedAccess:EC2/MaliciousIPCaller.Custom)</li>
+</ul>
+<p>For the complete list, see <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-atd-guardduty-use-case.html">Working with active threat defense indicators in Amazon GuardDuty</a>.</p>
+<p>For more on how ATD works and its role in a defense-in-depth architecture, see:</p>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/security/real-time-malware-defense-leveraging-aws-network-firewall-active-threat-defense/">Real-time malware defense: Leveraging AWS Network Firewall Active Threat Defense</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/improve-your-security-posture-using-amazon-threat-intelligence-on-aws-network-firewall/">Improve your security posture using Amazon threat intelligence on AWS Network Firewall</a></li>
+</ul>
+<h2 id="domain-and-ip-rule-groups-free">Domain and IP rule groups (free)</h2>
+<p><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/aws-managed-rule-groups-domain-list.html">Domain and IP rule groups</a> block HTTP or HTTPS traffic to domains and IPs identified as low-reputation or known to be associated with malicious activity. These are included at no additional cost beyond standard Network Firewall processing charges.</p>
+<p>Available rule groups:</p>
+<ul>
+<li><strong>BotNetCommandAndControlDomainsStrictOrder</strong> - Known botnet C2 domains</li>
+<li><strong>AbusedLegitBotNetCommandAndControlDomainsStrictOrder</strong> - Legitimate services being abused for botnet C2 (file sharing, paste sites, tunneling services)</li>
+<li><strong>MalwareDomainsStrictOrder</strong> - Known malware distribution domains</li>
+<li><strong>AbusedLegitMalwareDomainsStrictOrder</strong> - Legitimate services being abused for malware distribution</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Enable the domain and IP reputation rule groups on every firewall policy. These represent domains and IPs that your workloads should never be communicating with under normal circumstances. They provide a low-effort baseline of protection with zero rule authoring required.</p>
+</div>
+<h2 id="managed-threat-signature-rule-groups-free">Managed threat signature rule groups (free)</h2>
+<p><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/aws-managed-rule-groups-threat-signature.html">Managed threat signature rule groups</a> provide IDS/IPS coverage across malware, exploits, botnets, web-based attacks, credential phishing, scanning tools, and more. The threat intelligence for these rule groups is sourced from a third-party partner (Proofpoint/Emerging Threats).</p>
+<h3 id="understanding-deployment-tags">Understanding deployment tags</h3>
+<p>Each rule within a threat signature rule group is tagged with a "deployment type" from the <a href="https://community.emergingthreats.net/t/signature-metadata/96">Proofpoint/ET signature metadata system</a> that indicates where the rule is most effective:</p>
+<ul>
+<li><strong>Perimeter</strong> - Between internal clients and external servers (egress protection). The majority of rules are tagged for perimeter deployment.</li>
+<li><strong>Internal</strong> - East-West traffic monitoring for lateral movement detection.</li>
+<li><strong>Datacenter</strong> - Between external clients and internal/DMZ servers (ingress protection).</li>
+<li><strong>SSLDecrypt</strong> - Requires TLS inspection to function (inspects decrypted payload content).</li>
+<li><strong>alert_only</strong> - Informational rules that should not be placed in drop mode.</li>
+</ul>
+<p>As covered in <a href="../../firewall-policy-configuration/docs/#east-west-traffic-inspection">Firewall policy configuration</a>, rules tagged for Internal deployment will match East-West traffic correctly as long as $HOME_NET is set to RFC 1918 ranges.</p>
+<h3 id="recommended-threat-signature-rule-groups">Recommended threat signature rule groups</h3>
+<p>The table below shows each available threat signature rule group, what it detects, and the recommended deployment scenarios. Rule counts are approximate and change as the partner updates the rule sets.</p>
+<table>
+<thead>
+<tr>
+<th>Rule group</th>
+<th>What it detects</th>
+<th>Skip if...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ThreatSignaturesBotnetStrictOrder</strong></td>
+<td>Autogenerated signatures from known active botnet and C2 hosts</td>
+<td>Never skip. Broadly applicable to all traffic.</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesMalwareStrictOrder</strong></td>
+<td>Malware across TCP, UDP, SMTP, ICMP, SMB protocols and worm propagation</td>
+<td>Never skip. Broadly applicable to all traffic.</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesExploitsStrictOrder</strong></td>
+<td>Direct exploits including ActiveX, FTP, NetBIOS, RPC, shellcode, SQL injection, SNMP, Telnet, VOIP</td>
+<td>Never skip. Strong coverage for both egress and east-west.</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesIOCStrictOrder</strong></td>
+<td>Indicators of compromise, attack response signatures, exploit kit infrastructure</td>
+<td>Never skip. Broadly applicable to all traffic.</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesEmergingEventsStrictOrder</strong></td>
+<td>Short-lived campaigns and high-profile threats (rules are temporary and frequently rotated)</td>
+<td>Rarely skip. High timeliness value for current threats.</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesDoSStrictOrder</strong></td>
+<td>Denial of service patterns (small rule set, limited coverage)</td>
+<td>Rarely skip. Low capacity cost (200).</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesBotnetWebStrictOrder</strong></td>
+<td>HTTP-based botnet communication patterns</td>
+<td>No HTTP/HTTPS traffic flows through the firewall</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesMalwareWebStrictOrder</strong></td>
+<td>Malicious code in HTTP and TLS protocols</td>
+<td>No HTTP/HTTPS traffic flows through the firewall</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesSuspectStrictOrder</strong></td>
+<td>Suspicious JA3 fingerprints, IRC chat protocols, anomalous user agents</td>
+<td>No TLS/HTTP traffic flows through the firewall</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesWebAttacksStrictOrder</strong></td>
+<td>Attacks targeting web clients, web servers, and specific web applications</td>
+<td>No web services running internally and no ingress inspection</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesMalwareCoinminingStrictOrder</strong></td>
+<td>Cryptocurrency mining software (legitimate and malicious)</td>
+<td>You run legitimate cryptocurrency operations</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesScannersStrictOrder</strong></td>
+<td>Reconnaissance and probing from tools like Nessus, Nikto, and port scanners</td>
+<td>You run legitimate vulnerability scanners that would trigger these rules</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesPhishingStrictOrder</strong></td>
+<td>Credential phishing landing pages and credential submission to phishing sites</td>
+<td>No end-user browsing traffic flows through the firewall</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesBotnetWindowsStrictOrder</strong></td>
+<td>Windows-specific botnet behavior</td>
+<td>No Windows workloads in your environment</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesFUPStrictOrder</strong></td>
+<td>Policy violations: gaming, P2P traffic, inappropriate content</td>
+<td>You do not need acceptable use enforcement</td>
+</tr>
+<tr>
+<td><strong>ThreatSignaturesMalwareMobileStrictOrder</strong></td>
+<td>Malware targeting mobile and tablet operating systems</td>
+<td>No mobile device traffic flows through the firewall</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selecting-rule-groups-by-deployment-scenario">Selecting rule groups by deployment scenario</h3>
+<p>The 20 stateful rule group limit per policy means you need to be selective. Here is how we recommend prioritizing based on your deployment scenario:</p>
+<p><strong>Baseline (recommended for all deployments):</strong></p>
+<p>These three rule groups cover the broadest range of threats with the highest signal-to-noise ratio:</p>
+<ul>
+<li>ThreatSignaturesBotnetStrictOrder (comprehensive botnet/C2 detection)</li>
+<li>ThreatSignaturesMalwareStrictOrder (general malware detection)</li>
+<li>ThreatSignaturesExploitsStrictOrder (exploit detection, strong East-West coverage)</li>
+</ul>
+<p><strong>Enhanced egress protection (add to baseline for egress-focused deployments):</strong></p>
+<ul>
+<li>ThreatSignaturesBotnetWebStrictOrder (HTTP botnet detection)</li>
+<li>ThreatSignaturesBotnetWindowsStrictOrder (Windows botnet detection)</li>
+<li>ThreatSignaturesMalwareWebStrictOrder (web-based malware)</li>
+<li>ThreatSignaturesEmergingEventsStrictOrder (current campaigns)</li>
+<li>ThreatSignaturesPhishingStrictOrder (credential phishing)</li>
+<li>ThreatSignaturesMalwareCoinminingStrictOrder (cryptomining)</li>
+</ul>
+<p><strong>Enhanced East-West protection (add to baseline for lateral movement detection):</strong></p>
+<ul>
+<li>ThreatSignaturesWebAttacksStrictOrder (web attacks between internal systems)</li>
+<li>ThreatSignaturesIOCStrictOrder (indicators of compromise)</li>
+<li>ThreatSignaturesScannersStrictOrder (internal reconnaissance detection)</li>
+</ul>
+<p><strong>Enhanced ingress protection (add to baseline for inbound traffic):</strong></p>
+<ul>
+<li>ThreatSignaturesWebAttacksStrictOrder (web application attacks)</li>
+<li>ThreatSignaturesIOCStrictOrder (exploit kit detection)</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Start with the baseline three rule groups plus ATD and domain/IP reputation rule groups. This gives you strong coverage across the most common threat categories. Add additional rule groups based on your specific deployment scenario and available rule group capacity. Remember that each rule group you add consumes one slot from the 20 stateful rule group maximum per policy. Reserve enough slots for your custom rule groups.</p>
+</div>
+<h3 id="deploying-managed-rules-in-alert-mode-vs-drop-mode">Deploying managed rules in alert mode vs drop mode</h3>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Deploy managed threat signature rule groups in alert mode first. Monitor the alerts generated over a period of time to understand which rules are firing on your traffic and whether any matches represent legitimate application behavior. Once you have confidence that the rules are not interfering with your workloads, transition to drop mode.</p>
+</div>
+<p>The risk profile for false positives differs from AWS WAF. WAF rules inspect HTTP request structure and can inadvertently block legitimate application traffic (for example, a SQL injection rule blocking a legitimate query parameter that happens to contain SQL-like syntax). Network Firewall managed rules operate at the network layer, detecting patterns associated with known threats. While false positives are less common than with WAF rules, they can still occur, particularly with rules that match on broad network patterns or protocol behaviors that overlap with legitimate application traffic.</p>
+<p>The transition from alert to drop can be done incrementally. Start by moving the ATD and domain/IP reputation rule groups to drop mode first (these have the highest confidence indicators), then move threat signature groups to drop as you validate each one against your traffic.</p>
+<h3 id="home_net-is-critical-for-managed-rules">$HOME_NET is critical for managed rules</h3>
+<p>These rules use <code>$HOME_NET</code> and <code>$EXTERNAL_NET</code> variables to determine traffic directionality. If these variables are not configured correctly, managed rules will not match traffic as expected.</p>
+<div class="admonition danger">
+<p class="admonition-title">Common misconfiguration</p>
+<p>Customers deploy managed threat signature rule groups and never see them fire, then assume the rules are not effective. The most common cause is that $HOME_NET only contains the inspection VPC CIDR (the default), not the spoke VPC CIDRs where workloads actually run. Set $HOME_NET to all RFC 1918 space (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) at the policy level. See <a href="../../firewall-policy-configuration/docs/">Firewall policy configuration</a> for complete guidance.</p>
+</div>
+<p>You can <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/copying-managed-threat-signature-rules.html">view the individual rules</a> within managed threat signature rule groups through the console to understand exactly what they detect.</p>
+<h2 id="partner-managed-rule-groups-paid">Partner managed rule groups (paid)</h2>
+<p><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/aws-marketplace-rule-groups.html">Partner managed rule groups</a> are paid AWS Marketplace offerings from third-party security vendors. They are shared to customers using AWS Resource Access Manager (AWS RAM) or through the Network Firewall console via AWS Marketplace integration.</p>
+<p>Partner managed rules allow you to bring threat intelligence from known and trusted security partners and run it directly on Network Firewall without deploying that partner's dedicated firewall appliance. They complement (rather than replace) the free AWS-managed threat signatures and Active Threat Defense, giving you defense-in-depth from multiple intelligence sources on the same firewall.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Evaluate partner managed rule groups if you already have a relationship with one of the available partners or if your compliance requirements specify particular threat intelligence sources.</p>
+</div>
+<h2 id="filtered-managed-rule-groups-with-suricata-rule-generator">Filtered managed rule groups with Suricata Rule Generator</h2>
+<p>AWS managed threat signature rule groups contain thousands of rules covering a wide range of deployment scenarios. In many deployments, you only need a subset of these rules. For example, a firewall inspecting East-West traffic between internal VPCs does not need internet-facing signatures designed for perimeter deployments.</p>
+<p>The <a href="https://github.com/aws-samples/sample-suricata-generator">Suricata Rule Generator for AWS Network Firewall</a> includes a Managed Rule Group Generator that lets you create filtered, automatically-updating rule groups derived from AWS managed threat signatures. You define filter criteria (based on rule metadata fields like deployment type, protocol, or threat category), the tool extracts only the rules that match, and deploys the result as your own rule group with automatic synchronization when AWS updates the source rules.</p>
+<p><img alt="Managed Rule Group Generator" src="https://raw.githubusercontent.com/aws-samples/sample-suricata-generator/main/images/mrg.png" /></p>
+<h3 id="how-it-works">How it works</h3>
+<ol>
+<li><strong>Select sources</strong> - Choose one or more AWS managed StrictOrder threat signature rule groups as input</li>
+<li><strong>Define filters</strong> - Build metadata-based filter conditions (for example: <code>signature_deployment equals Internal</code>) to extract only the rules relevant to your use case</li>
+<li><strong>Build</strong> - The tool fetches rules from the selected sources, applies your filters, deduplicates by SID, and optionally applies test mode (converting all actions to <code>alert</code> for safe monitoring)</li>
+<li><strong>Deploy</strong> - One-click deployment creates the filtered rule group in AWS Network Firewall along with a Lambda function that automatically re-applies your filter whenever AWS updates the source rule groups</li>
+</ol>
+<h3 id="automatic-synchronization">Automatic synchronization</h3>
+<p>After deployment, the tool provisions a Lambda function that subscribes to the AWS-Managed-Threat-Signatures SNS topic. When AWS publishes updates to managed rule groups, the Lambda function automatically:</p>
+<ul>
+<li>Re-fetches the source rule groups</li>
+<li>Re-applies your filter criteria and deduplication logic</li>
+<li>Updates your rule group with the latest filtered results</li>
+<li>Optionally sends email notification when rules change</li>
+</ul>
+<p>This gives you the automatic update benefits of AWS managed rules, but with only the signatures you actually need, reducing capacity consumption and minimizing false positives from irrelevant signatures.</p>
+<h3 id="example-east-west-inspection">Example: East-West inspection</h3>
+<p>Using the filter <code>signature_deployment equals Internal</code> typically reduces thousands of rules to a focused set of 200-300 signatures specifically designed for detecting lateral movement, internal reconnaissance, and East-West threat patterns, without internet-facing rules that could generate false positives on internal traffic.</p>
+<h3 id="key-benefits">Key benefits</h3>
+<ul>
+<li><strong>Reduced capacity usage</strong> - Only consume rule capacity for signatures relevant to your deployment scenario</li>
+<li><strong>Fewer false positives</strong> - Exclude rule categories that do not apply to your traffic patterns</li>
+<li><strong>Automatic updates</strong> - Rules stay current with AWS threat intelligence without manual intervention</li>
+<li><strong>Configuration persistence</strong> - Save filter configurations to <code>.mrg</code> files for version control and reproducibility</li>
+</ul>
+<h2 id="what-to-read-next">What to read next</h2>
+<ul>
+<li><a href="../../firewall-policy-configuration/docs/">Firewall policy configuration</a> - Setting up $HOME_NET for managed rules</li>
+<li><a href="../../customer-managed-rules/docs/">Customer managed rules</a> - Using managed rules alongside custom rules</li>
+<li><a href="../../sample-suricata-rules/docs/">Sample Suricata rules</a> - Domain category filtering rule examples</li>
+<li><a href="../../logging-and-monitoring/docs/">Logging and monitoring</a> - Monitoring managed rule matches</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

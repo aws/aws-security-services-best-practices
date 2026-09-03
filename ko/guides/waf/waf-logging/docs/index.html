@@ -1,0 +1,1494 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/waf/waf-logging/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/waf/waf-logging/docs/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ko">
+        
+          <link rel="alternate" href="../../../../../ja/guides/waf/waf-logging/docs/" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>WAF Logging - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#waf-logging" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              WAF Logging
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="언어설정">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/waf/waf-logging/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ja/guides/waf/waf-logging/docs/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    홈
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../network-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall 모범 사례
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#log-destinations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log destinations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-delivery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log delivery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-retention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log retention
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#field-redaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field redaction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log filtering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#which-logging-approach-is-right-for-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which logging approach is right for you
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Which logging approach is right for you">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cost-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommendations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#considerations-for-logs-stored-in-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Considerations for logs stored in S3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Considerations for logs stored in S3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s3-prefix-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3 prefix structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#effective-log-querying-in-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Effective log querying in S3
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="waf-logging">WAF Logging</h1>
+<p>AWS WAF can log every request it inspects, capturing the action taken, which rules matched, labels applied, and request details such as headers, query strings, source IP, etc. These logs are essential for validating that rules are working as intended, investigating security incidents, tuning rules to reduce false positives, and understanding traffic patterns over time. Without WAF logs, you cannot determine why a request was blocked or allowed, nor can you retroactively confirm whether your applications were targeted by a newly disclosed vulnerability.</p>
+<p>AWS WAF supports multiple <a href="#which-logging-approach-is-right-for-you">delivery mechanisms and storage destinations</a> — each with different advantages including cost, query performance, native ETL capabilities, and operational complexity. This page walks through the <a href="#native-aws-log-destinations">native AWS log destinations</a> available and how to <a href="#querying-waf-logs">query logs</a> depending on where you store them. You should also determine your <a href="#log-retention">log retention</a> requirements — identify how long you need this data based on your operational use cases, compliance obligations, or incident response lookback periods — and decide whether to apply <a href="#log-filtering">log filtering</a> to reduce volume by excluding traffic that does not provide business or security value.</p>
+<h2 id="log-destinations">Log destinations</h2>
+<p>AWS WAF logs can be sent to Amazon CloudWatch Logs, Amazon S3, Amazon OpenSearch Serverless, or third-party destinations. See <a href="https://docs.aws.amazon.com/waf/latest/developerguide/logging.html">AWS WAF logging destinations</a> for full details on each option.</p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>CloudWatch Log Group</th>
+<th>Amazon S3</th>
+<th>OpenSearch Serverless</th>
+<th>Third-party (Splunk, Datadog, etc.)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Delivery via</strong></td>
+<td>CloudWatch Vended Logs</td>
+<td>Firehose or CloudWatch Vended Logs</td>
+<td>Firehose</td>
+<td>Firehose</td>
+</tr>
+<tr>
+<td><strong>Storage cost</strong></td>
+<td>$0.03/GB/month</td>
+<td>$0.023/GB/month (Standard); $0.004/GB/month (Glacier)</td>
+<td>$0.30/GB/month (Managed Storage — Hot)</td>
+<td>Platform Dependant</td>
+</tr>
+<tr>
+<td><strong>Query cost</strong></td>
+<td>$5/TB scanned (Logs Insights)</td>
+<td>$5/TB scanned (Athena)</td>
+<td>Included in OCU search capacity</td>
+<td>Included in third-party license</td>
+</tr>
+<tr>
+<td><strong>Query tool</strong></td>
+<td>CloudWatch Logs Insights</td>
+<td>Amazon Athena (SQL)</td>
+<td>OpenSearch Dashboards / query DSL / SQL</td>
+<td>Platform-native</td>
+</tr>
+<tr>
+<td><strong>Built-in dashboard</strong></td>
+<td>Native AWS WAF dashboard</td>
+<td>None (add QuickSight)</td>
+<td>OpenSearch Dashboards (included)</td>
+<td>Platform-native</td>
+</tr>
+<tr>
+<td><strong>Cross-account delivery</strong></td>
+<td>Not supported</td>
+<td>Yes</td>
+<td>Yes (via Firehose)</td>
+<td>Yes (via Firehose)</td>
+</tr>
+<tr>
+<td><strong>Cross-region delivery</strong></td>
+<td>Not supported</td>
+<td>Yes</td>
+<td>Yes (via Firehose)</td>
+<td>Yes (via Firehose)</td>
+</tr>
+<tr>
+<td><strong>Firewall Manager support</strong></td>
+<td>Not supported as log destination</td>
+<td>Yes</td>
+<td>Yes (via Firehose)</td>
+<td>Yes (via Firehose)</td>
+</tr>
+<tr>
+<td><strong>Best for</strong></td>
+<td>Fast setup; native WAF dashboard; moderate log volumes</td>
+<td>Cost-effective long-term storage; high volumes; ad-hoc queries</td>
+<td>Real-time dashboards; full-text search; frequent investigations</td>
+<td>Existing SIEM/observability platform</td>
+</tr>
+</tbody>
+</table>
+<h2 id="log-delivery">Log delivery</h2>
+<p>AWS WAF supports two delivery mechanisms. The delivery mechanism you choose determines which storage destination you can choose, how quickly logs reach your storage destination, what capabilities are available in transit and delivery cost. </p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>CloudWatch Vended Logs</th>
+<th>Amazon Data Firehose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Delivery frequency</strong></td>
+<td>Up to every 5 minutes</td>
+<td>Configurable from 60 seconds (best effort/buffer hints) *</td>
+</tr>
+<tr>
+<td><strong>Time to first insight</strong> **</td>
+<td>~5 minutes from request inspection</td>
+<td>60 seconds (best effort/buffer hints) * from request inspection</td>
+</tr>
+<tr>
+<td><strong>Delivery cost</strong></td>
+<td>$0.50/GB vended log delivery charge (to S3); ingestion charge applies (to CloudWatch Logs)</td>
+<td>$0.029/GB with a 5 KB minimum record size — effectively $0.145 per million WAF log records</td>
+</tr>
+<tr>
+<td><strong>Supported storage destinations</strong></td>
+<td>CloudWatch Logs, Amazon S3</td>
+<td>Amazon S3, OpenSearch Serverless, third-party (Splunk, Datadog, etc.)</td>
+</tr>
+<tr>
+<td><strong>Cross-account delivery</strong></td>
+<td>Yes (to S3); not supported (to CloudWatch Logs)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Cross-region delivery</strong></td>
+<td>Yes (to S3); not supported (to CloudWatch Logs)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Firewall Manager support</strong></td>
+<td>Yes (to S3); not supported (to CloudWatch Logs)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>ETL / transformation</strong></td>
+<td>None</td>
+<td>Record transformation via Lambda, format conversion, dynamic partitioning</td>
+</tr>
+<tr>
+<td><strong>S3 prefix control</strong></td>
+<td>Fixed per-minute structure</td>
+<td>Fully customizable (recommended: hourly)</td>
+</tr>
+</tbody>
+</table>
+<p>* Amazon Data Firehose allows the configuration of buffer hints, this is the desired delivery frequency/max buffer before delivery however these are uses as best effort and may not occur in all cases.<br />
+** Time to first insight refers to the time from when WAF inspects a request until that log record can be queried from the logging destination.  </p>
+<p>If you are sending WAF logs to S3 and querying with Athena, the S3 prefix structure and Athena partitioning strategy you choose have a direct impact on query performance and cost. See <a href="#effective-log-querying-in-s3">Effective log querying in S3</a> for detailed guidance.</p>
+<h2 id="log-retention">Log retention</h2>
+<p>Unless you have a business or compliance reason to retain logs longer, configure log retention to cover only the lookback period for how you use WAF logs. For many customers that do not have an explicit compliance requirement, 30 or 90 days is sufficient to support active investigation.</p>
+<ul>
+<li><strong>CloudWatch Logs</strong> — Set the retention period on the log group (e.g., 30, 60, or 90 days). Logs older than the retention period are automatically deleted.</li>
+<li><strong>Amazon S3</strong> — Use <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html">S3 Lifecycle policies</a> to transition logs to cheaper storage classes or expire them after a defined period.</li>
+<li><strong>Amazon OpenSearch Serverless</strong> — Configure a <a href="https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-lifecycle.html">data lifecycle policy</a> on your time-series collection to automatically delete indexes older than your retention period.</li>
+<li><strong>Third-party destinations</strong> — Retention is managed within the third-party platform according to its own policies and licensing.</li>
+</ul>
+<h2 id="field-redaction">Field redaction</h2>
+<p>If you want to avoid logging fields that might contain sensitive data, you can <a href="https://docs.aws.amazon.com/waf/latest/developerguide/logging-management.html">redact fields from AWS WAF logs</a>. Note that AWS WAF logs never include the BODY. Certain types of Amazon Managed Rules will include the section of a body that matches the rule however.</p>
+<p>Common headers to redact include <code>Authorization</code>, <code>Proxy-Authorization</code>, <code>Cookie</code>, <code>Set-Cookie</code>, <code>X-API-Key</code>, and <code>X-Amz-Security-Token</code>. These are just examples — your application may use other headers or other request attributes such as query strings that contain sensitive information worth redacting. Review what your application sends and receives to determine what should not appear in WAF logs.</p>
+<p>Redaction is permanent — once a field is redacted, that value is never written to the log and cannot be retrieved. If you later need that data for an investigation, it will not be available.</p>
+<h2 id="log-filtering">Log filtering</h2>
+<p>AWS WAF allows you to filter which requests are sent to your logging destination. This is almost always used as a cost control — some traffic may not have the business value to justify the logging cost and can be skipped. There is no one universal right answer. Below are several common examples of what customers do or do not capture:</p>
+<ul>
+<li>A security team needs to be able to validate if a security incident occurred retroactively. They only log allowed traffic. If a request was blocked, security wise there is not a risk that the request somehow exploited the application in a way that was unknown or undetected. For example a new high severity CVE is announced, you need to validate if the query string pattern targeted your endpoints. Blocked requests do not matter — you were targeted or IP spraying happened to hit your endpoint, but they were blocked. Allowed traffic gives you detailed information about what exactly the request contained, where it went, etc. so you can focus the investigation for those applications.</li>
+</ul>
+<ul>
+<li>Your customer base is geo focused/restricted. Logging requests that are blocked by a <em>list of countries not to block</em> or <em>specific list of countries to block</em>. Custom rules enforcing this can emit a custom label and used to filter and not log these. The risk comes from geo IP lookup not being 100% reliable. A user that is from one geo but their IP for whatever reason comes up as another — you will not have a corresponding WAF log to investigate.</li>
+</ul>
+<ul>
+<li>High confidence rules, specifically in the context of DDoS. DDoS events produce high volumes of traffic, in some cases this could be hundreds, thousands, millions, or more times more traffic than you normally experience. In the specific context of logging, without log filtering, this also equates to a corresponding WAF logging cost spike. Using high confidence labels such as <code>awswaf:managed:aws:anti-ddos:low-suspicion-ddos-request</code> or <code>awswaf:managed:aws:amazon-ip-list:AWSManagedIPDDoSList</code> in most cases can remove all or reduce the majority of the DDoS spike from being logged.</li>
+</ul>
+<p><strong>Reasons not to enable WAF log filtering</strong><br />
+Without the WAF log for a given request, you will not be able to reliably identify why a WAF action was taken (or not taken), request attributes such as query string, headers, etc. For allowed requests, you <em>may</em> be able to get this from application logs if you have tehse enabled and they contain the relevant details.</p>
+<h2 id="which-logging-approach-is-right-for-you">Which logging approach is right for you</h2>
+<h3 id="quick-selection">Quick Selection</h3>
+<table>
+<thead>
+<tr>
+<th>Destination</th>
+<th>Best use cases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CloudWatch Logs</strong></td>
+<td>Simplest to set up and start using with AWS WAF with the native WAF dashboard.  Works well for single application/endpoint use cases.</td>
+</tr>
+<tr>
+<td><strong>Amazon S3 + Athena</strong></td>
+<td>Lowest retention cost; excellent for long-term retention such as compliance or audit requirements; ad-hoc queries that can tolerate longer execution times (incident investigation, periodic reviews); you already have an S3-based data lake strategy. Requires additional services (i.e. QuickSight) to produce dashboards.</td>
+</tr>
+<tr>
+<td><strong>OpenSearch/OpenSearch Serverless</strong></td>
+<td>Native dashboarding capability with much faster query times than Athena even at massive scale (you still need to build those dashboards); security teams performing frequent investigations; moderate to high log volumes where query frequency justifies the OCU baseline cost. OpenSearch Clusters (not serverless) require management and scaling operational effort.</td>
+</tr>
+<tr>
+<td><strong>Third-party (Splunk, Datadog, etc.)</strong></td>
+<td>Your organization already has a centralized SIEM/observability platform; you need WAF logs correlated with application logs, infrastructure metrics, and other security data in one tool; existing investment in third-party dashboards and alerting workflows.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cost-summary">Cost summary</h3>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>CloudWatch Logs</th>
+<th>Amazon S3</th>
+<th>OpenSearch Serverless</th>
+<th>Third-party (Splunk, Datadog, etc.)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Primary cost driver</strong></td>
+<td>Ingestion</td>
+<td>Storage</td>
+<td>Managed Storage and/or Index OCU</td>
+<td>Third-party license</td>
+</tr>
+<tr>
+<td><strong>Cost per unit</strong></td>
+<td>$0.50/GB ingested</td>
+<td>$0.023/GB/month (Standard); $0.004/GB/month (Glacier)</td>
+<td>$0.30/GB/month (Managed Storage — Hot); OCU $0.24/hr per OCU</td>
+<td>License-dependent</td>
+</tr>
+<tr>
+<td><strong>Storage cost</strong></td>
+<td>$0.03/GB/month</td>
+<td>$0.023/GB/month (Standard); $0.004/GB/month (Glacier)</td>
+<td>$0.30/GB/month (Managed Storage — Hot); OCU $0.24/hr per OCU</td>
+<td>License-dependent</td>
+</tr>
+<tr>
+<td><strong>Query cost</strong></td>
+<td>$5/TB scanned (Logs Insights)</td>
+<td>$5/TB scanned (Athena)</td>
+<td>Included in OCU search capacity</td>
+<td>Included in third-party license</td>
+</tr>
+</tbody>
+</table>
+<h3 id="recommendations">Recommendations</h3>
+<p>Start by considering how you intend to use WAF logs. If you plan to actively investigate WAF log data — incident response, rule tuning, traffic analysis — and your organization already operates a centralized SIEM or observability platform (Splunk, Datadog, OpenSearch, etc.), deliver WAF logs there via Firehose. Your team already has the workflows, dashboards, and alerting in place — avoid duplicating tooling and use what you already know.</p>
+<p>For small teams or individual applications using WAF, use <strong>CloudWatch Logs</strong> with the native AWS WAF dashboard. This gives you immediate visibility with zero additional setup and is sufficient when you primarily need to validate rule behavior and troubleshoot recent traffic.</p>
+<p>For centralized or organization-wide WAF log collection, the AWS natice choice between <strong>Amazon S3</strong> and <strong>OpenSearch Serverless</strong> depends on how you intend to consume the data. If your use case is periodic ad-hoc queries — incident investigations, compliance audits, rule impact reviews — S3 with Athena provides the lowest cost at rest and scales to any volume. If your use case is operational — frequent interactive queries, real-time dashboards, alerting on WAF patterns — OpenSearch Serverless provides the query performance and built-in visualization to support that without stitching together additional services (Athena + QuickSight).</p>
+<p>Regardless of which destination you choose:</p>
+<ul>
+<li><strong><a href="#log-retention">Log retention</a></strong> — Set retention based on your compliance requirements or how long you need data for your use case (incident investigation lookback, rule tuning validation). If you do not have a specific requirement, 30 days is a good minimum — it provides enough historical traffic to validate rule changes and investigate recent incidents without accumulating unnecessary cost.</li>
+<li><strong><a href="#field-redaction">Field redaction</a></strong> — Redact any headers or request attributes that contain sensitive data (credentials, tokens, API keys). This prevents sensitive information from being stored in your log destination.</li>
+<li><strong><a href="#log-filtering">Log filtering</a></strong> — Many customers do not filter WAF logs. Consider filtering traffic that does not provide business or security value to reduce log volume and cost, depending on your use case.</li>
+</ul>
+<h2 id="considerations-for-logs-stored-in-s3">Considerations for logs stored in S3</h2>
+<h3 id="s3-prefix-structure">S3 prefix structure</h3>
+<p>CloudWatch Vended Logs and Amazon Data Firehose write WAF logs using different S3 prefix structures. Amazon Data Firehose allows you to customize the structure while CloudWatch Vended Logs does not. These prefix patterns directly affect how Amazon Athena partitions and queries your data.</p>
+<p>CloudWatch Vended Logs writes with a fixed <strong>per-minute</strong> prefix structure:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>AWSLogs/{AccountId}/WAFLogs/{Scope}/{WebAclName}/{YYYY}/{MM}/{dd}/{HH}/{mm}/log_file.log.gz
+</code></pre></div>
+<p>This prefix structure is set by the AWS WAF service and cannot be changed.</p>
+<p>Amazon Data Firehose gives you control over the S3 prefix. Configuring <strong>hourly</strong> granularity produces 60x fewer partition paths for the same time range:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>{BucketPrefix}/{YYYY}/{MM}/{dd}/{HH}/log_file.log.gz
+</code></pre></div>
+<p>The trade-off is that queries scoped to less than one hour still scan the full hour's data. Depending on your query patterns and partitioning strategy, this granularity difference can have a meaningful impact on query performance (see <a href="#effective-log-querying-in-s3">Effective log querying in S3</a>).</p>
+<h3 id="effective-log-querying-in-s3">Effective log querying in S3</h3>
+<p>When you query WAF logs stored in S3 using Amazon Athena, query performance depends on how your Athena table is partitioned. The examples below assume a WAF deployment producing 10 GB of logs per day and three common queries:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">-- Single day</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">waf_logs</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">log_time</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="s1">'2026/06/25/00/00'</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">log_time</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="s1">'2026/06/26/00/00'</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">-- Specific 5-minute window</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">waf_logs</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">log_time</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="s1">'2026/06/25/14/30'</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">log_time</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="s1">'2026/06/25/14/35'</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1">-- Last 30 days</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">waf_logs</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">log_time</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="s1">'2026/05/25/00/00'</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">log_time</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="s1">'2026/06/26/00/00'</span>
+</code></pre></div>
+<p><strong>No partitions</strong>  </p>
+<p>Without partitions, Athena scans all data in the table every time you query, regardless of your <code>WHERE</code> clause. A query cannot target specific data based on time and must scan everything — Athena reads all objects and discards what doesn't match. This is not recommended for WAF logs due to the cost and time implications at any meaningful scale.</p>
+<table>
+<thead>
+<tr>
+<th>Query Scope</th>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Scan Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 minutes</td>
+<td>30 days</td>
+<td>300 GB</td>
+<td>35 MB</td>
+<td>~43s</td>
+</tr>
+<tr>
+<td>5 minutes</td>
+<td>365 days</td>
+<td>3.6 TB</td>
+<td>35 MB</td>
+<td>~514s</td>
+</tr>
+<tr>
+<td>1 day</td>
+<td>30 days</td>
+<td>300 GB</td>
+<td>10 GB</td>
+<td>~43s</td>
+</tr>
+<tr>
+<td>1 day</td>
+<td>90 days</td>
+<td>900 GB</td>
+<td>10 GB</td>
+<td>~129s</td>
+</tr>
+<tr>
+<td>1 day</td>
+<td>365 days</td>
+<td>3.6 TB</td>
+<td>10 GB</td>
+<td>~514s</td>
+</tr>
+<tr>
+<td>30 days</td>
+<td>90 days</td>
+<td>900 GB</td>
+<td>300 GB</td>
+<td>~129s</td>
+</tr>
+<tr>
+<td>30 days</td>
+<td>365 days</td>
+<td>3.6 TB</td>
+<td>300 GB</td>
+<td>~514s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recommendation: Partition Projection</strong>  </p>
+<p>You define partitions in your table construction that tell Athena how to compute where data might exist. Athena only checks and scans data from relevant date/times, making it more cost effective than no partitions. The trade-off is that Athena must do pre-work to resolve each partition path via S3 LIST calls before scanning begins. At scale (thousands of partitions), this can add meaningful time before each query starts — but you still only pay for the data actually scanned.</p>
+<blockquote>
+<p><strong>Pros:</strong> No additional infrastructure or cost beyond the Athena table definition; only scans data within the queried timeframe; simple to set up.<br />
+<strong>Cons:</strong> Pre-work time grows linearly with the number of partitions in the query range; minute-level granularity with wide time ranges can result in significant delays before scanning begins.</p>
+</blockquote>
+<p>The partition granularity available to you depends on how your logs are written to S3 — see <a href="#s3-prefix-structure">S3 prefix structure</a>. CloudWatch Vended Logs uses per-minute prefixes (1,440 partitions per day), while Amazon Data Firehose can be configured with hourly prefixes (24 partitions per day).</p>
+<p><strong>Query for 1 day — Hourly Partition Granularity</strong>  </p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>24</td>
+<td>&lt;0.1s</td>
+<td>~1.4s</td>
+<td>~1.5s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>24</td>
+<td>&lt;0.1s</td>
+<td>~1.4s</td>
+<td>~1.5s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>24</td>
+<td>&lt;0.1s</td>
+<td>~1.4s</td>
+<td>~1.5s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query for 1 day — Minute Partition Granularity</strong></p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>1,440</td>
+<td>~2.9s</td>
+<td>~1.4s</td>
+<td>~4.3s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>1,440</td>
+<td>~2.9s</td>
+<td>~1.4s</td>
+<td>~4.3s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>1,440</td>
+<td>~2.9s</td>
+<td>~1.4s</td>
+<td>~4.3s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query for 5 minutes — Hourly Partition Granularity</strong>  </p>
+<p>With hourly partitions, a query targeting a 5-minute window still scans the entire hour's data because the hour is the smallest unit Athena can isolate. This is the trade-off of hourly granularity — narrow queries pay for the full hour.</p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>417 MB</td>
+<td>35 MB</td>
+<td>1</td>
+<td>&lt;0.1s</td>
+<td>~0.1s</td>
+<td>~0.1s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>417 MB</td>
+<td>35 MB</td>
+<td>1</td>
+<td>&lt;0.1s</td>
+<td>~0.1s</td>
+<td>~0.1s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>417 MB</td>
+<td>35 MB</td>
+<td>1</td>
+<td>&lt;0.1s</td>
+<td>~0.1s</td>
+<td>~0.1s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query for 5 minutes — Minute Partition Granularity</strong></p>
+<p>With minute partitions, Athena targets only the 5 relevant partitions and scans just the data within that window.</p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>35 MB</td>
+<td>35 MB</td>
+<td>5</td>
+<td>&lt;0.1s</td>
+<td>&lt;0.1s</td>
+<td>&lt;0.1s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>35 MB</td>
+<td>35 MB</td>
+<td>5</td>
+<td>&lt;0.1s</td>
+<td>&lt;0.1s</td>
+<td>&lt;0.1s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>35 MB</td>
+<td>35 MB</td>
+<td>5</td>
+<td>&lt;0.1s</td>
+<td>&lt;0.1s</td>
+<td>&lt;0.1s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query for 30 days — Hourly Partition Granularity</strong>  </p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>720</td>
+<td>~1.4s</td>
+<td>~43s</td>
+<td>~44s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>720</td>
+<td>~1.4s</td>
+<td>~43s</td>
+<td>~44s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>720</td>
+<td>~1.4s</td>
+<td>~43s</td>
+<td>~44s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query for 30 days — Minute Partition Granularity</strong></p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>43,200</td>
+<td>~86s</td>
+<td>~43s</td>
+<td>~129s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>43,200</td>
+<td>~86s</td>
+<td>~43s</td>
+<td>~129s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>43,200</td>
+<td>~86s</td>
+<td>~43s</td>
+<td>~129s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Partition Projection Summary</strong></p>
+<p>Partition projection reduces how much data is scanned overall but depends on the partition size and query evaluation period.  Hourly granularity keeps pre-work negligible (seconds even for 30-day queries) but scans a full hour of data for narrow queries (417 MB scanned for a 5-minute window that contains 35 MB). Minute granularity scans only the exact data needed but introduces significant pre-work for wide time ranges — a 30-day query must resolve 43,200 partitions, adding tens of seconds or more before each scan begins. For short queries (single day or less), either granularity completes quickly. For wide queries (30+ days), hourly granularity finishes in ~44 seconds total while minute granularity takes ~129 seconds due to pre-work — even though both scan the same amount of data.</p>
+<p><strong>Recommendation: Catalog-based Partitions (Glue Crawler)</strong> </p>
+<p>You configure an AWS Glue Crawler to automatically discover and register partitions in the Glue Data Catalog. Athena queries the catalog directly to find matching partitions instead of issuing S3 LIST API calls per partition in scope; this removes almost all of the pre-work at query time. This requires initial Crawler setup and has a small per-run cost, but is a managed service with no ongoing maintenance once configured. See <a href="../../waf-cost/docs/">WAF Costs</a> for Glue Crawler cost details in the context of WAF logging. Similar to partition projection, Athena only scans data for the relevant time range however does not have the pre-work partition projection must complete per query. This is the most cost and time efficient approach per query.</p>
+<blockquote>
+<p><strong>Pros:</strong> No pre-work delay regardless of partition count or granularity; only scans data within the queried timeframe; partition granularity (minute vs. hourly) has no impact on query time; managed service with no ongoing maintenance.<br />
+<strong>Cons:</strong> Requires initial Glue Crawler setup; small per-run cost for the Crawler; adds a dependency on the Glue Data Catalog.</p>
+</blockquote>
+<p><strong>Query for 1 day — Hourly Partition Granularity</strong>  </p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>24</td>
+<td>~0.5s</td>
+<td>~1.4s</td>
+<td>~1.9s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>24</td>
+<td>~0.5s</td>
+<td>~1.4s</td>
+<td>~1.9s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>24</td>
+<td>~0.5s</td>
+<td>~1.4s</td>
+<td>~1.9s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query for 1 day — Minute Partition Granularity</strong>  </p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>1,440</td>
+<td>~0.5s</td>
+<td>~1.4s</td>
+<td>~1.9s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>1,440</td>
+<td>~0.5s</td>
+<td>~1.4s</td>
+<td>~1.9s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>10 GB</td>
+<td>10 GB</td>
+<td>1,440</td>
+<td>~0.5s</td>
+<td>~1.4s</td>
+<td>~1.9s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query for 5 minutes — Hourly Partition Granularity</strong>  </p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>417 MB</td>
+<td>35 MB</td>
+<td>1</td>
+<td>~0.5s</td>
+<td>~0.1s</td>
+<td>~0.6s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>417 MB</td>
+<td>35 MB</td>
+<td>1</td>
+<td>~0.5s</td>
+<td>~0.1s</td>
+<td>~0.6s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>417 MB</td>
+<td>35 MB</td>
+<td>1</td>
+<td>~0.5s</td>
+<td>~0.1s</td>
+<td>~0.6s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query for 5 minutes — Minute Partition Granularity</strong>  </p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>35 MB</td>
+<td>35 MB</td>
+<td>5</td>
+<td>~0.5s</td>
+<td>&lt;0.1s</td>
+<td>~0.5s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>35 MB</td>
+<td>35 MB</td>
+<td>5</td>
+<td>~0.5s</td>
+<td>&lt;0.1s</td>
+<td>~0.5s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>35 MB</td>
+<td>35 MB</td>
+<td>5</td>
+<td>~0.5s</td>
+<td>&lt;0.1s</td>
+<td>~0.5s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query for 30 days — Hourly Partition Granularity</strong>  </p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>720</td>
+<td>~0.5s</td>
+<td>~43s</td>
+<td>~43.5s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>720</td>
+<td>~0.5s</td>
+<td>~43s</td>
+<td>~43.5s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>720</td>
+<td>~0.5s</td>
+<td>~43s</td>
+<td>~43.5s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Query for 30 days — Minute Partition Granularity</strong>  </p>
+<table>
+<thead>
+<tr>
+<th>Data Retention</th>
+<th>Data Scanned</th>
+<th>Data Used</th>
+<th>Partitions Scanned</th>
+<th>Pre-work Time</th>
+<th>Scan Time</th>
+<th>Total Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>43,200</td>
+<td>~0.5s</td>
+<td>~43s</td>
+<td>~43.5s</td>
+</tr>
+<tr>
+<td>90 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>43,200</td>
+<td>~0.5s</td>
+<td>~43s</td>
+<td>~43.5s</td>
+</tr>
+<tr>
+<td>365 days</td>
+<td>300 GB</td>
+<td>300 GB</td>
+<td>43,200</td>
+<td>~0.5s</td>
+<td>~43s</td>
+<td>~43.5s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>S3 querying summary</strong>  </p>
+<p>Always use date/time ranges for queries — both CloudWatch Log Insights and Athena bill based on data scanned ($5/TB scanned). Only keep logs as long as you need them.</p>
+<p>If you send WAF logs to S3 using CloudWatch Vended Logs:
+- A Glue Crawler is recommended; it is a one-time setup with a &lt;1% cost impact on a WAF logging cost estimate and can significantly reduce total query execution time.
+- Partition projection can be acceptable if you rarely expect to query WAF logs. The trade-off is queries hit more partitions and can result in longer overall query times.</p>
+<p>If you send WAF logs to S3 using Amazon Data Firehose:
+- If you use a Glue Crawler, per-minute granularity has no meaningful impact on scan cost or pre-work time per query.
+- If you do <strong>not</strong> use a Glue Crawler, hourly granularity reduces the pre-work per query execution to 1/60th.
+- Firehose can be configured to send data every 60 seconds (buffer hint), meaning new WAF logs show up in approximately 1 minute.</p>
+<p>Unless you require a specific feature of Amazon Data Firehose (buffer delivery time, ETL), use the delivery mechanism that is most cost effective for you. If this is CloudWatch Vended Logs, set up a Glue Crawler so queries are performant. If you use Amazon Data Firehose, either write logs in hourly prefixes to S3 or ensure you also create a Glue Crawler.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

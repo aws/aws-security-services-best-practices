@@ -1,0 +1,693 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/firewall-overview/egress-patterns/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/firewall-overview/egress-patterns/docs/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ko">
+        
+          <link rel="alternate" href="../../../../../ja/guides/firewall-overview/egress-patterns/docs/" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Egress Patterns - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#egress-patterns" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Egress Patterns
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="언어설정">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/firewall-overview/egress-patterns/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ja/guides/firewall-overview/egress-patterns/docs/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    홈
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../network-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall 모범 사례
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#at-a-glance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        At a glance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-zero-reduce-traffic-before-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step zero: reduce traffic before filtering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step zero: reduce traffic before filtering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deploy-vpc-endpoints-everywhere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploy VPC endpoints everywhere
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layered-egress-defense" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layered egress defense
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Layered egress defense">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vpc-endpoints-eliminate-traffic-from-the-inspection-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPC endpoints (eliminate traffic from the inspection path)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-groups-restrict-portsprotocols" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security groups (restrict ports/protocols)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dns-firewall-domain-filtering-at-dns-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNS Firewall (domain filtering at DNS resolution)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-firewall-full-traffic-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Firewall (full traffic inspection)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#centralized-vs-decentralized-egress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Centralized vs. decentralized egress
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-network-firewall-proxy-preview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS Network Firewall Proxy (preview)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-read-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to read next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="egress-patterns">Egress Patterns</h1>
+<div class="admonition info">
+<p class="admonition-title">Prerequisites</p>
+<p>This section assumes familiarity with <a href="../../fundamentals/docs/">Core concepts</a> and <a href="../../ingress-patterns/docs/">Ingress Patterns</a>. Review those pages first if you are new to the AWS network security services.</p>
+</div>
+<p>The goal for egress security is a deny-all-except model: each workload can only reach the destinations it has been explicitly authorized to contact. Egress filtering operates at three distinct layers: DNS resolution, network traffic inspection, and traffic elimination via VPC endpoints (which removes traffic from the inspection path entirely). Deploy all three together: each addresses a different class of egress threat and they are more effective in combination than any one alone.</p>
+<h2 id="at-a-glance">At a glance</h2>
+<ul>
+<li><strong>DNS-layer filtering:</strong> Amazon Route 53 Resolver DNS Firewall in every VPC as the first line of defense. Lowest cost, highest coverage. Blocks resolution of unauthorized domains before connections are ever attempted.</li>
+<li><strong>Network-layer filtering:</strong> AWS Network Firewall for full traffic inspection. Catches hardcoded-IP connections, filters by domain using TLS SNI and HTTP host headers, runs IPS/IDS signatures, and provides TLS inspection when needed.</li>
+<li><strong>Traffic elimination:</strong> VPC endpoints remove AWS service traffic from the egress firewall inspection path entirely, reducing firewall load and cost.</li>
+</ul>
+<hr />
+<h2 id="step-zero-reduce-traffic-before-filtering">Step zero: reduce traffic before filtering</h2>
+<p>Before configuring your firewall egress rules, first eliminate unnecessary traffic from the paths your firewall will inspect. Traffic that never traverses your egress firewall path never needs to be inspected and never incurs firewall or NAT gateway processing charges. VPC endpoints let you route trusted, high-volume traffic (like an EC2 instance communicating with your S3 buckets) directly through the AWS network, so your firewall inspection is focused only on the traffic you actually want to inspect. This also reduces costs on both the firewall and data transfer sides.</p>
+<h3 id="deploy-vpc-endpoints-everywhere">Deploy VPC endpoints everywhere</h3>
+<p><a href="https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html">Gateway endpoints</a> for Amazon S3 and Amazon DynamoDB are free and should be deployed in every VPC, regardless of size or environment. They route traffic through the AWS network instead of through your firewall and NAT gateways, eliminating unnecessary inspection load and data processing charges for these high-traffic services. There is no downside to enabling them. Pair gateway endpoints with endpoint policies scoped to your organization's resources to prevent workloads from reaching external buckets or tables, an important exfiltration control.</p>
+<p><a href="https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html">Interface endpoints</a> for frequently accessed AWS services (STS, AWS KMS, ECR, Systems Manager, Amazon CloudWatch Logs) keep API calls off the firewall and NAT gateway path. Enable private DNS so applications pick up the private path without code changes. In high-egress environments, interface endpoints often pay for themselves in avoided processing fees within days.</p>
+<p>For deeper guidance on VPC endpoint architecture, including when to centralize vs. decentralize endpoints, see <a href="https://aws.github.io/aws-networking-best-practices/connectivity/within-aws/#aws-privatelink-best-practices">AWS PrivateLink Best Practices</a> in the AWS Networking Best Practices Guide.</p>
+<hr />
+<h2 id="layered-egress-defense">Layered egress defense</h2>
+<p>Egress defense in depth combines multiple controls, each catching what the previous one cannot:</p>
+<h3 id="vpc-endpoints-eliminate-traffic-from-the-inspection-path">VPC endpoints (eliminate traffic from the inspection path)</h3>
+<p>Remove AWS service traffic from the egress firewall inspection path entirely so your firewall only inspects traffic that actually needs to leave your VPC. Deploy gateway endpoints for S3 and DynamoDB in every VPC. Deploy interface endpoints for frequently used services.</p>
+<h3 id="security-groups-restrict-portsprotocols">Security groups (restrict ports/protocols)</h3>
+<p>Restrict outbound security group rules to only the ports and protocols the workload actually needs. Remove the default allow-all outbound rule and replace it with explicit rules for the workload's actual egress requirements.</p>
+<h3 id="dns-firewall-domain-filtering-at-dns-resolution">DNS Firewall (domain filtering at DNS resolution)</h3>
+<p>Block resolution of unauthorized domains, including known C2 infrastructure, malware distribution sites, and DNS tunneling endpoints, before connections are attempted. DNS Firewall is the highest-value egress control for the cost and should be the first egress layer deployed in every VPC. Use AWS managed threat intelligence domain lists as a baseline. For sensitive workloads, use allowlist mode (permit only known-good domains, deny everything else).</p>
+<div class="admonition warning">
+<p class="admonition-title">DNS queries do not pass through Network Firewall</p>
+<p>DNS queries sent to the Route 53 Resolver (the VPC's .2 address) are resolved within the VPC and never traverse Network Firewall endpoints. This means Network Firewall's domain filtering (TLS SNI, HTTP host) only operates on actual connections, not on DNS resolution. DNS tunneling and DGA-based exfiltration bypass Network Firewall entirely. DNS Firewall is the only control that operates at the DNS resolution layer, which is why both services should be deployed together.</p>
+</div>
+<h3 id="network-firewall-full-traffic-inspection">Network Firewall (full traffic inspection)</h3>
+<p>Network Firewall inspects actual traffic for direct connections to hardcoded IPs, domain-based filtering using TLS SNI and HTTP host headers, IPS/IDS signatures, and protocol violations, catching what DNS Firewall cannot, particularly connections that bypass DNS resolution entirely. AWS managed threat intelligence rule groups block known command-and-control infrastructure without requiring manual rule maintenance.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Workload → Security Group → DNS Firewall (DNS query) → Network Firewall (traffic inspection) → NAT GW → Internet
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Cost-effective ordering</p>
+<p>By blocking unauthorized domains at the DNS layer first, you reduce the volume of traffic Network Firewall needs to inspect. Properly scoped security groups and DNS Firewall together dramatically reduce the processing load on Network Firewall.</p>
+</div>
+<hr />
+<h2 id="centralized-vs-decentralized-egress">Centralized vs. decentralized egress</h2>
+<p>This is a genuine trade-off with no single right answer:</p>
+<p><strong>Decentralized egress:</strong></p>
+<ul>
+<li>Each VPC runs its own firewall endpoints and NAT gateway, keeping the inspection and egress path local</li>
+<li>No TGW/Cloud WAN data processing charges</li>
+<li>Team autonomy. Each team owns its inspection and egress path.</li>
+<li>Simpler dual-stack (IPv4 and IPv6 both exit per-VPC)</li>
+<li>Failure domain bounded to one VPC</li>
+</ul>
+<p><strong>Centralized egress:</strong></p>
+<ul>
+<li>A shared inspection/egress VPC hosts the firewall endpoints and NAT gateways for all workload VPCs</li>
+<li>Collapses per-VPC firewall endpoint and NAT costs into one location</li>
+<li>Adds AWS Transit Gateway or Cloud WAN data processing on every flow</li>
+<li>Single physical inspection point (useful when compliance mandates this)</li>
+<li>Security or platform team owns the inspection VPC as a shared service</li>
+</ul>
+<p>Both deliver uniform firewall policy through AWS Firewall Manager and DNS Firewall. The difference is whether your firewall endpoints are distributed across workload VPCs or concentrated in a shared inspection VPC. Choose based on your cost model, operational ownership preferences, and whether compliance mandates a single physical inspection point.</p>
+<div class="admonition warning">
+<p class="admonition-title">NAT gateway pricing consideration</p>
+<p>If using Network Firewall, the 1:1 NAT gateway pricing discount (which waives NAT gateway data processing when Network Firewall is deployed in the same path) does NOT apply to regional NAT gateways. Factor this into your cost analysis if you plan to use both Network Firewall and regional NAT gateways together.</p>
+</div>
+<p>For the full trade-off analysis, see <a href="https://aws.github.io/aws-networking-best-practices/connectivity/internet/#comparing-decentralized-vs-centralized-ipv4-egress">Comparing decentralized vs. centralized IPv4 egress</a> in the AWS Networking Best Practices Guide.</p>
+<hr />
+<h2 id="aws-network-firewall-proxy-preview">AWS Network Firewall Proxy (preview)</h2>
+<div class="admonition note">
+<p class="admonition-title">Preview</p>
+<p>AWS Network Firewall Proxy is currently in preview. Features and behavior may change before general availability.</p>
+</div>
+<p>For organizations that need explicit forward-proxy semantics for outbound traffic, <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/reintroducing-network-firewall-proxy-for-secure-egress-connectivity/">AWS Network Firewall Proxy</a> provides a managed alternative to self-hosted Squid or proxy fleets. The proxy is built directly into Network Firewall, meaning you use the same firewall policy, same rule groups, and same management plane for both transparent firewall inspection and explicit proxy use cases.</p>
+<p>In proxy mode, Network Firewall uses a "no-source-preservation" deployment where the firewall is attached to a NAT gateway. Clients configure their workloads to send traffic to the firewall's FQDN (provided after creation) rather than relying on VPC route tables. The firewall inspects and filters the traffic using your existing rules, then uses the attached NAT gateway to communicate with upstream destinations.</p>
+<p>Because it is the same firewall engine, all Network Firewall capabilities apply: stateful and stateless rules, AWS managed rule groups, TLS inspection, URL/domain category filtering, GeoIP filtering, container attribute-based rules, and logging.</p>
+<p>Use cases for the proxy mode:</p>
+<ul>
+<li>Environments that already use explicit proxy configurations (corporate environments, containerized workloads with proxy environment variables)</li>
+<li>Centralizing egress from networks with overlapping CIDRs (the no-source-preservation mode handles this natively)</li>
+<li>When you want the same security policy to apply to both transparently inspected traffic and explicitly proxied traffic</li>
+</ul>
+<p>For detailed architecture patterns, see the <a href="../../../network-firewall/deployment-architecture/docs/#aws-network-firewall-proxy">AWS Network Firewall Best Practices: Deployment Architecture</a> section on the proxy.</p>
+<hr />
+<h2 id="what-to-read-next">What to read next</h2>
+<ul>
+<li><a href="../../segmentation/docs/">East-West Traffic and Segmentation</a>: Internal traffic controls</li>
+<li><a href="../../cost-and-reference/docs/">Cost Considerations and Reference</a>: Cost comparison across services</li>
+<li><a href="../../../network-firewall/">AWS Network Firewall Best Practices</a>: Detailed Network Firewall configuration guidance</li>
+<li><a href="https://aws.github.io/aws-networking-best-practices/security/outbound/">Outbound Controls</a> in the AWS Networking Best Practices Guide</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

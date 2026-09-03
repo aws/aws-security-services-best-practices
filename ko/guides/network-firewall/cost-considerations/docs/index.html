@@ -1,0 +1,962 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/network-firewall/cost-considerations/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/network-firewall/cost-considerations/docs/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ko">
+        
+          <link rel="alternate" href="../../../../../ja/guides/network-firewall/cost-considerations/docs/" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Cost considerations - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cost-considerations" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Cost considerations
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="언어설정">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/network-firewall/cost-considerations/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ja/guides/network-firewall/cost-considerations/docs/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    홈
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall 모범 사례
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pricing-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pricing model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nat-gateway-bundled-discount" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NAT gateway bundled discount
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NAT gateway bundled discount">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-excluded-from-the-discount" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is excluded from the discount
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verifying-your-discount" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifying your discount
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minimize-endpoint-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimize endpoint costs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Minimize endpoint costs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-centralized-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use centralized inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#native-transit-gateway-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Native Transit Gateway support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-endpoint-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-endpoint support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-unused-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete unused endpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reduce-data-processing-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reduce data processing costs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reduce data processing costs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#do-not-inspect-traffic-that-does-not-need-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do not inspect traffic that does not need inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identify-top-traffic-drivers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identify top traffic drivers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-dns-firewall-for-basic-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use DNS Firewall for basic blocks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#avoid-cross-az-data-transfer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Avoid cross-AZ data transfer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analyze-traffic-costs-with-suricata-rule-generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analyze traffic costs with Suricata Rule Generator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Analyze traffic costs with Suricata Rule Generator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-the-analyzer-provides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the analyzer provides
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc-endpoint-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPC endpoint recommendations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#source-ip-drill-down" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source IP drill-down
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run-the-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run the analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost allocation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reduce-logging-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reduce logging costs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tls-inspection-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TLS inspection costs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-transfer-changes-august-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data transfer changes (August 2026)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data transfer changes (August 2026)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#billing-visibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Billing visibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-read-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to read next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="cost-considerations">Cost considerations</h1>
+<div class="admonition info">
+<p class="admonition-title">Prerequisites</p>
+<p>This section assumes familiarity with <a href="../../deployment-architecture/docs/">Deployment architecture</a>. Review that topic first to understand how deployment model choices affect cost.</p>
+</div>
+<p>AWS Network Firewall costs are driven by endpoint hourly charges (per-AZ, regardless of traffic volume), data processing charges (per-GB metered at the stateless engine), optional TLS inspection charges (Advanced Inspection tier), and starting August 2026, standard AWS data transfer charges for traffic flowing through the firewall. Understanding these cost drivers and implementing optimization strategies can significantly reduce your Network Firewall spend without compromising security. See the <a href="https://aws.amazon.com/network-firewall/pricing/">Network Firewall pricing</a> page for current rates.</p>
+<h2 id="pricing-model">Pricing model</h2>
+<p>Network Firewall pricing consists of:</p>
+<ul>
+<li><strong>Endpoint hourly charge</strong> - Per firewall endpoint, per AZ, regardless of traffic volume</li>
+<li><strong>Data processing charge</strong> - Per GB of traffic processed by the firewall (metered at the stateless engine)</li>
+<li><strong>Advanced Inspection charges (TLS inspection only)</strong> - Additional hourly rate and per-GB charge when TLS inspection is enabled</li>
+<li><strong>Standard AWS data transfer charges</strong> - Standard data transfer rates apply for traffic flowing through Network Firewall (see <a href="#data-transfer-changes-august-2026">upcoming data transfer changes</a> below)</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">How traffic processing is metered</p>
+<p>Data processing charges are based on traffic that passes through the firewall endpoint once in each direction. The CloudWatch stateless <code>ReceivedBytes</code> metric is the most accurate representation of your billable GB processed. The <code>PrivateLinkEndpoints BytesProcessed</code> metric shows approximately double this amount due to internal packet handling. This does not reflect double billing.</p>
+</div>
+<h2 id="nat-gateway-bundled-discount">NAT gateway bundled discount</h2>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Always deploy your NAT gateway in the same networking path as your Network Firewall. When you do, standard NAT gateway per-hour and data processing charges are completely waived. This is one of the most significant cost benefits of using Network Firewall for egress filtering and is frequently overlooked.</p>
+</div>
+<p>If you create a NAT gateway and place it in the same networking path as your Network Firewall, standard NAT gateway per-hour and data processing usage charges are waived. This discount is applied on a one-to-one basis with standard Network Firewall charges.</p>
+<h3 id="requirements">Requirements</h3>
+<p>To receive the NAT gateway bundled discount:</p>
+<ul>
+<li>NAT gateway and Network Firewall must be in the <strong>same Region</strong> and under the <strong>same AWS payer ID</strong> (same account is not required, cross-account within the same payer is eligible)</li>
+<li>NAT gateway must be configured in the <strong>same networking path</strong> as your Network Firewall endpoint (can be directly service-chained or with Transit Gateway in between)</li>
+</ul>
+<h3 id="what-is-excluded-from-the-discount">What is excluded from the discount</h3>
+<ul>
+<li>Network Firewall Advanced Inspection Endpoint charges (TLS inspection)</li>
+<li>Network Firewall Advanced Inspection Traffic Processing charges (TLS inspection)</li>
+<li>Regional NAT gateway (RNAT)</li>
+</ul>
+<h3 id="verifying-your-discount">Verifying your discount</h3>
+<p>You can verify the bundled discount is being applied by reviewing your AWS bill. The NAT gateway line items should show corresponding credits that offset the NAT gateway hourly and data processing charges up to the amount of your Network Firewall usage.</p>
+<p>For more information, see the <a href="https://aws.amazon.com/network-firewall/pricing/">Network Firewall pricing</a> page.</p>
+<h2 id="minimize-endpoint-costs">Minimize endpoint costs</h2>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Use centralized inspection for multi-account environments. Consolidating traffic through fewer firewall endpoints dramatically reduces your endpoint hourly costs compared to deploying per-VPC firewalls. A centralized deployment with 3 endpoints (one per AZ) serves the same purpose as 30+ endpoints in a distributed model.</p>
+</div>
+<h3 id="use-centralized-inspection">Use centralized inspection</h3>
+<p>Because each endpoint incurs hourly charges even when idle, centralized inspection via Transit Gateway or Cloud WAN is typically more cost-effective for multi-account environments than deploying endpoints in every VPC.</p>
+<p>See <a href="../../deployment-architecture/docs/">Deployment architecture</a> for deployment model comparisons.</p>
+<h3 id="native-transit-gateway-support">Native Transit Gateway support</h3>
+<p>Network Firewall's <a href="https://aws.amazon.com/about-aws/whats-new/2025/07/aws-network-firewall-native-transit-gateway-support/">native Transit Gateway support</a> simplifies centralized inspection by removing the need for a separate inspection VPC. There are no additional charges for the native TGW integration beyond standard Network Firewall and Transit Gateway pricing, and the total cost profile is comparable to a centralized inspection VPC deployment. What differs is cost <em>allocation</em>: only a natively attached firewall lets you charge Network Firewall data processing back to the account that generated the traffic. See <a href="#cost-allocation">Cost allocation</a>.</p>
+<h3 id="multi-endpoint-support">Multi-endpoint support</h3>
+<p>For sharing a firewall across multiple VPCs without Transit Gateway, the <a href="https://aws.amazon.com/about-aws/whats-new/2025/05/aws-network-firewall-multiple-vpc-endpoints/">multi-endpoint support</a> feature allows up to 50 secondary endpoints associated with a single primary firewall. Secondary endpoints have reduced hourly costs compared to creating separate firewalls.</p>
+<div class="admonition note">
+<p class="admonition-title">TLS inspection limitation</p>
+<p>TLS inspection is not supported for firewalls with VPC endpoint associations (multi-endpoint feature).</p>
+</div>
+<h3 id="delete-unused-endpoints">Delete unused endpoints</h3>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Audit your firewall endpoints quarterly. Delete endpoints in AZs where you no longer have workloads. Each unused endpoint costs the full hourly rate whether or not it processes any traffic.</p>
+</div>
+<p>Firewall endpoints incur hourly charges whether or not they are processing traffic. Delete any endpoints that are no longer needed or in AZs where you no longer have workloads.</p>
+<h2 id="reduce-data-processing-costs">Reduce data processing costs</h2>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Deploy gateway VPC endpoints for S3 and DynamoDB in every VPC behind the firewall. Gateway endpoints are free, eliminate firewall data processing charges for that traffic, and are the single highest-impact cost optimization for most deployments.</p>
+</div>
+<h3 id="do-not-inspect-traffic-that-does-not-need-inspection">Do not inspect traffic that does not need inspection</h3>
+<ul>
+<li><strong>Use Transit Gateway or Cloud WAN route tables</strong> to segment your network. Keep VPC-Prod from talking to VPC-Dev if they do not need to communicate. Do not route that traffic through the firewall.</li>
+<li><strong>Use VPC endpoints</strong> for Amazon S3 and Amazon DynamoDB (free gateway endpoints) instead of sending that traffic through Network Firewall. There are no data processing or hourly charges for gateway VPC endpoints.</li>
+<li><strong>Use PrivateLink endpoints</strong> for other AWS services in private subnets behind the firewall vs routing through the firewall to reach a public service endpoint. Compare <a href="https://aws.amazon.com/privatelink/pricing/">PrivateLink pricing</a> with <a href="https://aws.amazon.com/network-firewall/pricing/">Network Firewall pricing</a> when making this decision.</li>
+<li><strong>Use VPC peering</strong> for shared services VPCs that workloads need to reach frequently and do not need firewall inspection. This avoids both Network Firewall and Transit Gateway data processing charges.</li>
+</ul>
+<h3 id="identify-top-traffic-drivers">Identify top traffic drivers</h3>
+<p>Use the "Top Talkers" section of the <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-using-dashboard.html">native firewall monitoring dashboard</a> to identify which source/destination pairs are generating the most traffic through the firewall. This helps you prioritize which traffic to route away from the firewall via VPC endpoints or other mechanisms. For domain-level visibility, the <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/reporting.html">traffic analysis report feature</a> shows which HTTP/HTTPS domains are driving the most data processing charges.</p>
+<h3 id="use-dns-firewall-for-basic-blocks">Use DNS Firewall for basic blocks</h3>
+<p>Amazon Route 53 Resolver DNS Firewall can block traffic at the DNS layer before it ever reaches Network Firewall. For domains you want to block outright, blocking at DNS is:</p>
+<ul>
+<li>Cheaper (no data processing charges on the blocked traffic)</li>
+<li>Faster (blocks closer to the packet source)</li>
+<li>Simpler (no Suricata rules needed for basic domain blocks)</li>
+</ul>
+<p>Use DNS Firewall for broad domain blocks and Network Firewall for traffic that needs deeper inspection.</p>
+<h2 id="avoid-cross-az-data-transfer">Avoid cross-AZ data transfer</h2>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Verify your route tables send traffic to the firewall endpoint in the same Availability Zone as the source workload. Cross-AZ routing doubles your data transfer costs and adds latency. Each AZ should have its own firewall endpoint with routes pointing to the local endpoint.</p>
+</div>
+<p>Route tables should send traffic to the local firewall endpoint in the same AZ, not to another AZ's endpoint. Cross-AZ routing incurs data transfer charges in addition to firewall processing charges.</p>
+<p><strong>Route to the firewall endpoint closest to the client, not the server.</strong></p>
+<h2 id="analyze-traffic-costs-with-suricata-rule-generator">Analyze traffic costs with Suricata Rule Generator</h2>
+<p>The <a href="https://github.com/aws-samples/sample-suricata-generator">Suricata Rule Generator for AWS Network Firewall</a> includes a Traffic Cost Analyzer that queries your CloudWatch flow and alert logs to show exactly where your firewall data processing costs are coming from. It correlates flow logs (traffic volumes) with alert logs (TLS SNI and HTTP hostnames) to produce a breakdown of bandwidth by destination, and recommends where VPC endpoints would be cost-effective.</p>
+<h3 id="what-the-analyzer-provides">What the analyzer provides</h3>
+<p>The Traffic Cost Analyzer produces a three-tab dashboard:</p>
+<p><strong>Internet Traffic</strong> - Non-AWS destinations with hostname resolution (HTTP host headers, TLS SNI). Shows cost breakdown per destination, source IP drill-down to identify which internal hosts generate the traffic, and opportunities to optimize (Windows Update, CDN traffic, package registries).</p>
+<p><img alt="Internet Traffic Analysis" src="https://raw.githubusercontent.com/aws-samples/sample-suricata-generator/main/images/internet_traffic.png" /></p>
+<p><strong>AWS Service Traffic</strong> - AWS service endpoints with traffic volumes and per-service costs. Includes VPC endpoint recommendations with monthly savings projections and break-even calculations.</p>
+<p><img alt="AWS Service Traffic Analysis" src="https://raw.githubusercontent.com/aws-samples/sample-suricata-generator/main/images/aws_service_traffic.png" /></p>
+<p><strong>Internal Traffic</strong> - VPC-to-VPC communication patterns with source-to-destination flow analysis and associated costs.</p>
+<p><img alt="Internal Traffic Analysis" src="https://raw.githubusercontent.com/aws-samples/sample-suricata-generator/main/images/internal_traffic.png" /></p>
+<h3 id="vpc-endpoint-recommendations">VPC endpoint recommendations</h3>
+<p>The analyzer performs cost-benefit analysis for each AWS service detected in your traffic:</p>
+<ul>
+<li><strong>Gateway endpoints (S3, DynamoDB)</strong> - Always recommended when same-region traffic is detected, since gateway endpoints are free and eliminate firewall data processing charges entirely</li>
+<li><strong>Interface endpoints</strong> - Only recommended when traffic volume exceeds the break-even threshold (the point where the interface endpoint monthly cost is less than the firewall data processing cost for that traffic). The threshold varies by region and is calculated automatically.</li>
+</ul>
+<p>For example, if 245 GB/month of traffic flows to S3 through the firewall, the analyzer recommends a free gateway endpoint that would save approximately $16/month. For SSM at 85 GB/month, it may recommend skipping the interface endpoint because the cost is below break-even - while Lambda at 180 GB/month would justify the endpoint.</p>
+<h3 id="source-ip-drill-down">Source IP drill-down</h3>
+<p>Double-clicking any row in the dashboard reveals which internal hosts are generating the traffic, with individual flow timestamps and volumes. This helps you identify specific workloads responsible for high-cost traffic patterns and take targeted action.</p>
+<p><img alt="Drill Down" src="https://raw.githubusercontent.com/aws-samples/sample-suricata-generator/main/images/drilldown.png" /></p>
+<h3 id="how-to-run-the-analysis">How to run the analysis</h3>
+<ol>
+<li>Open your rule file in the <a href="https://github.com/aws-samples/sample-suricata-generator">Suricata Rule Generator</a></li>
+<li>Navigate to <strong>Tools &gt; Analyze Traffic Costs</strong></li>
+<li>Configure the flow log group, alert log group (optional but recommended for hostname visibility), AWS region, and time range (7-90 days or custom date range)</li>
+<li>Click <strong>Analyze</strong> - the tool queries CloudWatch Logs Insights and returns results in 60-120 seconds</li>
+</ol>
+<p>The analysis requires both flow and alert logs to be published to CloudWatch Logs. Alert logs provide hostname resolution (TLS SNI and HTTP host headers) - without them, traffic is only identifiable by IP address. IAM permissions needed are <code>logs:StartQuery</code> and <code>logs:GetQueryResults</code>.</p>
+<p>Results can be saved to a <code>.stats</code> file for offline access without re-querying CloudWatch, and exported to CSV for reporting.</p>
+<div class="admonition tip">
+<p class="admonition-title">ROI of running this analysis</p>
+<p>A typical 30-day analysis costs $0.50-$2.00 in CloudWatch Logs Insights query charges but commonly identifies $50-200/month in VPC endpoint savings opportunities. Run it monthly or after significant workload changes.</p>
+</div>
+<h2 id="cost-allocation">Cost allocation</h2>
+<p>For organizations with multiple accounts or business units sharing a centralized Network Firewall, use <a href="https://docs.aws.amazon.com/vpc/latest/tgw/metering-policy.html">Flexible Cost Allocation for Transit Gateway</a> to allocate costs based on traffic usage patterns.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>To enable per-account or per-business-unit chargeback of Network Firewall data processing costs, the firewall must be natively attached to Transit Gateway using the <a href="../../deployment-architecture/docs/#centralizing-with-transit-gateway-native-attachment">Transit Gateway attachment</a>. This is one of the strongest reasons to choose native attachment over a customer-managed inspection VPC. With a firewall in a customer-managed inspection VPC, Flexible Cost Allocation can only allocate Transit Gateway data processing charges, not the Network Firewall data processing charges.</p>
+</div>
+<h2 id="reduce-logging-costs">Reduce logging costs</h2>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Use the <code>noalert;</code> keyword on intermediate rules (flowbits setters, JA3 hash enablers) that do not need their own log entries. This reduces log volume without losing visibility on rules that matter.</p>
+</div>
+<ul>
+<li>Publish flow and alert logs to separate log groups or S3 prefixes for more efficient querying</li>
+<li>Use the <code>noalert;</code> keyword on rules that perform intermediate logic but do not need to generate log events</li>
+<li>See <a href="../../logging-and-monitoring/docs/">Logging and monitoring</a> for details</li>
+</ul>
+<h2 id="tls-inspection-costs">TLS inspection costs</h2>
+<div class="admonition danger">
+<p class="admonition-title">Common misconfiguration</p>
+<p>Enabling TLS inspection on a firewall significantly increases costs (Advanced Inspection tier pricing applies to all traffic through that firewall, not just TLS-inspected traffic). Evaluate whether the security benefits justify the cost increase for your specific workloads before enabling.</p>
+</div>
+<p>TLS inspection is a paid Advanced Inspection feature with its own pricing tier:</p>
+<ul>
+<li>Additional hourly rate per Region/AZ for the Advanced Inspection endpoint</li>
+<li>In some Regions, additional per-GB charge for traffic processed with TLS inspection</li>
+</ul>
+<p>The NAT gateway bundled discount still applies to your standard Network Firewall charges (endpoint hourly + standard data processing) when TLS inspection is enabled. However, the additional Advanced Inspection hourly and per-GB charges are separate and not covered by the bundled discount.</p>
+<p>Evaluate whether the security benefits of TLS inspection justify the additional cost for your specific workloads. Many customers find that domain filtering via TLS SNI (which does not require TLS inspection) provides sufficient security for most use cases.</p>
+<h2 id="data-transfer-changes-august-2026">Data transfer changes (August 2026)</h2>
+<div class="admonition warning">
+<p class="admonition-title">Billing change, effective August 2026</p>
+<p>Starting with the August 2026 billing cycle, standard AWS data transfer rates apply for Network Firewall traffic. Customers were notified via email beginning May 2026. No retroactive charges were applied.</p>
+</div>
+<p>Previously, Network Firewall absorbed certain data transfer charges on behalf of customers. Starting August 2026, the following standard AWS data transfer charges apply:</p>
+<ul>
+<li><strong>Data Transfer Out (DTO)</strong> - Traffic sent from the firewall to the Internet</li>
+<li><strong>Data Transfer Inter-Region (DTIR)</strong> - Traffic transferred between AWS Regions through the firewall</li>
+<li><strong>Regional/Public IP</strong> - Traffic sent through the firewall within the same Region over internet gateway</li>
+<li><strong>Same-VPC cross-AZ (DTAZ)</strong> - No charge unless customers use public IPs to send traffic through the firewall within the same AWS Region</li>
+</ul>
+<p><strong>What is NOT changing:</strong> Network Firewall endpoint hourly charges and per-GB traffic processing charges remain unchanged.</p>
+<h3 id="billing-visibility">Billing visibility</h3>
+<ul>
+<li>New line items appear under Data Transfer, separate from endpoint and processing charges</li>
+<li>In Cost Explorer and CUR, charges appear under the AWS Network Firewall service name with usage types such as <code>DataTransfer-Out-Bytes</code></li>
+</ul>
+<h2 id="what-to-read-next">What to read next</h2>
+<ul>
+<li><a href="../../deployment-architecture/docs/">Deployment architecture</a> - Choose a cost-effective deployment model</li>
+<li><a href="../../logging-and-monitoring/docs/">Logging and monitoring</a> - Log cost optimization</li>
+<li><a href="https://aws.amazon.com/network-firewall/pricing/">Network Firewall pricing</a> - Official pricing page</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
