@@ -53,6 +53,12 @@ Unlike traditional scanners that generate findings without validation, AWS Secur
 
 AWS Security Agent tests against the [OWASP Top 10](https://owasp.org/www-project-top-ten/) for web applications as well as application-specific business logic flaws, and operates across AWS, other cloud providers, and on-premises environments. For a full description of the service, see the [AWS Security Agent product page](https://aws.amazon.com/security-agent/) and the [general availability announcement](https://aws.amazon.com/blogs/security/aws-security-agent-on-demand-penetration-testing-now-generally-available/).
 
+The following diagram shows the building blocks of a penetration test. Agent spaces, application context in Amazon S3, test credentials in AWS Secrets Manager or a Lambda credential vendor, CloudWatch logging, and the IAM service role all reside in a security-team AWS Account, while the test agents run in an AWS service-managed account (backed by Amazon Bedrock) and reach your target — hosted on AWS, another cloud, or on-premises — over the public internet once you have verified domain ownership.
+
+[![AWS Security Agent penetration testing building blocks](../../images/security-agent/sec_agent_components.png)](../../images/security-agent/sec_agent_components.png)
+
+*Figure 1: Foundational components of an AWS Security Agent penetration test*
+
 ## What are the benefits of AWS Security Agent penetration testing?
 
 Most organizations limit manual penetration testing to their most critical applications and run those tests periodically because of time and cost constraints. This leaves much of the application portfolio untested between assessments. AWS Security Agent addresses that gap:
@@ -131,7 +137,17 @@ To test internal applications that are not publicly reachable, connect AWS Secur
 
 Because agent spaces are usually configured in a dedicated security-team AWS Account (see [Organizing work with agent spaces](#organizing-work-with-agent-spaces)), the VPC you attach must be in the same AWS Account and AWS Region as the agent space — which is usually not the AWS Account or VPC that hosts the target application. When the target is not reachable from the internet, create a VPC in the agent space AWS Account and AWS Region, then establish connectivity from that VPC to the target VPC (for example, with VPC peering, AWS Transit Gateway, or a shared subnet) and confirm that routes and security groups on both sides allow the traffic.
 
+A common pattern uses AWS Transit Gateway as a central routing hub: for a private application on AWS, the agent's network interface reaches the workload VPC through a Transit Gateway attachment over the AWS private network; for a target in an on-premises data center or another cloud, traffic routes through a Direct Connect gateway and an AWS Direct Connect connection. No traffic traverses the public internet in either case, and you verify domain ownership with the Private VPC method (see [Validating domain ownership](#validating-domain-ownership)).
+
+[![Penetration testing a private application on AWS or on-premises](../../images/security-agent/sec_agent_private.png)](../../images/security-agent/sec_agent_private.png)
+
+*Figure 2: Reaching a private target on AWS, on-premises, or in another cloud through Transit Gateway and AWS Direct Connect*
+
 You may also need VPC configuration for a target that is reachable from the internet but only accepts traffic from known static public IP addresses. AWS Security Agent does not publish the public IP addresses it uses for internet-based tests, so there is no fixed range you can add to an ingress allowlist. Instead, attach a VPC and provide a subnet that routes outbound traffic through a NAT gateway that uses Elastic IP addresses (EIPs), then allow those EIPs in the target's ingress rules. This gives the test a predictable, stable source IP that your ingress controls can permit.
+
+[![Testing an internet-facing application with source IP allowlisting](../../images/security-agent/sec_agent_ip_allowlist.png)](../../images/security-agent/sec_agent_ip_allowlist.png)
+
+*Figure 3: Routing test traffic through a NAT gateway with an Elastic IP so a source-IP allowlist can permit it*
 
 For private domains inside a VPC, verification may show as `UNREACHABLE`; you can still proceed, because AWS Security Agent attempts domain verification for private endpoints at the start of each run.
 
@@ -204,6 +220,8 @@ Treat the accessible URL list as a trust boundary: test data, including credenti
 ### Limiting blast radius with out-of-scope paths
 
 Exclude URLs that trigger destructive or irreversible operations (for example, bulk-delete endpoints, payment capture, or email/SMS send actions) so the agent does not exercise them. AWS Security Agent excludes the path you specify and everything nested beneath it. Configuring out-of-scope paths is an important safeguard even though the agent uses intentionally minimal-impact payloads — but treat it as one layer and combine it with defense in depth (a dedicated non-production test account, recent backups, and least-privilege test credentials) so that an accidentally exercised path cannot cause irreversible harm.
+
+Also exclude authentication-sensitive endpoints for your test accounts — password reset, email or username change, and similar account-mutation paths. If the agent exercises these during a run, it can change or lock the very credentials it is testing with and stall the authenticated test partway through.
 
 To bound the cost of a run, use the maximum task-hour limit described under [Cost considerations](#cost-considerations).
 
@@ -335,6 +353,7 @@ The sample figures above are illustrative and not guaranteed. Confirm current pr
 
 * [AWS Security Agent on-demand penetration testing now generally available](https://aws.amazon.com/blogs/security/aws-security-agent-on-demand-penetration-testing-now-generally-available/)
 * [New AWS Security Agent secures applications proactively from design to deployment](https://aws.amazon.com/blogs/aws/new-aws-security-agent-secures-applications-proactively-from-design-to-deployment-preview/)
+* [Inside AWS Security Agent: A multi-agent architecture for automated penetration testing](https://aws.amazon.com/blogs/security/inside-aws-security-agent-a-multi-agent-architecture-for-automated-penetration-testing/)
 * [Introducing AWS Continuum: Security at machine speed](https://aws.amazon.com/blogs/security/introducing-aws-continuum-security-at-machine-speed/)
 
 ### Tools
