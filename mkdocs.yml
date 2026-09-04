@@ -106,7 +106,36 @@ plugins:
             build: true
             nav:
               - 홈: index.md
-              - AWS Network Firewall 모범 사례: guides/network-firewall/index.md
+              - AWS WAF 모범 사례:
+                - 홈: guides/waf/index.md
+                - 사전 요구 사항 및 기본 사항: guides/waf/prerequisites/docs/index.md
+                - 권장 HTTP 아키텍처: guides/waf/recommended-http-architecture/docs/index.md
+                - 운영화: guides/waf/operationalizing/docs/index.md
+                - AWS 관리형 규칙: guides/waf/aws-managed-rules/docs/index.md
+                - 사용자 정의 규칙: guides/waf/custom-rules/docs/index.md
+                - 봇 관리: guides/waf/bot-management/docs/index.md
+                - 사기 방지: guides/waf/fraud-prevention/docs/index.md
+                - 권장 WAF 규칙 순서: guides/waf/recommended-waf-rule-order/docs/index.md
+                - CAPTCHA 및 Challenge: guides/waf/captcha-and-challenge/docs/index.md
+                - WAF 비용: guides/waf/waf-cost/docs/index.md
+                - 로깅 접근 방식: guides/waf/waf-logging/docs/index.md
+                - WAF 로그 쿼리 및 시각화: guides/waf/monitoring-waf-rules/docs/index.md
+                - 다른 AWS 서비스와 함께 WAF 사용: guides/waf/using-waf-with-other-services/docs/index.md
+                - 추가 참고 자료: guides/waf/additional-references/docs/index.md
+              - AWS Network Firewall 모범 사례:
+                - 소개: guides/network-firewall/index.md
+                - 사전 요구 사항 및 기본 사항: guides/network-firewall/prerequisites/docs/index.md
+                - 배포 아키텍처: guides/network-firewall/deployment-architecture/docs/index.md
+                - 방화벽 정책 구성: guides/network-firewall/firewall-policy-configuration/docs/index.md
+                - 고객 관리 규칙: guides/network-firewall/customer-managed-rules/docs/index.md
+                - 샘플 Suricata 규칙: guides/network-firewall/sample-suricata-rules/docs/index.md
+                - AWS 관리형 규칙: guides/network-firewall/aws-managed-rules/docs/index.md
+                - TLS 검사: guides/network-firewall/tls-inspection/docs/index.md
+                - 로깅 및 모니터링: guides/network-firewall/logging-and-monitoring/docs/index.md
+                - 시작 정책: guides/network-firewall/getting-started-policy/docs/index.md
+                - 비용 고려 사항: guides/network-firewall/cost-considerations/docs/index.md
+                - 추가 참고 자료: guides/network-firewall/additional-references/docs/index.md
+                - 모범 사례 빠른 참조: guides/network-firewall/quick-reference/docs/index.md
           - locale: ja
             name: 日本語
             build: true
