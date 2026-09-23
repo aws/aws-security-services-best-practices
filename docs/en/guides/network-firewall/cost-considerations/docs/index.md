@@ -11,7 +11,7 @@ Network Firewall pricing consists of:
 
 * **Endpoint hourly charge** - Per firewall endpoint, per AZ, regardless of traffic volume
 * **Data processing charge** - Per GB of traffic processed by the firewall (metered at the stateless engine)
-* **Advanced Inspection charges (TLS inspection only)** - Additional hourly rate and per-GB charge when TLS inspection is enabled
+* **Advanced Inspection charges (TLS inspection only)** - Additional hourly rate per Region and Availability Zone when TLS inspection is enabled. There are no additional data processing charges for Advanced Inspection traffic beyond the standard Network Firewall traffic processing charges
 * **Standard AWS data transfer charges** - Standard data transfer rates apply for traffic flowing through Network Firewall (see [upcoming data transfer changes](#data-transfer-changes-august-2026) below)
 
 !!! note "How traffic processing is metered"
@@ -22,7 +22,7 @@ Network Firewall pricing consists of:
 !!! tip "Best practice"
     Always deploy your NAT gateway in the same networking path as your Network Firewall. When you do, standard NAT gateway per-hour and data processing charges are completely waived. This is one of the most significant cost benefits of using Network Firewall for egress filtering and is frequently overlooked.
 
-If you create a NAT gateway and place it in the same networking path as your Network Firewall, standard NAT gateway per-hour and data processing usage charges are waived. This discount is applied on a one-to-one basis with standard Network Firewall charges.
+If you create a NAT gateway and place it in the same networking path as your Network Firewall, standard NAT gateway per-hour and data processing usage charges are waived. This discount is applied on a one-to-one basis with standard Network Firewall charges: endpoint per-hour usage, secondary VPC endpoint per-hour usage, and standard traffic processing usage through both primary and secondary endpoints.
 
 ### Requirements
 
@@ -33,9 +33,10 @@ To receive the NAT gateway bundled discount:
 
 ### What is excluded from the discount
 
-* Network Firewall Advanced Inspection Endpoint charges (TLS inspection)
-* Network Firewall Advanced Inspection Traffic Processing charges (TLS inspection)
 * Regional NAT gateway (RNAT)
+
+!!! note "Using TLS inspection?"
+    If you have enabled TLS inspection, one additional charge is also outside the discount: the Advanced Inspection Endpoint hourly charge. This applies only to deployments that use TLS inspection. See [TLS inspection costs](#tls-inspection-costs) for details.
 
 ### Verifying your discount
 
@@ -175,14 +176,15 @@ For organizations with multiple accounts or business units sharing a centralized
 ## TLS inspection costs
 
 !!! danger "Common misconfiguration"
-    Enabling TLS inspection on a firewall significantly increases costs (Advanced Inspection tier pricing applies to all traffic through that firewall, not just TLS-inspected traffic). Evaluate whether the security benefits justify the cost increase for your specific workloads before enabling.
+    Enabling TLS inspection adds an Advanced Inspection Endpoint charge (an additional hourly rate per Region and Availability Zone), billed regardless of traffic volume and not covered by the NAT gateway bundled discount. Evaluate whether the security benefits justify the cost increase for your specific workloads before enabling.
 
 TLS inspection is a paid Advanced Inspection feature with its own pricing tier:
 
-* Additional hourly rate per Region/AZ for the Advanced Inspection endpoint
-* In some Regions, additional per-GB charge for traffic processed with TLS inspection
+* Additional hourly rate per Region and Availability Zone for the Advanced Inspection endpoint
 
-The NAT gateway bundled discount still applies to your standard Network Firewall charges (endpoint hourly + standard data processing) when TLS inspection is enabled. However, the additional Advanced Inspection hourly and per-GB charges are separate and not covered by the bundled discount.
+There are no additional data processing charges for Advanced Inspection traffic beyond the standard Network Firewall traffic processing charges.
+
+The NAT gateway bundled discount still applies to your standard Network Firewall charges (endpoint hourly + standard traffic processing) when TLS inspection is enabled. However, the additional Advanced Inspection Endpoint hourly charge is separate and not covered by the bundled discount.
 
 Evaluate whether the security benefits of TLS inspection justify the additional cost for your specific workloads. Many customers find that domain filtering via TLS SNI (which does not require TLS inspection) provides sufficient security for most use cases.
 
