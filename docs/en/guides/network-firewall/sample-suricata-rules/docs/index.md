@@ -54,7 +54,7 @@ reject http $HOME_NET any -> any any (msg:"Category:Spam"; aws_url_category:Spam
 ```
 reject http $HOME_NET any -> any any (http.host; content:"."; pcre:"/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/"; msg:"HTTP direct to IP via http host header"; flow:to_server; sid:202501026;)
 reject tls $HOME_NET any -> any any (tls.sni; content:"."; pcre:"/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/"; msg:"TLS direct to IP via TLS SNI"; flow:to_server; sid:202501027;)
-reject tls $HOME_NET any -> any any (ja4.hash; content:"_"; startswith; content:!"d"; offset:3; depth:1; msg:"JA4 No SNI Reject"; flow:to_server; sid:1297713;)
+reject tls $HOME_NET any -> any any (ja4.hash; content:!"d"; offset:3; depth:1; msg:"JA4 No SNI Reject"; flow:to_server; sid:1297713;)
 ```
 
 **What it does:** Blocks HTTP and TLS connections where the destination is specified as an IP address rather than a domain name. The third rule blocks TLS connections that have no SNI field at all (detected via JA4 fingerprint characteristics).
@@ -375,7 +375,7 @@ reject http $HOME_NET any -> any any (msg:"Category:Spam"; aws_url_category:Spam
 # --- Block Direct-to-IP Communication ---
 reject http $HOME_NET any -> any any (http.host; content:"."; pcre:"/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/"; msg:"HTTP direct to IP via http host header"; flow:to_server; sid:202501026;)
 reject tls $HOME_NET any -> any any (tls.sni; content:"."; pcre:"/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/"; msg:"TLS direct to IP via TLS SNI"; flow:to_server; sid:202501027;)
-reject tls $HOME_NET any -> any any (ja4.hash; content:"_"; startswith; content:!"d"; offset:3; depth:1; msg:"JA4 No SNI Reject"; flow:to_server; sid:1297713;)
+reject tls $HOME_NET any -> any any (ja4.hash; content:!"d"; offset:3; depth:1; msg:"JA4 No SNI Reject"; flow:to_server; sid:1297713;)
 
 # --- GeoIP Blocking (replace XX with your blocked country codes) ---
 # drop ip $HOME_NET any -> any any (msg:"Egress traffic to blocked geo"; geoip:dst,XX; metadata:geo XX; flow:to_server; sid:202501028;)
