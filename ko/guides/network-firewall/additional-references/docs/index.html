@@ -1,0 +1,702 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/network-firewall/additional-references/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/network-firewall/additional-references/docs/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ko">
+        
+          <link rel="alternate" href="../../../../../ja/guides/network-firewall/additional-references/docs/" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Additional references - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#additional-references" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Additional references
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="언어설정">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/network-firewall/additional-references/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ja/guides/network-firewall/additional-references/docs/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    홈
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall 모범 사례
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sample-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sample code
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workshops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workshops
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workshops">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workshop-instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workshop instructions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workshop-source-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workshop source code
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#videos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Videos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#blogs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blogs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Blogs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture-and-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture and deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rules-and-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rules and filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tls-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TLS inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-and-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging and monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-guides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related guides
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="additional-references">Additional references</h1>
+<p>This page collects hands-on resources for learning and implementing AWS Network Firewall beyond the best practices covered in this guide: sample code repositories, workshops, video walkthroughs, blog posts, and official documentation links.</p>
+<h2 id="sample-code">Sample code</h2>
+<p>Start here if you want working code to deploy or extend.</p>
+<ul>
+<li><a href="https://github.com/aws-samples/sample-suricata-generator">Suricata Rule Generator for AWS Network Firewall</a> - Open-source GUI application for writing, validating, and managing Suricata rules. Includes rule conflict analysis, bulk domain import, managed rule group filtering, CloudWatch usage analytics, and infrastructure export (CloudFormation, Terraform, direct API). Referenced throughout this guide.</li>
+<li><a href="https://github.com/aws-samples/aws-networkfirewall-cfn-templates">AWS Network Firewall CloudFormation Templates</a> - CloudFormation templates for all deployment architectures (centralized, distributed, combined), the getting started policy, and a CloudWatch dashboard.</li>
+<li><a href="https://github.com/aws-samples/aws-network-firewall-terraform">AWS Network Firewall Terraform Templates</a> - Terraform equivalents of the CloudFormation templates above, covering all deployment architectures and the getting started policy.</li>
+<li><a href="https://github.com/aws-samples/aws-network-firewall-automation-examples/tree/main">AWS Network Firewall Automation Examples</a> - Lambda-based automation patterns for dynamic rule updates, IP list synchronization, and event-driven rule management.</li>
+</ul>
+<h2 id="workshops">Workshops</h2>
+<p>AWS workshops are hands-on labs that walk you through deploying and configuring services in a sandbox AWS account.</p>
+<p>The best way to experience these workshops is through the <a href="https://aws-experience.com/amer/smb/events/series/activation-days">AWS Activation Day program</a>. Activation Days are free, instructor-led events open to anyone. AWS Solutions Architects guide you through the workshop content in a live setting with a provisioned sandbox account at no cost. Check the program page for upcoming sessions covering AWS security, identity, and governance services.</p>
+<p>If you are an AWS customer with an account team, you can also ask your Solutions Architect to set up a dedicated workshop event for your team. These use the same workshop content as Activation Days but are run privately for your organization.</p>
+<p>If you prefer to deploy the workshop into your own environment, the open-source code repositories below contain the infrastructure as code to do so.</p>
+<h3 id="workshop-instructions">Workshop instructions</h3>
+<ul>
+<li><a href="https://catalog.workshops.aws/network-security/en-US">AWS Advanced Network Security: Network Firewall and DNS Firewall</a> - Comprehensive workshop covering both Network Firewall and DNS Firewall together. Walks through centralized deployment with Transit Gateway, Suricata rule writing, domain filtering, managed rules, and logging.</li>
+<li><a href="https://catalog.us-east-1.prod.workshops.aws/workshops/cdef9a06-8156-4669-9e6a-6eb83e4a5adc/en-US">Building Secure Networks with AWS Cloud WAN, Network Firewall, and DNS Firewall</a> - Same Network Firewall and DNS Firewall content as above, but the centralized networking hub is Cloud WAN instead of Transit Gateway. Includes Cloud WAN service insertion concepts for routing traffic to the firewall.</li>
+</ul>
+<h3 id="workshop-source-code">Workshop source code</h3>
+<ul>
+<li><a href="https://github.com/aws-samples/sample-aws-network-security-workshop">sample-aws-network-security-workshop</a> - IaC for the AWS Advanced Network Security workshop (Transit Gateway variant)</li>
+<li><a href="https://github.com/aws-samples/sample-building-secure-global-hybrid-networks-on-aws-workshop">sample-building-secure-global-hybrid-networks-on-aws-workshop</a> - IaC for the Building Secure Networks workshop (Cloud WAN variant)</li>
+</ul>
+<h2 id="videos">Videos</h2>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=67pVOv3lPlk">Introduction, best practices and custom Suricata rules</a> - Broad overview of Network Firewall architecture and rule writing fundamentals.</li>
+<li><a href="https://www.youtube.com/watch?v=lTJxWAiQrHM">AWS re:Inforce 2023 - Firewalls, and where to put them (NIS306)</a> - Deployment architecture decision framework, covering when to use Network Firewall vs. WAF vs. security groups.</li>
+<li><a href="https://www.youtube.com/watch?v=S7_hUxWrYmw&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=3&amp;pp=iAQB">Decrypt, inspect, and re-encrypt TLS egress traffic at scale</a> - TLS inspection setup and operational considerations.</li>
+<li><a href="https://www.youtube.com/watch?v=j2pLuHdAj0A&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=40&amp;pp=iAQB">Decrypt, inspect, and re-encrypt TLS traffic at scale</a> - Extended TLS inspection walkthrough with inbound and outbound scenarios.</li>
+<li><a href="https://www.youtube.com/watch?v=ufx8sO5s4BI&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=22&amp;pp=iAQB">AWS Network Firewall Suricata HOME_NET variable override</a> - Visual demonstration of the HOME_NET misconfiguration and how to fix it.</li>
+<li><a href="https://www.youtube.com/watch?v=_K_2TVNygF4&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=54&amp;pp=iAQB">AWS Network Firewall support for reject action for TCP traffic</a> - Reject action behavior and when to use it vs. drop.</li>
+<li><a href="https://www.youtube.com/watch?v=SDj_tMHN5Zk&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=55&amp;pp=iAQB">AWS Network Firewall tag-based resource groups</a> - Organizing firewall resources with tags for multi-team environments.</li>
+<li><a href="https://www.youtube.com/watch?v=BYVObzBWnqo&amp;list=PLhr1KZpdzukfJzNDd8eCJH_TGg24ZTwP6&amp;index=1&amp;pp=iAQB">AWS Network Firewall console experience</a> - Console walkthrough for visual learners who prefer the console over IaC.</li>
+</ul>
+<h2 id="blogs">Blogs</h2>
+<h3 id="architecture-and-deployment">Architecture and deployment</h3>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/deployment-models-for-aws-network-firewall/">Deployment models for AWS Network Firewall</a> - Original deployment model blog covering centralized, distributed, and combined architectures with diagrams.</li>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/deployment-models-for-aws-network-firewall-transit-gateway-attachment-and-multiple-vpc-endpoints/">Deployment models for AWS Network Firewall: Transit Gateway attachment and multiple VPC endpoints</a> - Updated deployment models covering the native TGW attachment and multi-endpoint features.</li>
+<li><a href="https://aws.amazon.com/blogs/security/why-and-how-to-migrate-to-a-transit-gateway-attached-aws-network-firewall/">Why and how to migrate to a Transit Gateway-attached AWS Network Firewall</a> - Migration guide from inspection VPC to native TGW attachment.</li>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/reintroducing-network-firewall-proxy-for-secure-egress-connectivity/">Reintroducing Network Firewall Proxy for Secure Egress Connectivity</a> - Explicit proxy mode for Network Firewall with no-source-preservation architecture.</li>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-deploy-aws-network-firewall-by-using-aws-firewall-manager/">How to deploy AWS Network Firewall by using AWS Firewall Manager</a> - Multi-account deployment automation with Firewall Manager.</li>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/centralized-outbound-inspection-architecture-in-aws-cloud-wan/">Centralized outbound inspection architecture in AWS Cloud WAN</a> - Cloud WAN service insertion with Network Firewall.</li>
+</ul>
+<h3 id="rules-and-filtering">Rules and filtering</h3>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/security/from-log-analysis-to-rule-creation-how-aws-network-firewall-automates-domain-based-security-for-outbound-traffic/">From log analysis to rule creation: How AWS Network Firewall automates domain-based security for outbound traffic</a> - Traffic Analysis Mode for automated domain discovery and rule generation.</li>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/introducing-prefix-lists-in-aws-network-firewall-stateful-rule-groups/">Introducing Prefix Lists in AWS Network Firewall Stateful Rule Groups</a> - Using managed prefix lists as IP set references in rules.</li>
+<li><a href="https://aws.amazon.com/blogs/security/how-to-control-non-http-and-non-https-traffic-to-a-dns-domain-with-aws-network-firewall-and-aws-lambda/">How to control non-HTTP and non-HTTPS traffic to a DNS domain with AWS Network Firewall and AWS Lambda</a> - Filtering non-web protocols by domain using dynamic IP resolution.</li>
+<li><a href="https://aws.amazon.com/blogs/security/use-aws-network-firewall-to-filter-outbound-https-traffic-from-applications-hosted-on-amazon-eks/">Use AWS Network Firewall to filter outbound HTTPS traffic from applications hosted on Amazon EKS and collect hostnames provided by SNI</a> - EKS-specific egress filtering patterns.</li>
+</ul>
+<h3 id="tls-inspection">TLS inspection</h3>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/security/tls-inspection-configuration-for-encrypted-traffic-and-aws-network-firewall/">TLS inspection configuration for encrypted traffic and AWS Network Firewall</a> - Step-by-step inbound TLS inspection configuration.</li>
+<li><a href="https://aws.amazon.com/blogs/security/tls-inspection-configuration-for-encrypted-egress-traffic-and-aws-network-firewall/">TLS inspection configuration for encrypted egress traffic and AWS Network Firewall</a> - Step-by-step outbound TLS inspection configuration.</li>
+</ul>
+<h3 id="logging-and-monitoring">Logging and monitoring</h3>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/security/cost-considerations-and-common-options-for-aws-network-firewall-log-management/">Cost considerations and common options for AWS Network Firewall log management</a> - Log destination selection, cost optimization, and retention strategies.</li>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-analyze-aws-network-firewall-logs-using-amazon-opensearch-service-part-1/">How to analyze AWS Network Firewall logs using Amazon OpenSearch Service (Part 1)</a> - OpenSearch integration for log analysis and visualization.</li>
+<li><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-analyze-aws-network-firewall-logs-using-amazon-opensearch-service-part-2/">How to analyze AWS Network Firewall logs using Amazon OpenSearch Service (Part 2)</a> - Advanced OpenSearch queries and dashboard creation.</li>
+<li><a href="https://aws.amazon.com/blogs/security/aws-network-firewall-now-supports-rule-hit-count/">AWS Network Firewall now supports rule hit count</a> - Per-rule traffic match reporting for finding dormant rules, validating new rules, and evidencing active controls.</li>
+<li><a href="https://aws.amazon.com/blogs/security/introducing-the-aws-network-firewall-cloudwatch-dashboard/">Introducing the AWS Network Firewall CloudWatch Dashboard</a> - Native monitoring dashboard setup and usage.</li>
+<li><a href="https://aws.amazon.com/blogs/mt/use-contributor-insights-to-analyze-aws-network-firewall/">Use Contributor Insights to analyze AWS Network Firewall</a> - CloudWatch Contributor Insights for top-N analysis.</li>
+</ul>
+<h2 id="aws-documentation">AWS documentation</h2>
+<ul>
+<li><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html">AWS Network Firewall Developer Guide</a> - Complete service documentation.</li>
+<li><a href="https://aws.amazon.com/network-firewall/faqs/">Network Firewall FAQ</a> - Common questions and answers.</li>
+<li><a href="https://aws.amazon.com/network-firewall/pricing/">Network Firewall pricing</a> - Current pricing for endpoints, processing, and TLS inspection.</li>
+<li><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-examples.html">Suricata rule examples</a> - Official AWS Suricata rule examples.</li>
+<li><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/troubleshooting-rules.html">Troubleshooting rules</a> - Common rule issues and solutions.</li>
+<li><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-rule-evaluation-order.html">Evaluation order for stateful rule groups</a> - How strict and action order modes work.</li>
+<li><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-rule-group-capacity.html">Setting rule group capacity</a> - How stateful and stateless rule group capacity is calculated.</li>
+<li><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/quotas.html">Network Firewall quotas</a> - Adjustable and fixed service limits.</li>
+<li><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/stream-exception-policy.html">Stream exception policy</a> - Midstream flow handling options.</li>
+<li><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/tls-inspection-configurations.html">TLS inspection configurations</a> - TLS decryption setup reference.</li>
+<li><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/troubleshooting.html">Troubleshooting AWS Network Firewall</a> - General troubleshooting guide.</li>
+</ul>
+<h2 id="related-guides">Related guides</h2>
+<ul>
+<li><a href="https://aws.github.io/aws-networking-best-practices/security/">AWS Networking Best Practices - Security</a> - Broader AWS networking security guidance.</li>
+<li><a href="../../../firewall-overview/">AWS Security Services Best Practices - Firewalls on AWS</a> - Choosing between AWS firewall services (Network Firewall, WAF, security groups, DNS Firewall).</li>
+<li><a href="../../../waf/">AWS Security Services Best Practices - AWS WAF</a> - Best practices for the complementary web application firewall.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

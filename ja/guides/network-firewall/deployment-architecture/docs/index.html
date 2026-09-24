@@ -1,0 +1,890 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ja/guides/network-firewall/deployment-architecture/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/network-firewall/deployment-architecture/docs/" hreflang="en">
+        
+          <link rel="alternate" href="../../../../../ko/guides/network-firewall/deployment-architecture/docs/" hreflang="ko">
+        
+          <link rel="alternate" href="./" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Deployment architecture - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deployment-architecture" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Deployment architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/network-firewall/deployment-architecture/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ko/guides/network-firewall/deployment-architecture/docs/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dns-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Route 53 Resolver DNS Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#centralized-deployment-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Centralized deployment models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Centralized deployment models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#centralizing-with-transit-gateway-native-attachment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Centralizing with Transit Gateway native attachment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#centralizing-with-an-inspection-vpc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Centralizing with an inspection VPC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#centralizing-with-cloud-wan-and-service-insertion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Centralizing with Cloud WAN and service insertion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#distributed-deployment-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distributed deployment models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Distributed deployment models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#distributed-with-dedicated-firewall-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distributed with dedicated firewall endpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributed-with-multiple-vpc-endpoint-associations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distributed with multiple VPC endpoint associations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combined-deployment-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combined deployment models
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aws-network-firewall-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS Network Firewall Proxy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AWS Network Firewall Proxy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-proxy-supports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the proxy supports
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-network-firewall-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use Network Firewall Proxy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architecture-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managing-across-accounts-with-aws-firewall-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managing across accounts with AWS Firewall Manager
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-sharing-with-aws-ram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource sharing with AWS RAM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource sharing with AWS RAM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#centralized-deployment-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Centralized deployment pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributed-deployment-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Distributed deployment pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-endpoint-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-endpoint pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-read-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to read next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="deployment-architecture">Deployment architecture</h1>
+<div class="admonition info">
+<p class="admonition-title">Prerequisites</p>
+<p>This section assumes familiarity with <a href="../../prerequisites/docs/">Prerequisites and fundamentals</a>. Review that topic first if you are new to AWS Network Firewall concepts.</p>
+</div>
+<p>AWS Network Firewall supports centralized, distributed, and combined deployment models, with centralized inspection being the recommended starting point for multi-account environments because it minimizes endpoint costs and simplifies policy management. Choosing the right architecture impacts cost, scalability, blast radius, and operational complexity.</p>
+<p>For sample CloudFormation and Terraform templates implementing these models, see the <a href="https://github.com/aws-samples/aws-networkfirewall-cfn-templates">aws-networkfirewall-cfn-templates</a> and <a href="https://github.com/aws-samples/aws-network-firewall-terraform">aws-network-firewall-terraform</a> repositories.</p>
+<h2 id="centralized-deployment-models">Centralized deployment models</h2>
+<p>Centralized deployment places Network Firewall in a hub position where traffic from multiple spoke VPCs is routed through a single set of firewall endpoints. This is the most common and recommended pattern for multi-account environments.</p>
+<h3 id="centralizing-with-transit-gateway-native-attachment">Centralizing with Transit Gateway native attachment</h3>
+<p>AWS Network Firewall supports <a href="https://aws.amazon.com/about-aws/whats-new/2025/07/aws-network-firewall-native-transit-gateway-support/">native integration with AWS Transit Gateway</a> that attaches a firewall directly to a Transit Gateway as a network function attachment, eliminating the need to create and manage a dedicated inspection VPC. This is the recommended centralized model for new deployments.</p>
+<p>For a detailed walkthrough of architectural patterns with this feature, see <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/deployment-models-for-aws-network-firewall-transit-gateway-attachment-and-multiple-vpc-endpoints/">Deployment models for AWS Network Firewall: Transit Gateway attachment and multiple VPC endpoints</a>.</p>
+<p>You specify a Transit Gateway when creating the firewall (no VPC required), and AWS creates and manages an internal VPC containing the firewall endpoints, subnets, and Transit Gateway attachment. Transit Gateway appliance mode is automatically activated, providing symmetric routing without manual configuration. You configure static routes on Transit Gateway route tables to direct traffic through the firewall attachment.</p>
+<p>This model supports East-West (VPC-to-VPC) inspection, centralized internet egress (requires a separate egress VPC with NAT gateway and internet gateway), and combined egress plus East-West through a single firewall.</p>
+<p>Supports <a href="https://docs.aws.amazon.com/vpc/latest/tgw/metering-policy.html">Flexible Cost Allocation for Transit Gateway</a> to charge back account owners for traffic they send through the centralized firewall. This cost allocation capability is only available with Transit Gateway-attached firewalls.</p>
+<p><img alt="Transit Gateway-attached Network Firewall with centralized egress VPC" src="../../../../../images/network-firewall/tgw-attached-firewall.png" /></p>
+<p>For migration guidance from a traditional inspection VPC to native TGW attachment, see <a href="https://aws.amazon.com/blogs/security/why-and-how-to-migrate-to-a-transit-gateway-attached-aws-network-firewall/">Why and how to migrate to a Transit Gateway-attached AWS Network Firewall</a>.</p>
+<h3 id="centralizing-with-an-inspection-vpc">Centralizing with an inspection VPC</h3>
+<p>This is the original centralized model that existed before Transit Gateway native attachment. Network Firewall is deployed into a customer-managed inspection VPC attached to Transit Gateway. You create and manage the VPC, subnets, firewall endpoints, and route tables yourself.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>For new centralized deployments, prefer the <a href="#centralizing-with-transit-gateway-native-attachment">native Transit Gateway attachment</a> over a customer-managed inspection VPC. Only choose an inspection VPC when you have one of the specific requirements listed below. If you already run an inspection VPC and none of those requirements apply to you, see the <a href="https://aws.amazon.com/blogs/security/why-and-how-to-migrate-to-a-transit-gateway-attached-aws-network-firewall/">migration blog</a>.</p>
+</div>
+<p><strong>What you give up by using an inspection VPC:</strong></p>
+<ul>
+<li><strong>Flexible cost allocation for Network Firewall charges.</strong> Transit Gateway metering policies can only charge back Network Firewall data processing to the account that generated the traffic when the firewall is natively attached to Transit Gateway. With an inspection VPC you can allocate the Transit Gateway data processing charges, but not the Network Firewall charges. For many central security teams this is the difference between a chargeback model and absorbing the whole bill.</li>
+<li><strong>The infrastructure AWS would otherwise manage for you.</strong> You own the VPC, the firewall subnets in each AZ, the inspection VPC route tables, the Transit Gateway attachment, and the route table associations and propagations that steer traffic in and back out. With native attachment, AWS provisions and manages all of that in a service-managed VPC.</li>
+<li><strong>Automatic appliance mode.</strong> Native attachments enable Transit Gateway appliance mode automatically. With an inspection VPC you have to remember to enable it, and forgetting is a common source of asymmetric routing that silently degrades inspection.</li>
+</ul>
+<p><strong>When an inspection VPC is still the right choice:</strong></p>
+<ul>
+<li>When you need access to PrivateLink endpoint metrics and VPC flow logs for the firewall endpoint ENIs, which are not available for the service-managed VPC used by native attachments</li>
+<li>When you need centralized ingress inspection (placing the firewall between an internet gateway and a load balancer within the inspection VPC)</li>
+<li>When you require Transit Gateway encryption, which native Network Firewall attachment does not currently support</li>
+<li>When you require specialized routing not supported by the native integration</li>
+</ul>
+<p>Enable <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/vpc-config.html">TGW appliance mode</a> on the inspection VPC attachment to ensure symmetric routing. Without it, return traffic could land on an endpoint in a different AZ, preventing correct traffic evaluation.</p>
+<p><img alt="Network Firewall in a dedicated inspection VPC with separate egress VPC" src="../../../../../images/network-firewall/inspection-vpc-tgw.png" /></p>
+<p>You can also place the NAT gateway in the same inspection VPC as the firewall, combining inspection and egress into a single VPC:</p>
+<p><img alt="Network Firewall and NAT gateway in the same centralized inspection VPC" src="../../../../../images/network-firewall/centralized-inspection-vpc-tgw-natgw.png" /></p>
+<h3 id="centralizing-with-cloud-wan-and-service-insertion">Centralizing with Cloud WAN and service insertion</h3>
+<p><a href="https://aws.amazon.com/cloud-wan/">AWS Cloud WAN</a> can serve as the routing hub instead of Transit Gateway. In this model, Network Firewall is deployed into an inspection VPC and Cloud WAN's <a href="https://docs.aws.amazon.com/network-manager/latest/cloudwan/cloudwan-policy-service-insertion.html">service insertion</a> feature directs traffic through the firewall.</p>
+<p><strong>When to use:</strong></p>
+<ul>
+<li>Organizations already using Cloud WAN as their global network backbone</li>
+<li>When you need Cloud WAN's global routing capabilities (multi-Region network segmentation, dynamic routing policies)</li>
+</ul>
+<p><img alt="Centralized Network Firewall inspection with Cloud WAN service insertion" src="../../../../../images/network-firewall/centralized-cloud-wan.png" /></p>
+<p>For a detailed walkthrough of this pattern, see <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/centralized-outbound-inspection-architecture-in-aws-cloud-wan/">Centralized outbound inspection architecture in AWS Cloud WAN</a>.</p>
+<h2 id="distributed-deployment-models">Distributed deployment models</h2>
+<p>Distributed deployment places firewall endpoints directly in the VPCs that need inspection, keeping traffic local and avoiding Transit Gateway or Cloud WAN data processing charges.</p>
+<h3 id="distributed-with-dedicated-firewall-endpoints">Distributed with dedicated firewall endpoints</h3>
+<p>Network Firewall is deployed into each individual VPC that requires inspection, with each VPC having its own firewall and firewall policy.</p>
+<p><strong>When to use:</strong></p>
+<ul>
+<li>Single-account or few-account environments</li>
+<li>When specific workloads require dedicated inspection with independent failure domains</li>
+<li>When Transit Gateway data processing charges for a high-throughput workload exceed the cost of additional firewall endpoints</li>
+<li>When workloads have unique firewall policies that cannot share a centralized policy</li>
+</ul>
+<p>Each VPC requires its own firewall endpoints (one per AZ for high availability), which results in higher total endpoint hourly costs in multi-VPC environments. Can be managed centrally via <a href="https://docs.aws.amazon.com/firewall-manager/latest/userguide/what-is-fms.html">AWS Firewall Manager</a> for policy enforcement across accounts.</p>
+<p><img alt="Distributed deployment with dedicated firewall endpoints per VPC" src="../../../../../images/network-firewall/distributed-deployment.png" /></p>
+<div class="admonition warning">
+<p class="admonition-title">Cost at scale</p>
+<p>In a multi-account environment with many VPCs, distributed deployment with dedicated firewalls becomes expensive. For example, 10 VPCs across 3 AZs requires 30 endpoints and 10 separate firewalls, compared to a centralized model with 3 endpoints (one per AZ). See the <a href="https://aws.amazon.com/network-firewall/pricing/">Network Firewall pricing</a> page for current per-endpoint rates.</p>
+</div>
+<h3 id="distributed-with-multiple-vpc-endpoint-associations">Distributed with multiple VPC endpoint associations</h3>
+<p>The <a href="https://aws.amazon.com/about-aws/whats-new/2025/05/aws-network-firewall-multiple-vpc-endpoints/">multiple VPC endpoint associations</a> feature solves the distributed model's cost and management problems by allowing up to 50 secondary endpoints per AZ to share a single primary firewall. This provides distributed endpoints (AZ-local inspection in each spoke VPC) with centralized management (one firewall, one policy, one rule set).</p>
+<p>For a detailed walkthrough of architectural patterns with this feature, see <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/deployment-models-for-aws-network-firewall-transit-gateway-attachment-and-multiple-vpc-endpoints/">Deployment models for AWS Network Firewall: Transit Gateway attachment and multiple VPC endpoints</a>.</p>
+<p>A primary firewall is created in one account/VPC, and secondary endpoints are associated in other VPCs (same account or cross-account via AWS RAM). All endpoints share the same firewall policy and rule groups. Secondary endpoints are charged at a reduced hourly rate.</p>
+<p><img alt="Distributed deployment with multiple VPC endpoint associations sharing a single firewall" src="../../../../../images/network-firewall/multi-endpoint.png" /></p>
+<p><strong>Architectural constraint for egress:</strong></p>
+<p>Multi-endpoint support is designed for <strong>distributed egress</strong> architectures where each account maintains its own internet egress infrastructure (NAT gateway + internet gateway). The shared firewall provides centralized inspection and policy enforcement, but the egress infrastructure remains account-specific.</p>
+<ul>
+<li><strong>Supported:</strong> Spoke VPC &gt; Firewall endpoint (secondary) &gt; NAT gateway (spoke account) &gt; internet gateway (spoke account)</li>
+<li><strong>Not supported:</strong> Spoke VPC &gt; Firewall endpoint (secondary) &gt; NAT gateway (hub account) &gt; internet gateway (hub account)</li>
+</ul>
+<p><strong>Key limitations:</strong></p>
+<ul>
+<li>TLS inspection is not supported for firewalls with VPC endpoint associations</li>
+<li>East-West inspection is limited to traffic within the same AZ</li>
+<li>All endpoints (primary + secondary) share combined throughput capacity per AZ</li>
+<li>Secondary endpoints can only be deployed in AZs where the primary firewall already has an endpoint</li>
+</ul>
+<h2 id="combined-deployment-models">Combined deployment models</h2>
+<p>A combined model runs a centralized firewall for East-West and egress traffic while also deploying separate firewalls in specific VPCs for internet ingress inspection. It appears in older deployment model guidance as a way to get centralized cost efficiency for most traffic and dedicated inspection where it is needed.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>We do not recommend a combined deployment model as a starting point. Running two deployment models side by side means two sets of endpoints to pay for, two sets of routing to reason about, and firewall policies that have to be kept coherent with each other. It also inherits the <a href="#centralizing-with-an-inspection-vpc">limitations of a customer-managed inspection VPC</a>, including the loss of flexible cost allocation for Network Firewall charges.</p>
+</div>
+<p>Before reaching for a combined model, check whether the requirement that is driving it can be met another way:</p>
+<ul>
+<li><strong>Web application ingress.</strong> Amazon CloudFront with AWS WAF in front of your origin is the recommended architecture for HTTP and HTTPS ingress, and it does not require a firewall in the ingress path at all. See <a href="../../../firewall-overview/ingress-patterns/docs/">Ingress patterns</a>.</li>
+<li><strong>Non-HTTP ingress inspection.</strong> Centralized ingress inspection is one of the cases where a <a href="#centralizing-with-an-inspection-vpc">customer-managed inspection VPC</a> is still appropriate, and it can handle both ingress and egress in a single centralized firewall.</li>
+<li><strong>A workload that needs its own policy or its own failure domain.</strong> <a href="#distributed-with-multiple-vpc-endpoint-associations">Multiple VPC endpoint associations</a> give you AZ-local endpoints in individual VPCs while keeping one firewall and one policy, which covers most of what people reach for a combined model to achieve.</li>
+</ul>
+<p>If you do end up running more than one deployment model, keep the number of distinct firewall policies as small as possible and manage them from the same infrastructure as code repository so they cannot drift apart.</p>
+<h2 id="aws-network-firewall-proxy">AWS Network Firewall Proxy</h2>
+<div class="admonition note">
+<p class="admonition-title">Preview</p>
+<p>AWS Network Firewall Proxy is currently in preview. Features and behavior may change before general availability.</p>
+</div>
+<p><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/reintroducing-network-firewall-proxy-for-secure-egress-connectivity/">AWS Network Firewall Proxy</a> is an explicit proxy capability built directly into Network Firewall. Rather than transparently intercepting traffic via routing (the default deployment mode), Network Firewall Proxy requires clients to explicitly configure a proxy endpoint. The key difference from the initial preview is that the proxy is now a function of Network Firewall itself, not a separate product. This means you use the same firewall policy, same rule groups, and same management plane for both transparent firewall and explicit proxy use cases.</p>
+<h3 id="how-it-works">How it works</h3>
+<p>Network Firewall Proxy uses a new deployment mode called <code>no-source-preservation</code>. In this mode, the firewall is attached to a NAT gateway. Traffic flows from the client to the firewall endpoint, the firewall inspects and filters the traffic, then uses the attached NAT gateway's IP address to communicate with the upstream destination on the client's behalf.</p>
+<p><img alt="Network Firewall default source-preservation deployment mode" src="../../../../../images/network-firewall/nfw-proxy-source-preservation.png" /></p>
+<p><em>Default Network Firewall deployment (source-preservation): firewall as route target</em></p>
+<p>In <code>no-source-preservation</code> mode, clients configure their workloads to send traffic to the firewall's FQDN (provided after firewall creation). The hostname resolves to a local VPC endpoint, so no route table changes are required for proxied traffic. On Linux, this is typically done with environment variables:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>export https_proxy="https://&lt;nfw_hostname&gt;:&lt;port&gt;"
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>export http_proxy="https://&lt;nfw_hostname&gt;:&lt;port&gt;"
+</code></pre></div>
+<h3 id="what-the-proxy-supports">What the proxy supports</h3>
+<p>Because the proxy is integrated directly into Network Firewall, it supports the full set of Network Firewall capabilities:</p>
+<ul>
+<li>Stateful and stateless rules engine (all Suricata rules work as-is)</li>
+<li>AWS managed rule groups (threat signatures, ATD, domain/IP reputation)</li>
+<li>TLS inspection</li>
+<li>URL and domain category filtering</li>
+<li>Geographic IP filtering</li>
+<li>Container attribute-based rules</li>
+<li>Logging and monitoring (with additional proxy-specific fields like requested domain from CONNECT)</li>
+</ul>
+<h3 id="when-to-use-network-firewall-proxy">When to use Network Firewall Proxy</h3>
+<ul>
+<li>Environments that already use explicit proxy configurations (corporate environments, containerized workloads with proxy environment variables)</li>
+<li>When you need to centralize egress from networks with overlapping CIDRs (the <code>no-source-preservation</code> mode handles this natively)</li>
+<li>When you want the same security policy to apply to both transparently inspected traffic and explicitly proxied traffic without maintaining separate configurations</li>
+</ul>
+<h3 id="architecture-patterns">Architecture patterns</h3>
+<p>The <code>no-source-preservation</code> firewall can protect proxied traffic from the local VPC, remote VPCs, or on-premises sources. As long as the workload has connectivity to the Network Firewall endpoint, it can use the proxy functionality. Traffic can only reach the firewall through an endpoint; routing traffic directly to the NAT gateway does not apply Network Firewall policies.</p>
+<p>For detailed setup instructions and architecture patterns, see <a href="https://aws.amazon.com/blogs/networking-and-content-delivery/reintroducing-network-firewall-proxy-for-secure-egress-connectivity/">Reintroducing Network Firewall Proxy for Secure Egress Connectivity</a> and the <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/network-firewall-proxy-developer-guide.html">Network Firewall Proxy documentation</a>.</p>
+<h2 id="managing-across-accounts-with-aws-firewall-manager">Managing across accounts with AWS Firewall Manager</h2>
+<p><a href="https://docs.aws.amazon.com/firewall-manager/latest/userguide/what-is-fms.html">AWS Firewall Manager</a> provides centralized policy management for Network Firewall across multiple accounts. It automatically deploys firewall endpoints and policies to new accounts and VPCs, and monitors compliance.</p>
+<p>Firewall Manager is most valuable for <strong>distributed deployment models</strong> where you need to deploy and manage separate firewalls across many VPCs and accounts. For centralized deployments, Firewall Manager adds limited value because you already have a single firewall managed in one account. Most customers with centralized deployments manage their firewall policy through infrastructure as code (CloudFormation, Terraform, CDK) in a Git repository and do not see significant benefit from adding Firewall Manager as an additional abstraction layer above an already centralized resource.</p>
+<p><strong>Use Firewall Manager when:</strong></p>
+<ul>
+<li>You have a distributed deployment with firewalls in many VPCs across accounts</li>
+<li>You need automatic deployment of firewall endpoints to new VPCs/accounts as they are created</li>
+<li>You need compliance monitoring and automatic remediation of policy drift across distributed firewalls</li>
+</ul>
+<p><strong>Use direct management (IaC) when:</strong></p>
+<ul>
+<li>You have a centralized deployment with one firewall (or a small number) managed in a security account</li>
+<li>Your team already manages infrastructure as code and prefers Git-based change control</li>
+</ul>
+<h2 id="resource-sharing-with-aws-ram">Resource sharing with AWS RAM</h2>
+<p><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/sharing.html">AWS Resource Access Manager (AWS RAM)</a> is used in several Network Firewall deployment patterns to share resources across accounts.</p>
+<h3 id="centralized-deployment-pattern">Centralized deployment pattern</h3>
+<p>A security team in a central account owns and operates the firewall. AWS RAM shares the Transit Gateway so spoke accounts can create attachments and route traffic to the inspection path. The firewall policy, rule groups, and firewall itself remain in the central account and are not shared. Spoke accounts only need to route traffic through Transit Gateway. The central security team manages the firewall policy via IaC in a Git repository with change control.</p>
+<h3 id="distributed-deployment-pattern">Distributed deployment pattern</h3>
+<p>A security team creates the firewall policy and rule groups centrally, then shares them to spoke accounts so each account can create its own firewall that references the shared policy. This enforces a <strong>centralized control plane</strong> (policy defined once, centrally) with a <strong>distributed data plane</strong> (firewall endpoints deployed locally in each spoke VPC). The central account retains ownership and can update shared resources. Changes propagate automatically to all consumers.</p>
+<h3 id="multi-endpoint-pattern">Multi-endpoint pattern</h3>
+<p>The primary firewall owner shares the <strong>firewall</strong> via AWS RAM so spoke accounts can create secondary VPC endpoint associations. Spoke accounts create endpoints in their VPCs that route traffic to the shared firewall. The firewall owner retains full control over the policy and rule groups.</p>
+<h2 id="what-to-read-next">What to read next</h2>
+<ul>
+<li><a href="../../firewall-policy-configuration/docs/">Firewall policy configuration</a> - Configure your firewall policy settings</li>
+<li><a href="../../cost-considerations/docs/">Cost considerations</a> - Understand and optimize Network Firewall costs</li>
+<li><a href="../../customer-managed-rules/docs/">Customer managed rules</a> - Write rules for your firewall policy</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

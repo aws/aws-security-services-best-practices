@@ -1,0 +1,1036 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ja/guides/network-firewall/getting-started-policy/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/network-firewall/getting-started-policy/docs/" hreflang="en">
+        
+          <link rel="alternate" href="../../../../../ko/guides/network-firewall/getting-started-policy/docs/" hreflang="ko">
+        
+          <link rel="alternate" href="./" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Getting started policy - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#getting-started-policy" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Getting started policy
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/network-firewall/getting-started-policy/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ko/guides/network-firewall/getting-started-policy/docs/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dns-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Route 53 Resolver DNS Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#template-repositories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template repositories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-template-deploys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the template deploys
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policy-configuration-explained" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy configuration explained
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Policy configuration explained">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stateless-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stateless engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stateful-engine-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stateful engine settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#home_net-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HOME_NET variable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managed-rule-groups-all-in-alert-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managed rule groups (all in alert mode)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Managed rule groups (all in alert mode)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#active-threat-defense-priority-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Active Threat Defense (Priority 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-and-ip-reputation-priority-2-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain and IP reputation (Priority 2-5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#threat-signature-rule-groups-priority-6-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat signature rule groups (Priority 6-15)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-not-included-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is not included (and why)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capacity-planning-after-the-quota-increase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capacity planning after the quota increase
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-rule-group-priority-100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom rule group (Priority 100)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transitioning-to-enforcement-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transitioning to enforcement mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Transitioning to enforcement mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-remove-drop_to_alert-overrides-from-managed-rule-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Remove DROP_TO_ALERT overrides from managed rule groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-add-the-drop-default-action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Add the drop default action
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-add-domain-allowlist-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Add domain allowlist rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-convert-east-west-monitoring-to-access-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Convert east-west monitoring to access control
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capacity-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capacity summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-read-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to read next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="getting-started-policy">Getting started policy</h1>
+<div class="admonition info">
+<p class="admonition-title">Prerequisites</p>
+<p>This section assumes familiarity with all previous sections of this guide. It brings together the best practices from <a href="../../firewall-policy-configuration/docs/">Firewall policy configuration</a>, <a href="../../customer-managed-rules/docs/">Customer managed rules</a>, and <a href="../../aws-managed-rules/docs/">AWS Managed Rules</a> into a single deployable template.</p>
+</div>
+<p>Getting started with AWS Network Firewall is the hardest part. Once you have a well-configured policy in place, ongoing operations are straightforward. This page provides a getting started firewall policy template that you can deploy immediately and begin monitoring traffic without blocking anything. It implements all of the best practices covered in this guide, helping you avoid common misconfigurations and start on the right foot.</p>
+<p>The template deploys a firewall policy in <strong>monitor mode</strong>. It logs all traffic and threat detections without blocking. The goal is to let the firewall inspect your traffic for a period of time so you have a clear picture of what traffic is flowing through it. Once you understand your traffic patterns, you transition the policy into enforcement mode by adding the drop default action and removing the alert-only overrides from managed rule groups.</p>
+<h2 id="template-repositories">Template repositories</h2>
+<p>The getting started policy template is available in both CloudFormation and Terraform:</p>
+<ul>
+<li><strong>CloudFormation:</strong> <a href="https://github.com/aws-samples/aws-networkfirewall-cfn-templates/tree/main/getting_started_policy">aws-networkfirewall-cfn-templates</a></li>
+<li><strong>Terraform:</strong> <a href="https://github.com/aws-samples/aws-network-firewall-terraform/tree/main/getting_started_policy">aws-network-firewall-terraform</a></li>
+</ul>
+<p>These repositories also contain sample templates for deploying the firewall itself (VPC, subnets, endpoints, routing) across all supported deployment architectures. See <a href="../../deployment-architecture/docs/">Deployment architecture</a> for guidance on which deployment model to use.</p>
+<h2 id="what-the-template-deploys">What the template deploys</h2>
+<p>The template creates two resources:</p>
+<ol>
+<li><strong>A firewall policy</strong> configured with all recommended settings and 15 AWS managed rule groups (all in alert mode)</li>
+<li><strong>A custom Suricata rule group</strong> with monitoring rules for traffic visibility</li>
+</ol>
+<p>You associate this policy with your existing or new Network Firewall. The template does not create the firewall itself, because that requires VPC and subnet decisions specific to your deployment architecture. See the CloudFormation and Terraform repositories linked above for complete deployment templates that create the firewall, VPC, subnets, and routing alongside this policy.</p>
+<h2 id="policy-configuration-explained">Policy configuration explained</h2>
+<h3 id="stateless-engine">Stateless engine</h3>
+<p>The stateless engine default action is set to forward all traffic to the stateful engine (<code>aws:forward_to_sfe</code>). No stateless rules are configured. All inspection happens in the stateful engine. See <a href="../../customer-managed-rules/docs/#do-not-use-stateless-rules">Do not use stateless rules</a> for why.</p>
+<h3 id="stateful-engine-settings">Stateful engine settings</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rule order</td>
+<td>STRICT_ORDER</td>
+<td>Deterministic, priority-based evaluation. See <a href="../../firewall-policy-configuration/docs/#rule-ordering-always-use-strict">Rule ordering</a>.</td>
+</tr>
+<tr>
+<td>Stream exception policy</td>
+<td>REJECT</td>
+<td>Sends TCP RST for midstream flows so clients reconnect cleanly. See <a href="../../firewall-policy-configuration/docs/#stream-exception-policy">Stream exception policy</a>.</td>
+</tr>
+<tr>
+<td>TCP idle timeout</td>
+<td>350 seconds</td>
+<td>Aligns with the NAT gateway's fixed timeout, and set explicitly so it is visible in your IaC. Increase it if your path has no NAT gateway and carries long-lived flows. See <a href="../../firewall-policy-configuration/docs/#tcp-idle-timeout">TCP idle timeout</a>.</td>
+</tr>
+<tr>
+<td>Default action</td>
+<td>Application alert established (server-directed only)</td>
+<td>Logs unmatched traffic without blocking. Waits for application-layer data (TLS SNI, HTTP host) before alerting. See <a href="../../firewall-policy-configuration/docs/#default-actions">Default actions</a>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="home_net-variable">HOME_NET variable</h3>
+<p>HOME_NET is set to all RFC 1918 private IP address ranges at the policy level: 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16. This ensures all private IP traffic flowing through the firewall matches correctly against rules using $HOME_NET, regardless of which VPCs you add in the future. See <a href="../../firewall-policy-configuration/docs/#home-net-and-external-net-variables">$HOME_NET and $EXTERNAL_NET variables</a> for the full explanation.</p>
+<h3 id="managed-rule-groups-all-in-alert-mode">Managed rule groups (all in alert mode)</h3>
+<p>All managed rule groups are deployed with the <code>DROP_TO_ALERT</code> override, which converts their drop/reject actions to alert. This means the rules will detect and log threats without blocking any traffic. Once you are confident the rules are not interfering with legitimate traffic, you remove the override and they begin blocking.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>For managed rule groups, false positives are uncommon because these rules match on confirmed threat patterns (known malicious domains, botnet C2 protocols, exploit payloads) rather than heuristic or behavioral patterns. Most customers can remove the DROP_TO_ALERT overrides after a short monitoring period without encountering issues.</p>
+</div>
+<h4 id="active-threat-defense-priority-1">Active Threat Defense (Priority 1)</h4>
+<p><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/aws-managed-rule-groups-atd.html">AttackInfrastructureStrictOrder</a> blocks communication with known malicious infrastructure tracked by AWS, including malware staging URLs, botnet command-and-control servers, and cryptomining pools. Powered by AWS threat intelligence from MadPot. This is the single most important managed rule group.</p>
+<h4 id="domain-and-ip-reputation-priority-2-5">Domain and IP reputation (Priority 2-5)</h4>
+<p>These four rule groups block traffic to domains and IPs known to be associated with malicious activity. They are included at no additional cost and have minimal capacity footprint (200 each).</p>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Rule group</th>
+<th>What it blocks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>BotNetCommandAndControlDomainsStrictOrder</td>
+<td>Known botnet C2 domains</td>
+</tr>
+<tr>
+<td>3</td>
+<td>AbusedLegitBotNetCommandAndControlDomainsStrictOrder</td>
+<td>Legitimate services being abused for C2 (file sharing, paste sites)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>MalwareDomainsStrictOrder</td>
+<td>Known malware distribution domains</td>
+</tr>
+<tr>
+<td>5</td>
+<td>AbusedLegitMalwareDomainsStrictOrder</td>
+<td>Legitimate services being abused for malware distribution</td>
+</tr>
+</tbody>
+</table>
+<h4 id="threat-signature-rule-groups-priority-6-15">Threat signature rule groups (Priority 6-15)</h4>
+<p>These rule groups detect specific attack patterns and protocols in network traffic. The selection is optimized for the most common Network Firewall use case: protecting server workloads (EC2, ECS, EKS) where the threat model is a compromised instance attempting to communicate with C2, download payloads, mine cryptocurrency, or move laterally.</p>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Rule group</th>
+<th>What it detects</th>
+<th>Why included</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6</td>
+<td>ThreatSignaturesBotnetStrictOrder</td>
+<td>Botnet C2 protocols across TCP, UDP, and other protocols</td>
+<td>Broadest botnet coverage. Compromised servers phone home over many protocols.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>ThreatSignaturesBotnetWebStrictOrder</td>
+<td>HTTP-based botnet C2 communication</td>
+<td>HTTP is the most common C2 channel because it blends with normal web traffic.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>ThreatSignaturesMalwareStrictOrder</td>
+<td>Malware across TCP, UDP, SMTP, ICMP, SMB, and worm propagation</td>
+<td>Broad malware detection across all protocols.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>ThreatSignaturesMalwareCoinminingStrictOrder</td>
+<td>Cryptocurrency mining protocols and pool communication</td>
+<td>Cryptomining is the most common post-compromise activity for server workloads.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>ThreatSignaturesExploitsStrictOrder</td>
+<td>Direct exploits (ActiveX, FTP, NetBIOS, RPC, shellcode, SQL injection, SNMP)</td>
+<td>Strong east-west coverage. Detects lateral exploitation between internal systems.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>ThreatSignaturesIOCStrictOrder</td>
+<td>Indicators of compromise, attack response signatures, exploit kit infrastructure</td>
+<td>Detects post-exploitation activity after initial compromise.</td>
+</tr>
+<tr>
+<td>12</td>
+<td>ThreatSignaturesScannersStrictOrder</td>
+<td>Reconnaissance tools (Nessus, Nikto, port scanners)</td>
+<td>Detects internal recon. Key for east-west (catches scanning before exploitation).</td>
+</tr>
+<tr>
+<td>13</td>
+<td>ThreatSignaturesSuspectStrictOrder</td>
+<td>Suspicious JA3 fingerprints, IRC chat, anomalous user agents</td>
+<td>Catches anomalous client behavior that doesn't match normal server traffic.</td>
+</tr>
+<tr>
+<td>14</td>
+<td>ThreatSignaturesEmergingEventsStrictOrder</td>
+<td>Active campaigns and breaking threats (rules rotate frequently)</td>
+<td>High timeliness value. Catches threats that are happening right now.</td>
+</tr>
+<tr>
+<td>15</td>
+<td>ThreatSignaturesDoSStrictOrder</td>
+<td>Denial of service patterns</td>
+<td>Low capacity cost (200). Provides basic DoS visibility.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="what-is-not-included-and-why">What is not included (and why)</h4>
+<p>The default quota for stateful rules per firewall policy is 30,000. This template uses 29,200 of that. The following rule groups do not fit within the default limit:</p>
+<table>
+<thead>
+<tr>
+<th>Rule group</th>
+<th>Capacity</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ThreatSignaturesBotnetWindowsStrictOrder</td>
+<td>3,400</td>
+<td>Windows-specific botnet detection. Add if you run Windows workloads.</td>
+</tr>
+<tr>
+<td>ThreatSignaturesMalwareWebStrictOrder</td>
+<td>3,300</td>
+<td>HTTP/TLS malware. Complements MalwareStrictOrder with web-specific signatures.</td>
+</tr>
+<tr>
+<td>ThreatSignaturesWebAttacksStrictOrder</td>
+<td>1,400</td>
+<td>Web application attacks (SQLi, XSS). Relevant for ingress or east-west web traffic.</td>
+</tr>
+<tr>
+<td>ThreatSignaturesPhishingStrictOrder</td>
+<td>4,200</td>
+<td>Credential phishing. More relevant for end-user browsing than server workloads.</td>
+</tr>
+<tr>
+<td>ThreatSignaturesMalwareMobileStrictOrder</td>
+<td>4,000</td>
+<td>Mobile OS malware. Not relevant unless mobile traffic traverses the firewall.</td>
+</tr>
+</tbody>
+</table>
+<p>ThreatSignaturesFUPStrictOrder is also excluded. It covers acceptable use policy violations (gaming, peer-to-peer traffic, inappropriate content) rather than threat detection, so it is a fit for environments that need acceptable use enforcement rather than a baseline every deployment should have.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Submit a <a href="https://console.aws.amazon.com/servicequotas/home/services/network-firewall/quotas">Service Quotas increase request</a> to raise your stateful rule capacity to 50,000 immediately after deploying this template. Two quotas govern this: the total stateful rules per firewall policy (default 30,000, across all rule groups the policy references) and the stateful rule group capacity maximum (default 30,000, for any single rule group). Increases are typically approved quickly and let you add additional managed rule groups and larger custom rule groups for domain allowlists.</p>
+</div>
+<h4 id="capacity-planning-after-the-quota-increase">Capacity planning after the quota increase</h4>
+<p>A common question: "If I add all the AWS managed rules, how much room will I have for custom rules?"</p>
+<p>The 20 stateful rule group limit per policy is the binding constraint, not just capacity. With 50,000 capacity but only 20 rule group slots, you need to balance managed rules against custom rule groups. This template uses 16 of the 20 slots (15 managed + 1 custom), leaving 4 slots.</p>
+<p>Recommended approach after the capacity increase:</p>
+<ul>
+<li>Add 2-3 of the excluded managed rule groups (using 2-3 of your 4 remaining slots)</li>
+<li>Keep 1-2 slots for custom rule groups with higher capacity (domain allowlists, environment-specific rules)</li>
+</ul>
+<p>For example, adding BotnetWindows (3,400), MalwareWeb (3,300), and WebAttacks (1,400) uses 3 slots and 8,100 capacity, leaving you with 1 custom rule group slot and approximately 12,500 capacity units available for custom rules. That is enough for a substantial domain allowlist or hundreds of custom Suricata rules.</p>
+<h3 id="custom-rule-group-priority-100">Custom rule group (Priority 100)</h3>
+<p>The custom rule group is deployed at the lowest priority (evaluated last, after all managed rules) with 200 capacity units. This keeps the initial capacity available for managed rules. After your service quota increase is approved, create additional custom rule groups with higher capacity for domain allowlists and other custom rules.</p>
+<p>The custom rules included are:</p>
+<p><strong>HOME_NET validation</strong> - Alerts on traffic where neither source nor destination matches $HOME_NET. If this rule fires, your HOME_NET configuration is incomplete. See <a href="../../firewall-policy-configuration/docs/#detecting-misconfigured-home-net">Detecting misconfigured $HOME_NET</a>.</p>
+<p><strong>Plaintext HTTP detection</strong> - Alerts on any plaintext HTTP traffic leaving your network. All outbound traffic from server workloads should be TLS encrypted. Plaintext HTTP may indicate misconfigured applications or potential data exposure. The default action will also log this, but a dedicated rule makes it easy to search for and alert on specifically.</p>
+<p><strong>East-West traffic monitoring</strong> - A set of rules that alert on internal-to-internal traffic, helping you discover lateral communication patterns between your VPCs. Includes specific rules for common sensitive ports (databases, SSH, RDP, SMB) so you can see which internal services are communicating with each other. This visibility is essential before building east-west access control rules.</p>
+<p><strong>Inbound traffic monitoring</strong> - Alerts on any traffic initiated from external sources toward your network. In an egress-only or east-west deployment, inbound internet traffic is unexpected and may indicate a routing misconfiguration.</p>
+<h2 id="transitioning-to-enforcement-mode">Transitioning to enforcement mode</h2>
+<p>After monitoring traffic and understanding your traffic patterns, transition the policy from alert mode to enforcement mode:</p>
+<h3 id="step-1-remove-drop_to_alert-overrides-from-managed-rule-groups">Step 1: Remove DROP_TO_ALERT overrides from managed rule groups</h3>
+<p>Remove the <code>Override</code> block from each managed rule group reference in your template. This allows the managed rules to take their native action (drop or reject) when threats are detected. You can do this incrementally, starting with ATD and domain/IP reputation (highest confidence) and then adding threat signatures.</p>
+<h3 id="step-2-add-the-drop-default-action">Step 2: Add the drop default action</h3>
+<p>Add the drop default action alongside the existing alert action. Change from:</p>
+<ul>
+<li><code>aws:alert_established_app_layer_to_server</code></li>
+</ul>
+<p>To both:</p>
+<ul>
+<li><code>aws:drop_established_app_layer_to_server</code> (blocks unmatched traffic)</li>
+<li><code>aws:alert_established_app_layer_to_server</code> (logs what is being blocked)</li>
+</ul>
+<p>Keep both actions. The alert action ensures blocked traffic is still logged. Without it, dropped traffic would not appear in your alert logs. See <a href="../../firewall-policy-configuration/docs/#default-actions">Default actions</a> for details.</p>
+<h3 id="step-3-add-domain-allowlist-rules">Step 3: Add domain allowlist rules</h3>
+<p>Based on what you observed during the monitoring period, add pass rules for the domains your workloads legitimately need to reach. See <a href="../../customer-managed-rules/docs/#domain-filtering">Domain filtering</a> and <a href="../../sample-suricata-rules/docs/#allow-rules-and-domain-allowlisting">Sample Suricata rules</a> for examples.</p>
+<h3 id="step-4-convert-east-west-monitoring-to-access-control">Step 4: Convert east-west monitoring to access control</h3>
+<p>Review the east-west alert logs to understand which internal flows exist. Convert the monitoring rules to explicit pass rules for known-good flows and drop/reject rules for everything else.</p>
+<h2 id="capacity-summary">Capacity summary</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Capacity used</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AttackInfrastructureStrictOrder</td>
+<td>15,000</td>
+<td>Fixed</td>
+</tr>
+<tr>
+<td>Domain/IP rule groups (4)</td>
+<td>800</td>
+<td>Fixed</td>
+</tr>
+<tr>
+<td>Threat signature groups (10)</td>
+<td>13,200</td>
+<td>Can add more after capacity increase</td>
+</tr>
+<tr>
+<td>Custom rule group</td>
+<td>200</td>
+<td>Intentionally small to start</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>29,200 / 30,000</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Rule groups used</td>
+<td>16 / 20</td>
+<td>4 slots remaining</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-to-read-next">What to read next</h2>
+<ul>
+<li><a href="../../firewall-policy-configuration/docs/">Firewall policy configuration</a> - Deep dive into each policy setting configured here</li>
+<li><a href="../../customer-managed-rules/docs/">Customer managed rules</a> - Writing custom rules for your specific requirements</li>
+<li><a href="../../aws-managed-rules/docs/">AWS Managed Rules</a> - Understanding what the managed rules detect</li>
+<li><a href="../../logging-and-monitoring/docs/">Logging and monitoring</a> - Analyzing the alert logs this policy generates</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

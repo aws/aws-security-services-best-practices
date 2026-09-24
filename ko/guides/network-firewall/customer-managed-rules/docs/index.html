@@ -1,0 +1,929 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ko/guides/network-firewall/customer-managed-rules/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../guides/network-firewall/customer-managed-rules/docs/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ko">
+        
+          <link rel="alternate" href="../../../../../ja/guides/network-firewall/customer-managed-rules/docs/" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Customer managed rules - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#customer-managed-rules" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Customer managed rules
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="언어설정">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../guides/network-firewall/customer-managed-rules/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../ja/guides/network-firewall/customer-managed-rules/docs/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    홈
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall 모범 사례
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#do-not-use-stateless-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do not use stateless rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-custom-suricata-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use custom Suricata rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#always-use-the-flow-keyword-on-all-tcp-or-ip-protocol-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Always use the flow: keyword on all TCP or IP protocol rules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Always use the flow: keyword on all TCP or IP protocol rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-the-flow-keyword-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the flow: keyword matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#which-rules-need-a-flow-keyword" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which rules need a flow: keyword
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-application-layer-rules-never-fire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: application-layer rules never fire
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pass-rules-end-inspection-for-the-rest-of-the-stream" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pass rules end inspection for the rest of the stream
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consolidate-into-few-rule-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consolidate into few rule groups
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consolidate into few rule groups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#understanding-and-calculating-capacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding and calculating capacity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verifying-the-capacity-you-need" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifying the capacity you need
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planning-for-growth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planning for growth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signature-ids-sids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signature IDs (SIDs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#domain-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain filtering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Domain filtering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sni-manipulation-and-when-to-consider-tls-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SNI manipulation and when to consider TLS inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-allowed-traffic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log allowed traffic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ip-set-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IP set references
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-rules-with-suricata-rule-generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writing rules with Suricata Rule Generator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Writing rules with Suricata Rule Generator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-the-tool-does-for-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the tool does for you
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#beyond-rule-authoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beyond rule authoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-read-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to read next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="customer-managed-rules">Customer managed rules</h1>
+<div class="admonition info">
+<p class="admonition-title">Prerequisites</p>
+<p>This section assumes familiarity with <a href="../../prerequisites/docs/">Prerequisites and fundamentals</a> and <a href="../../firewall-policy-configuration/docs/">Firewall policy configuration</a>. Review those topics first if you are new to AWS Network Firewall.</p>
+</div>
+<p>Customer managed stateful rules are the core of AWS Network Firewall's inspection capability, using the Suricata engine for connection-aware deep packet inspection at layers 3-7 with support for TLS SNI matching, HTTP header inspection, protocol detection, URL category matching, JA3/JA4 fingerprinting, and GeoIP filtering.</p>
+<p>Read this page before jumping to <a href="../../sample-suricata-rules/docs/">Sample Suricata rules</a>. The concepts here (especially the <code>flow:</code> keyword, Suricata rule types, and rule group organization) are essential context for understanding why the sample rules are written the way they are.</p>
+<h2 id="do-not-use-stateless-rules">Do not use stateless rules</h2>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Set the stateless engine's default actions to "Forward to stateful rule groups" and do not configure any stateless rules. Perform all filtering in the stateful engine.</p>
+</div>
+<p>The stateless rule engine inspects each packet in isolation without regard to connection state or traffic direction. It is somewhat similar to a VPC network ACL in that both are stateless packet filters, though the stateless engine scales to far more rules, exposes packet-level options like TCP flags, and is more flexible in how you express sources and destinations. What it shares with a network ACL is the part that matters here: no connection context. It is also significantly more expensive than a network ACL, because Network Firewall charges per GB of traffic processed. The stateless engine cannot log traffic, which makes troubleshooting difficult when rules are misconfigured.</p>
+<div class="admonition danger">
+<p class="admonition-title">Common misconfiguration</p>
+<p>Creating a broad stateless pass rule (such as pass on all TCP traffic) without realizing the stateless engine is optional. Because the stateless engine evaluates before the stateful engine, this pass rule allows all matching traffic through before the stateful engine ever sees it. The stateful rules then never fire, and because the stateless engine does not log, there is no indication of why. This creates a difficult troubleshooting situation that is entirely avoidable by not using stateless rules.</p>
+</div>
+<p>The stateful engine provides everything the stateless engine does plus return traffic handling, deep packet inspection, logging, and the reject action. While some customers do have legitimate use cases for the stateless engine, these are rare. For the vast majority of deployments, all filtering should happen in the stateful engine.</p>
+<h2 id="use-custom-suricata-rules">Use custom Suricata rules</h2>
+<p>Network Firewall supports three <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/rule-groups-creating-editing.html">stateful rule formats</a>, but all three are converted to Suricata rules under the hood:</p>
+<ol>
+<li><strong><a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-examples.html">Custom Suricata rules</a></strong> (recommended) - You write the raw Suricata rule syntax directly</li>
+<li><strong>Domain list rules</strong> - A UI abstraction that generates Suricata domain filtering rules</li>
+<li><strong>Standard stateful rule builder</strong> - A UI abstraction that generates Suricata rules from form inputs</li>
+</ol>
+<p>The domain list rules and standard stateful rule builder are just interfaces that produce Suricata rules. They limit you to whatever the UI experience supports. By using the custom Suricata rulestring option, you get access to the full range of Suricata capabilities that the console UI may not yet expose, and you are able to easily import and export rules in text format in case you ever need to adjust the rule group capacity.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Write custom Suricata rules directly. This gives you full control over rule behavior, custom log messages, custom Signature IDs (SIDs) for log analysis, and the ability to easily copy, paste, back up, and move rules between rule groups.</p>
+</div>
+<p>Suricata rule syntax can seem intimidating at first if you have never worked with it. With the resources available (the <a href="../../sample-suricata-rules/docs/">Sample Suricata rules</a> page in this guide, the <a href="https://github.com/aws-samples/sample-suricata-generator">Suricata Rule Generator</a> tool, and the <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-examples.html">official AWS documentation examples</a>), it is more approachable than it initially appears. Customers who invest time in learning the syntax early consistently report that reading raw Suricata rules becomes more intuitive than navigating console-built rules over time. See <a href="#writing-rules-with-suricata-rule-generator">Writing rules with Suricata Rule Generator</a> below for an open-source tool that automates many of the best practices on this page, including the ability to automatically convert UI-generated rules into Suricata rules.</p>
+<p>A significant operational advantage of custom Suricata rules is portability. Since they are plain text, you can copy them into version control, move them between rule groups, and include them in infrastructure-as-code templates. Most customers store their Suricata rules in a git repository and manage all rule and policy changes through version-controlled pull requests. This provides an audit trail of who changed what rule and when, the ability to roll back to a known-good configuration, and peer review of firewall policy changes before they are deployed. Rules built through the standard stateful rule builder are stored as structured objects. When managing rules through IaC (CloudFormation, Terraform, CDK), the plain text Suricata format integrates naturally into your templates. If you create rules manually in the console, the standard stateful rule builder's structured format makes it painful to migrate rules between rule groups or export them for backup. It is surprisingly more intuitive to read the raw Suricata rules after you get some familiarity with it, rather than trying to parse a console-built rule in the UI or in IaC output.</p>
+<h2 id="always-use-the-flow-keyword-on-all-tcp-or-ip-protocol-rules">Always use the flow: keyword on all TCP or IP protocol rules</h2>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Add <code>flow:</code> to every stateful rule where the protocol field in the rule (field 2) is either <code>tcp</code> or <code>ip</code>. This single keyword prevents the most common class of rule conflicts in Network Firewall deployments. Most often customers find that <code>flow:to_server;</code> is the most appropriate, but <code>flow:established;</code> or <code>flow:to_server, established;</code> are good options to consider too.</p>
+</div>
+<h3 id="why-the-flow-keyword-matters">Why the flow: keyword matters</h3>
+<p>When Suricata parses a rule, it assigns it an <a href="https://docs.suricata.io/en/latest/rules/rule-types.html">internal rule type</a> based on the protocol field and keywords present. The type determines whether the action applies to a single packet or to the entire flow.</p>
+<p>A rule with <code>tcp</code>, <code>udp</code>, or <code>ip</code> in the protocol field and no <code>flow:</code> keyword is classified as <strong>SIG_TYPE_IPONLY</strong>. Suricata evaluates it on the first packet of a flow (for example, the TCP SYN), locks in the action for the entire connection, and stops inspecting it. All subsequent packets — including application-layer data — are handled by the firewall's state table without being evaluated against any other rules. This is the source of most rule ordering problems in Network Firewall.</p>
+<p>Adding <code>flow:</code> converts the rule to <strong>SIG_TYPE_PKT</strong>, which is evaluated per-packet. The flow continues to be inspected, application-layer rules can still fire in priority order, and you have explicit control over directionality.</p>
+<h3 id="which-rules-need-a-flow-keyword">Which rules need a flow: keyword</h3>
+<p>Add <code>flow:</code> to any rule whose protocol field is <code>tcp</code>, <code>udp</code>, or <code>ip</code> and that matches only on addresses and ports. Without it, Suricata classifies the rule as SIG_TYPE_IPONLY and locks in the action on the first packet before any application-layer data is present.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a># Correct: flow:to_server makes this SIG_TYPE_PKT
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pass tcp $HOME_NET any -&gt; any 80 (flow:to_server; sid:22222;)
+</code></pre></div>
+<p>Rules with an application-layer protocol field (<code>tls</code>, <code>http</code>, <code>ssh</code>, <code>dns</code>, etc.) or an application-layer buffer keyword (<code>tls.sni</code>, <code>http.host</code>) do not need <code>flow:</code> — they cannot match until app-layer data is available, so they never trigger on the initial SYN. Adding <code>flow:to_server</code> to them is harmless and common for consistency.</p>
+<div class="admonition danger">
+<p class="admonition-title">Common misconfiguration</p>
+<p>When customers report that their firewall is "processing rules out of order" or that higher-priority rules are being skipped, the cause is almost always a rule without <code>flow:</code> that is matching on the SYN packet and passing the entire flow before application-layer rules can inspect it. Adding <code>flow:to_server;</code> to the rule fixes this in every case we have seen.</p>
+</div>
+<h3 id="example-application-layer-rules-never-fire">Example: application-layer rules never fire</h3>
+<p>Without <code>flow:to_server</code>, a TCP pass rule matches on the SYN packet and passes the entire flow. Application-layer rules higher in the ruleset never see the traffic:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a># BAD - DO NOT USE
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a># Rule 1: intends to block HTTP traffic to baddomain.com
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>reject http $HOME_NET any -&gt; any 80 (http.host; content:"baddomain.com"; sid:1;)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a># Rule 2: allows all TCP port 80 (SIG_TYPE_IPONLY rule - matches on SYN, stops inspecting)
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>pass tcp $HOME_NET any -&gt; any 80 (sid:2;)
+</code></pre></div>
+<p>In this example, Rule 2 matches the first TCP SYN packet (before any HTTP data exists) and passes the entire flow. Rule 1 never evaluates because the flow is already in the state table as allowed. The customer sees that strict rule ordering "isn't working" because a lower-priority rule is taking precedence.</p>
+<p><strong>The fix:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a># GOOD
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a># Rule 1: blocks HTTP traffic to baddomain.com (unchanged - no flow: needed)
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>reject http $HOME_NET any -&gt; any 80 (http.host; content:"baddomain.com"; sid:1;)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a># Rule 2: allows TCP port 80 (SIG_TYPE_PKT rule - continues inspecting)
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>pass tcp $HOME_NET any -&gt; any 80 (flow:to_server; sid:2;)
+</code></pre></div>
+<p>Only Rule 2 changes. With <code>flow:to_server</code>, Rule 2 becomes a SIG_TYPE_PKT rule. Suricata continues to inspect the flow, and when the HTTP request arrives with "baddomain.com" in the host header, Rule 1 fires and blocks it.</p>
+<p>See <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/troubleshooting-rules.html">Troubleshooting rules in Network Firewall</a> for more information.</p>
+<h3 id="pass-rules-end-inspection-for-the-rest-of-the-stream">Pass rules end inspection for the rest of the stream</h3>
+<p>Adding <code>flow:</code> fixes rule ordering, but it does not change a more fundamental property of the <code>pass</code> action: once a <code>pass</code> rule matches, Suricata stops inspecting the rest of that TCP stream. Subsequent payload on the same connection is not evaluated against your other rules, including AWS managed threat signatures, even if that payload is malicious. This is by design in Suricata, not a Network Firewall limitation.</p>
+<p>The practical consequence is that a broadly scoped pass rule is not just permissive access, it is a blind spot. A rule like <code>pass tcp $HOME_NET any -&gt; any 443 (flow:to_server, established; sid:1;)</code> allows every HTTPS destination and also removes IPS inspection from every one of those connections.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Scope <code>pass</code> rules as narrowly as the use case allows. Prefer application-layer pass rules that match a specific domain (<code>tls.sni</code>, <code>http.host</code>) over broad <code>pass tcp</code> rules on a port, so that the allow decision is tied to a destination you intended rather than to the port number. Where you must allow a broad range, place your AWS managed threat signature rule groups at a higher priority so they evaluate before the pass rule.</p>
+</div>
+<p>For the underlying Suricata behavior, see <a href="https://docs.suricata.io/en/latest/performance/ignoring-traffic.html#pass-rules">Ignoring traffic: pass rules</a> and this <a href="https://forum.suricata.io/t/do-pass-action-allows-all-payload-going-through-same-tcp-stream/3567">Suricata forum discussion</a>.</p>
+<h2 id="consolidate-into-few-rule-groups">Consolidate into few rule groups</h2>
+<p>Network Firewall has limits around how many rules and rule groups you can attach to a firewall policy. A firewall policy supports a maximum of 20 stateful rule groups, and that limit is shared between your custom rule groups and AWS managed rule groups. The total stateful rule capacity defaults to 30,000 across all rule groups referenced by a policy, and any single rule group is capped at 30,000 capacity. Both are default quotas that you can request an increase for through <a href="https://console.aws.amazon.com/servicequotas/home/services/network-firewall/quotas">Service Quotas</a>. A rule group also has a 2 MB maximum size limit on its Suricata rules string, which is not adjustable.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Use as few custom rule groups as possible, ideally just one. This maximizes the number of AWS managed rule groups you can attach (the 20 stateful rule group limit is shared between custom and managed) and makes it much easier to read your custom ruleset from top to bottom for troubleshooting.</p>
+</div>
+<h3 id="understanding-and-calculating-capacity">Understanding and calculating capacity</h3>
+<p>Capacity is the number of rules you expect the rule group to hold over its lifetime. It is pre-allocated when the rule group is created, and it is <strong>fixed</strong>. You cannot increase the capacity of an existing rule group. If an update would exceed the group's capacity, the API rejects it, and you need to create a new rule group with a larger capacity and move your rules into it.</p>
+<p>How capacity is consumed depends on the rule group type. For the official reference, see <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-rule-group-capacity.html">Setting rule group capacity in AWS Network Firewall</a>.</p>
+<p><strong>Suricata compatible IPS rules and standard stateful rules</strong></p>
+<p>Each rule consumes exactly <strong>1 capacity unit</strong>, regardless of how complex the rule is. A rule with several <code>content</code> matches, a PCRE, and multiple flowbits still costs 1. This is what the AWS documentation means when it says to estimate a stateful rule group's capacity as "the number of rules that you expect to have in it during its lifetime": the rule count is the capacity, with no multiplier for rule complexity.</p>
+<p><strong>Domain list rule groups</strong></p>
+<p>The first domain consumes 2 capacity for HTTP or 1 for HTTPS, or 3 if both protocols are selected. Every domain after the first consumes 1 capacity per protocol. Note that strict order domain list rule groups do not automatically create the drop rules behind the scenes, so you configure the drop established default action on the firewall policy yourself. See <a href="../../firewall-policy-configuration/docs/#default-actions">Default actions</a>.</p>
+<p>For example, a domain list rule group with 20 domains, a rule action of allow, and both HTTP and HTTPS selected:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Domain 1:      3 capacity
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Domains 2-20:  2 capacity each (1 per protocol)
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>Total = 3 + (2 x 19) = 41
+</code></pre></div>
+<p><strong>Stateless rule groups</strong></p>
+<p>Stateless capacity is calculated differently: the capacity of a single rule is the <em>product</em> of the number of specifications in each of its match settings. A rule specifying 2 protocols, 3 sources, and 5 destinations costs 2 x 3 x 5 = 30. The capacity documentation linked above has the full calculation and worked examples.</p>
+<h3 id="verifying-the-capacity-you-need">Verifying the capacity you need</h3>
+<p>You do not have to calculate capacity by hand. There are three ways to get the exact number:</p>
+<ul>
+<li><strong>Dry run the create call.</strong> Call <code>CreateRuleGroup</code> with <code>DryRun</code> set to <code>true</code>. Network Firewall evaluates the request and returns what the rule group would consume, without creating anything. Read <code>ConsumedCapacity</code> from the response. This is the most reliable method and the one to use in a pipeline. Pass a generous <code>--capacity</code> value for the dry run so the request is not rejected before it reports back.<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>aws network-firewall create-rule-group \
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    --rule-group-name my-rule-group \
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    --type STATEFUL \
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    --capacity 30000 \
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    --rule-group file://rules.json \
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    --dry-run \
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    --query 'RuleGroupResponse.ConsumedCapacity'
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li><strong>Read the error message.</strong> If you attempt to create a rule group with insufficient capacity, the error tells you the required value directly:<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>An error occurred (InvalidRequestException) when calling the CreateRuleGroup operation:
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>StatefulRules capacity exceeded, parameter: [67], context: RulesSource.StatefulRules
+</code></pre></div>
+<p>In this example the rule set needs at least 67 capacity units.</p>
+</li>
+</ul>
+<ul>
+<li><strong>Describe an existing rule group.</strong> The <code>ConsumedCapacity</code> field shows how much of an existing rule group's capacity is in use.<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>aws network-firewall describe-rule-group \
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    --type STATEFUL \
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    --rule-group-name my-rule-group
+</code></pre></div>
+</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Determine the capacity you need with a <code>DryRun</code> create call, then set the actual capacity well above it. If you are consolidating all custom rules into one group, set the capacity to whatever remains after accounting for your managed rule groups. Capacity you do not use costs nothing.</p>
+</div>
+<h3 id="planning-for-growth">Planning for growth</h3>
+<p>If you are building a domain allowlist that may grow over time, plan for the 2 MB rule group byte limit as well as the capacity limit. A practical approach is to cap each rule group at approximately 7,500 domain rules, leaving headroom for per-rule comments and future growth.</p>
+<p>If your domain list is approaching a rule group's capacity, consider a PCRE rule that matches many domains in a single rule instead of splitting across multiple rule groups. One PCRE rule costs 1 capacity unit no matter how many domains it covers. See <a href="../../sample-suricata-rules/docs/#allow-multiple-domains-in-a-single-rule-pcre">Allow multiple domains in a single rule</a> for the pattern and its trade-offs.</p>
+<h3 id="signature-ids-sids">Signature IDs (SIDs)</h3>
+<p>Every Suricata rule requires a Signature ID (SID), which is a unique numeric identifier for that rule. The SID is included in every alert log entry generated by that rule, making it your primary key for identifying which rule fired on a given traffic flow. SIDs are defined with the <code>sid:</code> keyword:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>pass tls $HOME_NET any -&gt; any any (tls.sni; content:"example.com"; flow:to_server; sid:100001;)
+</code></pre></div>
+<p>When you see an alert in your logs, the SID tells you which rule matched. Alert log events also include an <code>aws_metadata.resource_arn</code> field identifying the rule group the rule came from, so a SID that is reused across two different rule groups is still unambiguous in the logs. Combine descriptive <code>msg:</code> fields with a SID numbering convention that makes rules easy to find in your ruleset. See <a href="../../logging-and-monitoring/docs/#rule-hit-count">Rule hit count</a> for how SIDs and rule group ARNs are used together to report per-rule traffic matches.</p>
+<h2 id="domain-filtering">Domain filtering</h2>
+<p>Domain-based filtering on TLS SNI and HTTP host headers is one of the most common and effective use cases for Network Firewall. It allows you to control which domains your workloads communicate with without managing IP-based rules for services behind CDNs or with frequently changing IPs.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Implement a domain allowlist for egress traffic: explicitly allow only the domains your workloads need, and block everything else by default. This is an extremely common configuration we recommend because it flips the security model from trying to identify and block all bad destinations on the internet (an impossible task) to only allowing known-good domains your workloads actually need access to, blocking everything else by default, dramatically reducing the risk surface.</p>
+</div>
+<p>Network Firewall inspects domain information from two sources:</p>
+<ul>
+<li><strong>TLS SNI</strong> - The Server Name Indication field in the TLS Client Hello (matched with the <code>tls.sni</code> keyword)</li>
+<li><strong>HTTP Host Header</strong> - The Host header in plaintext HTTP requests (matched with the <code>http.host</code> keyword)</li>
+</ul>
+<p>Domain-based rules match regardless of the destination port, depending on how you write the rule. The sample rules in this guide use <code>any</code> for the destination port, so they match TLS or HTTP traffic on any port. Domain-based rules also work regardless of whether the underlying connection uses IPv4 or IPv6, which is a significant advantage over IP-based filtering in dual-stack environments.</p>
+<p>For complete domain filtering rule examples (exact match, wildcard subdomain matching with dotprefix, PCRE for multiple domains in a single rule, and HTTP/HTTPS variants), see <a href="../../sample-suricata-rules/docs/#allow-rules-and-domain-allowlisting">Sample Suricata rules</a>.</p>
+<h3 id="sni-manipulation-and-when-to-consider-tls-inspection">SNI manipulation and when to consider TLS inspection</h3>
+<p>TLS SNI filtering is a common industry standard, but it has a known limitation: if a client system is compromised, it could craft TLS requests with a legitimate domain in the SNI field while connecting to a different (malicious) IP address. In practice, most customers accept this risk because a domain allowlist already dramatically reduces the attack surface. An unauthorized party must not only compromise the workload but also know which specific domains are on the allowlist.</p>
+<p>For organizations that cannot accept this risk, enabling <a href="../../tls-inspection/docs/">TLS inspection</a> (decryption) eliminates this concern. When TLS is decrypted, the firewall validates that the SNI matches the certificate presented by the server. Mismatches are blocked automatically.</p>
+<h2 id="log-allowed-traffic">Log allowed traffic</h2>
+<p>Pass rules in Suricata allow traffic without generating a log entry. If you need visibility into which traffic is being allowed (not just what is being blocked), you must explicitly enable logging on pass rules.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Add the <code>alert;</code> keyword to any pass rule that you want to log. This is the simplest approach and keeps your ruleset compact.</p>
+</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a># Pass rule with logging enabled via alert; keyword
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>pass tls $HOME_NET any -&gt; any any (alert; msg:"allowed *.amazonaws.com"; tls.sni; dotprefix; content:".amazonaws.com"; nocase; endswith; flow:to_server; sid:100001;)
+</code></pre></div>
+<p>The <code>alert;</code> keyword causes the pass rule to generate a log entry, and the log shows a <code>verdict.action</code> of <code>pass</code>, accurately reflecting what the firewall did with the traffic.</p>
+<p>Logging pass rules is also what makes them visible in <a href="../../logging-and-monitoring/docs/#rule-hit-count">rule hit count</a>. Hit counters increment only when a rule match produces an alert log entry, so a pass rule without <code>alert;</code> never appears in the Top Rule Hits view no matter how much traffic it allows.</p>
+<h2 id="ip-set-references">IP set references</h2>
+<p>For rules that need to reference large or frequently changing sets of IP addresses, use <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/rule-groups-ip-set-references.html">IP set references</a> linked to managed prefix lists. IP set references use the <code>@</code> prefix and allow you to update the IP list without modifying or redeploying your rule groups.</p>
+<div class="admonition tip">
+<p class="admonition-title">Best practice</p>
+<p>Use IP set references linked to prefix lists for any IP-based rules where the target addresses change over time (partner IPs, SaaS provider ranges, internal service endpoints). This decouples your rule definitions from the specific IPs they reference.</p>
+</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pass tls @partnercidrs any -&gt; $HOME_NET 443 (msg:"Allow partner ingress on TLS/443"; flow:to_server; sid:202608211;)
+</code></pre></div>
+<p>Associate a customer-managed or AWS-managed prefix list with a rule group's IP set reference. When the prefix list is updated, the firewall rules automatically reflect the new entries.</p>
+<p>Limits:</p>
+<ul>
+<li>Maximum of 5 IP set references per stateful rule group</li>
+<li>Maximum of 1,000 entries per prefix list</li>
+<li>With 20 rule groups x 5 references x 1,000 entries = up to 100,000 CIDRs supported</li>
+</ul>
+<p>The <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/container-associations.html">container attribute association</a> feature also uses IP sets to dynamically reference container workload IPs, but the 5 IP set reference limit per rule group does not apply to container association IP sets. This means you can use IP set references for your manually managed prefix lists without worrying about conflicting with container attribute associations.</p>
+<p>For configuration details, see <a href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/rule-groups-ip-set-references.html">IP set references in rule groups</a>.</p>
+<h2 id="writing-rules-with-suricata-rule-generator">Writing rules with Suricata Rule Generator</h2>
+<p>Writing custom Suricata rules correctly requires attention to many details: proper <code>flow:</code> keyword placement, unique SIDs, valid protocol/action combinations, consistent formatting, and revision tracking. The <a href="https://github.com/aws-samples/sample-suricata-generator">Suricata Rule Generator for AWS Network Firewall</a> is an open-source GUI application designed to handle these concerns automatically, so you can focus on <em>what</em> to filter rather than getting the syntax right.</p>
+<p><img alt="Suricata Rule Generator Interface" src="https://raw.githubusercontent.com/aws-samples/sample-suricata-generator/main/images/screenshot.png" /></p>
+<h3 id="what-the-tool-does-for-you">What the tool does for you</h3>
+<ul>
+<li><strong>Automatic <code>flow:</code> keyword</strong> - The tool applies <code>flow:to_server</code> on rules where appropriate as you write them, preventing the most common rule conflict in Network Firewall deployments (the SIG_TYPE_IPONLY vs application-layer rule interaction described <a href="#always-use-the-flow-keyword-on-all-tcp-or-ip-protocol-rules">above</a>)</li>
+<li><strong>Real-time syntax validation</strong> - Only allows supported actions (<code>pass</code>, <code>drop</code>, <code>reject</code>, <code>alert</code>), supported protocols, valid network/port formats, and properly structured rule options. Errors are flagged before you save.</li>
+<li><strong>Automatic SID management</strong> - Suggests the next available SID for new rules, prevents duplicate SIDs within a rule group, and provides bulk SID renumbering when reorganizing rules</li>
+<li><strong>Automatic revision tracking</strong> - The <code>rev</code> keyword auto-increments when rule fields change, giving you built-in version history per rule</li>
+<li><strong>Color-coded rule table</strong> - Rules are visually organized by action type (green for pass, red for drop, purple for reject, blue for alert, grey for comments), making it easy to scan a large ruleset and understand its structure at a glance</li>
+<li><strong>Content keyword auto-complete</strong> - Protocol-aware suggestions for Suricata keywords (<code>tls.sni</code>, <code>http.host</code>, <code>ja3.hash</code>, <code>aws_domain_category</code>, etc.) as you build rule options</li>
+<li><strong>Rule conflict analysis</strong> - Detects when rules shadow or conflict with other rules in your ruleset before you deploy, identifying security bypasses and unreachable rules</li>
+<li><strong>Infrastructure export</strong> - Export your rules directly to AWS Network Firewall, Terraform, or CloudFormation with proper capacity calculation, variable mapping, and strict rule ordering configured automatically</li>
+</ul>
+<h3 id="beyond-rule-authoring">Beyond rule authoring</h3>
+<p>The tool also provides capabilities covered in other sections of this guide:</p>
+<ul>
+<li><a href="../../logging-and-monitoring/docs/#convert-domain-reports-to-suricata-rules">Bulk domain import</a> with automatic consolidation for building domain allowlists</li>
+<li><a href="../../aws-managed-rules/docs/#filtered-managed-rule-groups-with-suricata-rule-generator">Managed Rule Group Generator</a> for creating filtered, auto-updating rule groups from AWS managed threat signatures</li>
+<li><a href="../../logging-and-monitoring/docs/#rule-usage-analysis-with-suricata-rule-generator">CloudWatch Rule Usage Analysis</a> for identifying unused and overly-broad rules in production</li>
+<li><a href="../../cost-considerations/docs/#analyze-traffic-costs-with-suricata-rule-generator">Traffic Cost Analyzer</a> for understanding where your firewall data processing costs are coming from</li>
+<li>AI Rule Assistant for generating rules from plain English descriptions using Amazon Bedrock</li>
+<li>Import standard stateful rule groups created in the AWS console directly to custom Suricata rules</li>
+</ul>
+<p>For installation instructions, documentation, and the complete feature set, see the <a href="https://github.com/aws-samples/sample-suricata-generator">Suricata Rule Generator GitHub repository</a>.</p>
+<h2 id="what-to-read-next">What to read next</h2>
+<ul>
+<li><a href="../../sample-suricata-rules/docs/">Sample Suricata rules</a> - Complete rules template and individual rule examples by use case</li>
+<li><a href="../../aws-managed-rules/docs/">AWS Managed Rules</a> - AWS Managed Rule Groups for threat detection</li>
+<li><a href="../../logging-and-monitoring/docs/">Logging and monitoring</a> - Analyzing what your rules are doing</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

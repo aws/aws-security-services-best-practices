@@ -1,0 +1,1219 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ja/guides/security-agent/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../guides/security-agent/" hreflang="en">
+        
+          <link rel="alternate" href="../../../ko/guides/security-agent/" hreflang="ko">
+        
+          <link rel="alternate" href="./" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>AWS Security Agent - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#aws-security-agent" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              AWS Security Agent
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../guides/security-agent/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../ko/guides/security-agent/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dns-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Route 53 Resolver DNS Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Introduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to use this guide
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-aws-security-agent-penetration-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is AWS Security Agent penetration testing?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-the-benefits-of-aws-security-agent-penetration-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What are the benefits of AWS Security Agent penetration testing?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#position-it-alongside-your-existing-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Position it alongside your existing tools
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#region-availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Region availability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#first-time-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First-time setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#organizing-work-with-agent-spaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Organizing work with agent spaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabling-penetration-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling penetration testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Enabling penetration testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validating-domain-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validating domain ownership
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-private-applications-with-a-vpc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing private applications with a VPC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-test-activity-to-cloudwatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging test activity to CloudWatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storing-test-credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storing test credentials
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-iam-policies-for-administrators-and-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting up IAM policies for administrators and users
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scoping-the-service-role-with-least-privilege" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoping the service role with least privilege
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#providing-application-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Providing application context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-a-penetration-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring a penetration test
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring a penetration test">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defining-scope-with-target-and-accessible-urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Defining scope with target and accessible URLs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limiting-blast-radius-with-out-of-scope-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limiting blast radius with out-of-scope paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#working-with-a-waf-in-front-of-the-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Working with a WAF in front of the application
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-authenticated-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring authenticated testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selecting-risk-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selecting risk types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operationalizing-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operationalizing findings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operationalizing findings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reviewing-validated-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reviewing validated findings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#working-with-non-deterministic-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Working with non-deterministic results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#providing-feedback-to-improve-accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Providing feedback to improve accuracy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remediating-and-retesting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remediating and retesting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exporting-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exporting reports
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integrating-with-cicd-and-existing-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integrating with CI/CD and existing tooling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-safely-and-responsibly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing safely and responsibly
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-and-data-protection-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security and data protection considerations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost considerations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#product-and-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Product and documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blogs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blogs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="aws-security-agent">AWS Security Agent</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Welcome to the AWS Security Agent Best Practices Guide. The purpose of this guide is to provide prescriptive guidance for using AWS Security Agent on-demand penetration testing to discover and validate exploitable vulnerabilities in your web applications and APIs. This guide is designed to provide value whether you are running your first penetration test against a single application or scaling continuous, context-aware testing across your entire application portfolio.</p>
+<p>This guide focuses on the on-demand penetration testing capability of AWS Security Agent. AWS Security Agent also provides design security reviews, code security reviews, and threat modeling, which are referenced where relevant but are not the primary focus here.</p>
+<blockquote>
+<p>AWS Security Agent is now part of <a href="https://aws.amazon.com/about-aws/whats-new/2026/06/aws-continuum/">AWS Continuum</a>. Product and console naming may evolve as these capabilities converge. Always confirm current terminology against the <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/">AWS Security Agent User Guide</a>.</p>
+</blockquote>
+<h2 id="how-to-use-this-guide">How to use this guide</h2>
+<p>This guide is geared towards security practitioners, application security (AppSec) teams, and development teams who are responsible for validating application security before and after deployment. The best practices are organized into categories for easier consumption. Each category begins with a brief overview, followed by detailed guidance for implementing the recommendation. The topics do not need to be read in a particular order:</p>
+<ul>
+<li><a href="#what-is-aws-security-agent-penetration-testing">What is AWS Security Agent penetration testing?</a></li>
+<li><a href="#what-are-the-benefits-of-aws-security-agent-penetration-testing">What are the benefits of AWS Security Agent penetration testing?</a></li>
+<li><a href="#position-it-alongside-your-existing-tools">Position it alongside your existing tools</a></li>
+<li><a href="#getting-started">Getting started</a>
+    * <a href="#region-availability">Region availability</a>
+    * <a href="#first-time-setup">First-time setup</a>
+    * <a href="#organizing-work-with-agent-spaces">Organizing work with agent spaces</a></li>
+<li><a href="#enabling-penetration-testing">Enabling penetration testing</a>
+    * <a href="#validating-domain-ownership">Validating domain ownership</a>
+    * <a href="#testing-private-applications-with-a-vpc">Testing private applications with a VPC</a>
+    * <a href="#logging-test-activity-to-cloudwatch">Logging test activity to CloudWatch</a>
+    * <a href="#storing-test-credentials">Storing test credentials</a>
+    * <a href="#setting-up-iam-policies-for-administrators-and-users">Setting up IAM policies for administrators and users</a>
+    * <a href="#scoping-the-service-role-with-least-privilege">Scoping the service role with least privilege</a></li>
+<li><a href="#providing-application-context">Providing application context</a></li>
+<li><a href="#configuring-a-penetration-test">Configuring a penetration test</a>
+    * <a href="#defining-scope-with-target-and-accessible-urls">Defining scope with target and accessible URLs</a>
+    * <a href="#limiting-blast-radius-with-out-of-scope-paths">Limiting blast radius with out-of-scope paths</a>
+    * <a href="#working-with-a-waf-in-front-of-the-application">Working with a WAF in front of the application</a>
+    * <a href="#configuring-authenticated-testing">Configuring authenticated testing</a>
+    * <a href="#selecting-risk-types">Selecting risk types</a></li>
+<li><a href="#operationalizing-findings">Operationalizing findings</a>
+    * <a href="#reviewing-validated-findings">Reviewing validated findings</a>
+    * <a href="#working-with-non-deterministic-results">Working with non-deterministic results</a>
+    * <a href="#providing-feedback-to-improve-accuracy">Providing feedback to improve accuracy</a>
+    * <a href="#remediating-and-retesting">Remediating and retesting</a>
+    * <a href="#exporting-reports">Exporting reports</a>
+    * <a href="#integrating-with-cicd-and-existing-tooling">Integrating with CI/CD and existing tooling</a></li>
+<li><a href="#testing-safely-and-responsibly">Testing safely and responsibly</a></li>
+<li><a href="#security-and-data-protection-considerations">Security and data protection considerations</a></li>
+<li><a href="#cost-considerations">Cost considerations</a></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+<h2 id="what-is-aws-security-agent-penetration-testing">What is AWS Security Agent penetration testing?</h2>
+<p>AWS Security Agent is a frontier agent that proactively secures your applications throughout the development lifecycle. Its on-demand penetration testing capability deploys specialized AI agents that discover, validate, and report security vulnerabilities in web applications and APIs through tailored, multi-step testing scenarios.</p>
+<p>Unlike traditional scanners that generate findings without validation, AWS Security Agent attempts to exploit potential vulnerabilities with targeted payloads and exploit chains to confirm they are legitimate, exploitable security risks. It combines static application security testing (SAST), dynamic application security testing (DAST), and penetration testing into a single context-aware agent. The agent ingests design documents, architecture diagrams, infrastructure-as-code, source code, API specifications, and threat models to understand how your application was designed, built, and deployed, then identifies how individual vulnerabilities connect into higher-severity exploit chains.</p>
+<p>AWS Security Agent tests against the <a href="https://owasp.org/www-project-top-ten/">OWASP Top 10</a> for web applications as well as application-specific business logic flaws, and operates across AWS, other cloud providers, and on-premises environments. For a full description of the service, see the <a href="https://aws.amazon.com/security-agent/">AWS Security Agent product page</a> and the <a href="https://aws.amazon.com/blogs/security/aws-security-agent-on-demand-penetration-testing-now-generally-available/">general availability announcement</a>.</p>
+<p>The following diagram shows the building blocks of a penetration test. Agent spaces, application context in Amazon S3, test credentials in AWS Secrets Manager or a Lambda credential vendor, CloudWatch logging, and the IAM service role all reside in a security-team AWS Account, while the test agents run in an AWS service-managed account (backed by Amazon Bedrock) and reach your target — hosted on AWS, another cloud, or on-premises — over the public internet once you have verified domain ownership.</p>
+<p><a href="../../../images/security-agent/sec_agent_components.png"><img alt="AWS Security Agent penetration testing building blocks" src="../../../images/security-agent/sec_agent_components.png" /></a></p>
+<p><em>Figure 1: Foundational components of an AWS Security Agent penetration test</em></p>
+<h2 id="what-are-the-benefits-of-aws-security-agent-penetration-testing">What are the benefits of AWS Security Agent penetration testing?</h2>
+<p>Most organizations limit manual penetration testing to their most critical applications and run those tests periodically because of time and cost constraints. This leaves much of the application portfolio untested between assessments. AWS Security Agent addresses that gap:</p>
+<ul>
+<li><strong>On-demand, not periodic.</strong> You can initiate a penetration test in minutes and receive validated findings in hours rather than waiting weeks for an external vendor or an internal team to find capacity. This compresses the testing timeline and reduces the exposure window between releases.</li>
+<li><strong>Validated findings, fewer false positives.</strong> Because the agent confirms vulnerabilities through exploitation, your team can focus on legitimate, high-impact risks instead of triaging scanner noise. Each finding includes a Common Vulnerability Scoring System (CVSS) score, an application-specific severity rating, reproduction steps, and impact analysis.</li>
+<li><strong>Context awareness.</strong> By learning from your source code and documentation, the agent uncovers implementation-specific and business logic vulnerabilities that pattern-based tools miss, and chains lower-severity findings into critical exploit paths.</li>
+<li><strong>Transparency.</strong> The agent shows how it plans its testing, which payloads it uses, and how it verifies successful exploitation, so you can review its reasoning.</li>
+<li><strong>Broader coverage at lower cost.</strong> Testing runs autonomously at a fraction of the cost of manual penetration testing, which lets you expand coverage from a handful of critical applications to your entire portfolio.</li>
+<li><strong>Complete lifecycle.</strong> The agent does not stop at a report. It can generate pull requests with code fixes and retest to confirm that vulnerabilities are resolved.</li>
+</ul>
+<p>Note that AWS Security Agent is not a replacement for a professional penetration testing service. It is best used as an on-demand capability integrated into your security review workflow, with security professionals reviewing, validating, and extending its findings. See <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/security-guidance.html">Security Considerations for AWS Security Agent</a>.</p>
+<h2 id="position-it-alongside-your-existing-tools">Position it alongside your existing tools</h2>
+<p>AWS Security Agent complements, rather than replaces, your existing application security tooling. It focuses on discovering and validating exploitable, context-aware vulnerabilities — business logic flaws and multi-step exploit chains — and does not perform traditional dependency or manifest (software composition analysis) scanning. In practice, this means:</p>
+<ul>
+<li><strong>Keep a fast, rule-based scanner for known CVEs and vulnerable dependencies.</strong> A tool such as <a href="https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html">Amazon Inspector</a> continuously scans for published vulnerabilities in third-party dependencies and is cheap and quick to run. AWS Security Agent will not, for example, flag that a dependency in your manifest has a known CVE and bump its version.</li>
+<li><strong>Use AWS Security Agent for depth.</strong> It reasons about your application to find and prove exploitable, high-impact issues that pattern-based tools miss, and runs continuously and on demand between your formal assessments.</li>
+<li><strong>Treat it as supplementary evidence for compliance programs.</strong> Where an independent penetration test is mandated, use AWS Security Agent as a force multiplier for your testers and a way to catch issues before the formal assessment, not as a wholesale replacement for a required third-party test.</li>
+</ul>
+<h2 id="getting-started">Getting started</h2>
+<p>This section covers what to consider before you run your first penetration test.</p>
+<h3 id="region-availability">Region availability</h3>
+<p>Confirm that AWS Security Agent on-demand penetration testing is available in the AWS Region you intend to use, and consolidate testing in supported Regions. At the time of writing, on-demand penetration testing is available in US East (N. Virginia), US West (Oregon), Europe (Ireland), Europe (Frankfurt), Asia Pacific (Sydney), and Asia Pacific (Tokyo). Because Region support expands over time, verify the current list in the <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/">AWS Security Agent User Guide</a> before you plan a deployment.</p>
+<h3 id="first-time-setup">First-time setup</h3>
+<p>During first-time setup in the AWS console you make a few organizational decisions that apply to all of your future work. Plan these deliberately:</p>
+<ol>
+<li><strong>Access method.</strong> Choose how users access the AWS Security Agent web application. Using <a href="https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html">AWS IAM Identity Center</a> single sign-on (SSO) is recommended over IAM-only console access, because it lets you centrally manage which team members can create, manage, and view penetration tests and design reviews (role-based access control). For the identity-based IAM permissions to attach to those administrator and user roles — including a gap in the managed policies you need to plan around — see <a href="#setting-up-iam-policies-for-administrators-and-users">Setting up IAM policies for administrators and users</a>.</li>
+<li><strong>Service permissions.</strong> Configure the IAM role the web application uses to access AWS services. Follow least privilege here rather than reusing a broad administrative role (see <a href="#scoping-the-service-role-with-least-privilege">Scoping the service role with least privilege</a>).</li>
+<li><strong>First agent space.</strong> Create your initial agent space with a name and description. After setup, creating additional agent spaces only requires a name and description.</li>
+</ol>
+<p>For the full walkthrough, see <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/setup-security-agent.html">Set up AWS Security Agent</a>.</p>
+<h3 id="organizing-work-with-agent-spaces">Organizing work with agent spaces</h3>
+<p>An <em>agent space</em> is a dedicated workspace for securing a specific application or project. It holds the security reviews, optionally connected GitHub repositories, penetration test configurations, results, and findings for that application.</p>
+<p>The recommended practice is to <strong>create one agent space per application or project</strong>. This keeps each application's assessments, context, and testing boundaries separate, which makes results easier to reason about and lets teams focus on the application they own. Organizational security requirements are defined once at the organization level and apply across all agent spaces, while each agent space maintains its own design documents, code repositories, penetration testing configurations, results, and findings.</p>
+<p>Use a consistent naming convention for agent spaces (for example, by application name and environment) and apply <a href="#security-and-data-protection-considerations">tags</a> so you can filter results, generate targeted reports, and allocate costs by team, environment, compliance framework, or business unit.</p>
+<p>In many organizations, agent spaces are set up and managed by a central security team in a dedicated AWS Account (a member account) reserved for security tooling rather than for running workload environments. As a result, the AWS Account that owns an agent space is typically not the AWS Account that owns the target application's test environment. Keep this separation of AWS Accounts in mind as you plan domain verification, VPC connectivity, and cross-account access to the resources a test needs.</p>
+<h2 id="enabling-penetration-testing">Enabling penetration testing</h2>
+<p>Before you can run a test, enable penetration testing for your agent and configure the AWS integrations it needs. The configuration wizard walks through target domains and optional VPC, CloudWatch logging, credential storage, S3 context, and the service role. The subsections below cover the decisions that most affect safety, coverage, and cost. For the full procedure, see <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/enable-penetration-test.html">Enable penetration test</a>.</p>
+<h3 id="validating-domain-ownership">Validating domain ownership</h3>
+<p>AWS Security Agent will only test domains you have proven you own. This protects both you and AWS, and it is a required step. Complete domain validation for all of your domains during initial configuration so you do not hit delays later when you want to run a test.</p>
+<p>Choose the verification method that fits your environment:</p>
+<ul>
+<li><strong>DNS TXT record</strong> — Add a TXT record to your domain's DNS. If your domain is hosted in Amazon Route 53 in the same AWS account, you can use one-click verification, and AWS Security Agent creates the record for you.</li>
+<li><strong>HTTP route</strong> — Host a verification file at a specific route on your web server.</li>
+<li><strong>Private VPC</strong> — Used only for private VPC testing; verifies that the domain resolves to an IP in a private CIDR range.</li>
+</ul>
+<p>Sub-domains of a verified domain are covered automatically for DNS TXT and HTTP route verification, so you generally do not need to verify each sub-domain individually. You can add up to 20 target domains.</p>
+<p>If you are authorized to test an endpoint but cannot complete ownership verification through any of these methods, you can request manual verification for a valid business case. Open an <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/enable-test-domain.html">AWS Support</a> case that includes your business use case and your justification for why you are authorized to test the endpoint. See <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/enable-test-domain.html">Enable an application domain for penetration testing</a> for details.</p>
+<blockquote>
+<p>Only verified target domains are tested for vulnerabilities. Requests to any URL outside your target and accessible URLs are blocked by the network. Ensure you have proper authorization to test every system that could be affected, and comply with the <a href="https://aws.amazon.com/aup/">AWS Acceptable Use Policy</a>.</p>
+</blockquote>
+<h3 id="testing-private-applications-with-a-vpc">Testing private applications with a VPC</h3>
+<p>To test internal applications that are not publicly reachable, connect AWS Security Agent to the VPC that hosts them instead of exposing them to the internet. When you configure the VPC:</p>
+<ul>
+<li><strong>Provide a private route to the target.</strong> You do not need a NAT gateway. Instead, ensure the private subnet you provide in the penetration test configuration has a route to the target's private subnet — for example through AWS Transit Gateway, VPC peering, or another connectivity option.</li>
+<li><strong>Confirm the security groups allow the connections</strong> the agent needs to reach the target and perform testing.</li>
+</ul>
+<p>Because agent spaces are usually configured in a dedicated security-team AWS Account (see <a href="#organizing-work-with-agent-spaces">Organizing work with agent spaces</a>), the VPC you attach must be in the same AWS Account and AWS Region as the agent space — which is usually not the AWS Account or VPC that hosts the target application. When the target is not reachable from the internet, create a VPC in the agent space AWS Account and AWS Region, then establish connectivity from that VPC to the target VPC (for example, with VPC peering, AWS Transit Gateway, or a shared subnet) and confirm that routes and security groups on both sides allow the traffic.</p>
+<p>A common pattern uses AWS Transit Gateway as a central routing hub: for a private application on AWS, the agent's network interface reaches the workload VPC through a Transit Gateway attachment over the AWS private network; for a target in an on-premises data center or another cloud, traffic routes through a Direct Connect gateway and an AWS Direct Connect connection. No traffic traverses the public internet in either case, and you verify domain ownership with the Private VPC method (see <a href="#validating-domain-ownership">Validating domain ownership</a>).</p>
+<p><a href="../../../images/security-agent/sec_agent_private.png"><img alt="Penetration testing a private application on AWS or on-premises" src="../../../images/security-agent/sec_agent_private.png" /></a></p>
+<p><em>Figure 2: Reaching a private target on AWS, on-premises, or in another cloud through Transit Gateway and AWS Direct Connect</em></p>
+<p>You may also need VPC configuration for a target that is reachable from the internet but only accepts traffic from known static public IP addresses. AWS Security Agent does not publish the public IP addresses it uses for internet-based tests, so there is no fixed range you can add to an ingress allowlist. Instead, attach a VPC and provide a subnet that routes outbound traffic through a NAT gateway that uses Elastic IP addresses (EIPs), then allow those EIPs in the target's ingress rules. This gives the test a predictable, stable source IP that your ingress controls can permit.</p>
+<p><a href="../../../images/security-agent/sec_agent_ip_allowlist.png"><img alt="Testing an internet-facing application with source IP allowlisting" src="../../../images/security-agent/sec_agent_ip_allowlist.png" /></a></p>
+<p><em>Figure 3: Routing test traffic through a NAT gateway with an Elastic IP so a source-IP allowlist can permit it</em></p>
+<p>For private domains inside a VPC, verification may show as <code>UNREACHABLE</code>; you can still proceed, because AWS Security Agent attempts domain verification for private endpoints at the start of each run.</p>
+<h3 id="logging-test-activity-to-cloudwatch">Logging test activity to CloudWatch</h3>
+<p>Configure an <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html">Amazon CloudWatch</a> log group so you retain a record of penetration test activity for audit and troubleshooting. If you do not select a log group, AWS Security Agent creates one named <code>/aws/securityagent/&lt;agent name&gt;/&lt;pentest id&gt;</code> with the appropriate permissions. Make sure the service role has permission to write to the log group you choose.</p>
+<h3 id="storing-test-credentials">Storing test credentials</h3>
+<p>Most vulnerabilities live behind authentication, so authenticated testing dramatically improves coverage. AWS Security Agent retrieves credentials at runtime from one of two sources:</p>
+<ul>
+<li><strong>AWS Secrets Manager</strong> — Store static username/password credentials as secrets. Credentials are encrypted at rest, and the service role needs permission to read the secrets.</li>
+<li><strong>A credential vendor (AWS Lambda function)</strong> — Use a Lambda function that returns credentials dynamically in the expected format, which is useful for short-lived tokens or credentials that must be generated on demand.</li>
+</ul>
+<p><strong>Create dedicated test credentials with permissions scoped to a realistic user role rather than reusing administrative accounts.</strong> Scoping credentials to the privileges of an ordinary user produces more realistic results and lets the agent surface broken access controls. For example, a test using a standard user's credentials can reveal that the user is able to bypass authorization and access another user's data — a flaw you would miss with an administrative account that can see every user's data by default. Provisioning credentials specifically for penetration testing also makes it easy to rotate or revoke access afterward.</p>
+<h3 id="setting-up-iam-policies-for-administrators-and-users">Setting up IAM policies for administrators and users</h3>
+<p>Distinguish two separate IAM concerns: the identity-based permissions you grant to the people who administer and use AWS Security Agent, and the <a href="#scoping-the-service-role-with-least-privilege">service role</a> the web application assumes to reach AWS resources during a test. This subsection covers the former.</p>
+<p>AWS Security Agent provides the <code>AWSSecurityAgentWebAppPolicy</code> AWS managed policy, which grants the permissions needed for day-to-day use of the web application — creating and running penetration tests, viewing findings, and listing existing agent spaces and target domains. Attach it to the roles your security engineers and testers use for ongoing work.</p>
+<p>At the time of writing, there is no AWS managed policy that also covers first-time administrative setup. Actions such as creating agent spaces, managing IAM Identity Center user and group memberships, and listing IAM Identity Center applications are not included in <code>AWSSecurityAgentWebAppPolicy</code>. If you attach only that policy to an administrator's role, initial setup fails partway through with access-denied errors for the missing permissions (for example, an action such as <code>ListApplications</code>). This differs from peer services — Amazon GuardDuty, AWS Security Hub, Amazon Inspector, and Amazon Detective — which each ship a full-access managed policy alongside a read-only one.</p>
+<p>Until a dedicated administrator (full-access) managed policy is available, set up two distinct roles rather than granting broad access:</p>
+<ul>
+<li><strong>User role</strong> — Attach <code>AWSSecurityAgentWebAppPolicy</code>. This is sufficient to run tests and review findings.</li>
+<li><strong>Administrator role</strong> — Attach <code>AWSSecurityAgentWebAppPolicy</code> plus a customer-managed policy that grants the additional setup actions your administrators need, such as creating and managing agent spaces, IAM Identity Center membership management (for example, <code>CreateMembership</code> and <code>ListApplications</code>), VPC configuration, and domain verification.</li>
+</ul>
+<p>Avoid the blunt workaround of granting <code>securityagent:*</code> or account-wide administrator access. It unblocks setup but violates least privilege and is generally unacceptable in production environments with strict IAM governance. If you must use a broad grant temporarily to complete setup, scope it tightly and replace it with a least-privilege customer-managed policy as soon as setup is done.</p>
+<p>To build that policy accurately, complete setup with the missing-permission (access-denied) messages and AWS CloudTrail events in hand to capture exactly which actions are required, then grant only those. Re-check periodically: when AWS publishes an administrator or full-access managed policy for AWS Security Agent, adopt it in place of your custom policy.</p>
+<h3 id="scoping-the-service-role-with-least-privilege">Scoping the service role with least privilege</h3>
+<p>AWS Security Agent uses an IAM service role to reach the VPC, CloudWatch log groups, Secrets Manager secrets, Lambda functions, and other resources involved in a test. The default role is a reasonable starting point, but for regulated or sensitive environments, provide a custom role scoped to only the specific resources each test needs. Grant access to named secrets, log groups, and functions rather than wildcards, and review the role periodically.</p>
+<h2 id="providing-application-context">Providing application context</h2>
+<p>Application context is optional but is one of the most valuable inputs you can give the agent. Richer context produces higher-quality findings, fewer false positives, and more actionable remediation, and it enables white-box testing that surfaces implementation-specific vulnerabilities black-box testing cannot reach. Provide as much of the following as you can:</p>
+<ul>
+<li><strong>Source code</strong> — Connect a repository to enable white-box testing. For the current list of supported source control providers, see the <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/">AWS Security Agent User Guide</a>. If repository integration is not feasible — or you just want to evaluate AWS Security Agent without setting up the full source control integration — upload a snapshot of your source code to an Amazon S3 bucket and provide it as a learning resource instead. Typically you just upload a zip file containing a snapshot of your mainline branch.</li>
+<li><strong>API specifications (OpenAPI or Swagger)</strong> — Document endpoints, parameters, and authentication requirements so the agent tests comprehensively instead of discovering endpoints by trial and error. This applies to REST and GraphQL APIs.</li>
+<li><strong>Architecture documentation</strong> — Helps the agent understand service interactions and potential exploit chains. This can be in any format; the underlying models are highly capable at interpreting and reasoning about diagrams and charts, so you do not need to convert visual material to text first.</li>
+<li><strong>Product requirements documents</strong> — Convey purpose, features, and user stories so the agent understands intended behavior and can spot business logic flaws.</li>
+<li><strong>Existing threat models</strong> — Direct the agent toward your highest-risk areas and known concerns.</li>
+<li><strong>Vulnerability reports from other tools</strong> — Provide findings from tools such as SAST or software composition analysis (SCA) scanners so the agent can build on what they have already surfaced.</li>
+</ul>
+<p>You can connect an <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html">Amazon S3</a> bucket for artifacts, connect GitHub repositories, or upload files directly in the web application.</p>
+<p><strong>Prefer authenticated, context-rich runs over black-box testing.</strong> A black-box run with no credentials and no source code exercises only the unauthenticated surface and tends to surface shallow results. For meaningful findings, run authenticated (see <a href="#configuring-authenticated-testing">Configuring authenticated testing</a>) and provide source code and documentation so the agent can reason about business logic and exploit chains. Reserve black-box runs for cases where you specifically want an external, unauthenticated perspective, and set expectations accordingly.</p>
+<p><strong>Feed context forward to improve consistency.</strong> Because results vary between runs (see <a href="#working-with-non-deterministic-results">Working with non-deterministic results</a>), providing source code, documentation, and prior findings as context helps stabilize and deepen what the agent discovers from one run to the next.</p>
+<h2 id="configuring-a-penetration-test">Configuring a penetration test</h2>
+<p>You can create and run penetration tests in the AWS Security Agent web application, or programmatically through the AWS Security Agent API and the AWS CLI — which is useful for scripting tests or integrating them into CI/CD and other automated workflows. <strong>Run tests against a pre-production environment that closely mirrors production</strong> whenever possible; this keeps unexpected business logic interactions away from live systems and customer data. See <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/quickstart.html">Quickstart: Run a penetration test</a> and <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/perform-penetration-test.html">Create a penetration test</a>.</p>
+<h3 id="defining-scope-with-target-and-accessible-urls">Defining scope with target and accessible URLs</h3>
+<p>Two scope settings work together and are commonly misconfigured, so understand the distinction:</p>
+<ul>
+<li><strong>Target URLs</strong> are the verified domains the agent is allowed to test. Only these are tested; sub-domains are covered automatically.</li>
+<li><strong>Accessible URLs</strong> are domains the agent must be able to <em>reach</em> for login and navigation but must <em>not</em> test, such as identity providers, single sign-on endpoints, content delivery networks (CDNs), or APIs outside your target domain.</li>
+</ul>
+<p>A frequent cause of failed authenticated tests is a missing accessible URL: if an identity provider or SSO domain is not listed, the network blocks it and the agent cannot complete the sign-in flow. When the login flow redirects through an external identity provider (for example Okta, Auth0, Microsoft Entra ID, or Amazon Cognito), <strong>every domain in the redirect chain must be listed as an accessible URL, not just the first one.</strong> Capture them by signing in manually with your browser's network inspector open and recording every unique domain the flow touches, or use the open-source <a href="https://github.com/aws-samples/sample-security-agent-recorder">AWS Security Agent Recorder browser extension</a>, which records the domains your app contacts and fills them into the target, accessible, and out-of-scope fields for you. Accessible domains do not require ownership verification. Review the networking configuration rules the wizard displays to confirm which endpoints can and cannot receive traffic during the test.</p>
+<p>Treat the accessible URL list as a trust boundary: test data, including credentials, may be transmitted to accessible URL endpoints during testing, so only add domains you trust.</p>
+<h3 id="limiting-blast-radius-with-out-of-scope-paths">Limiting blast radius with out-of-scope paths</h3>
+<p>Exclude URLs that trigger destructive or irreversible operations (for example, bulk-delete endpoints, payment capture, or email/SMS send actions) so the agent does not exercise them. AWS Security Agent excludes the path you specify and everything nested beneath it. Configuring out-of-scope paths is an important safeguard even though the agent uses intentionally minimal-impact payloads — but treat it as one layer and combine it with defense in depth (a dedicated non-production test account, recent backups, and least-privilege test credentials) so that an accidentally exercised path cannot cause irreversible harm.</p>
+<p>Also exclude authentication-sensitive endpoints for your test accounts — password reset, email or username change, and similar account-mutation paths. If the agent exercises these during a run, it can change or lock the very credentials it is testing with and stall the authenticated test partway through.</p>
+<p>To bound the cost of a run, use the maximum task-hour limit described under <a href="#cost-considerations">Cost considerations</a>.</p>
+<p>Before launching, verify that all target domains are correctly verified and reachable, the service role has appropriate permissions, out-of-scope paths are configured, and you are authorized to test every target.</p>
+<h3 id="working-with-a-waf-in-front-of-the-application">Working with a WAF in front of the application</h3>
+<p>A penetration test is meant to test your application, not the web application firewall (WAF) or CDN in front of it. If a WAF sits between AWS Security Agent and your target, it can block or throttle test traffic and distort your results. AWS Security Agent tags its requests with a <code>User-Agent</code> of <code>securityagent</code> by default, and you can add your own custom HTTP headers to every request in the test configuration. Use one of these to identify test traffic, then add a matching allow rule at the top of your WAF rule set so pentest traffic bypasses the WAF for the duration of the test. Scope that rule to your pre-production environment and remove it when testing is complete.</p>
+<p>Keep in mind that a WAF is itself a security control that provides real defense in production, so bypassing it changes what your results mean. Testing with the WAF bypassed isolates flaws in the application itself, which is usually what you want to fix at the source. But the agent may then report a vulnerability as <em>verified</em> because it exploited it against the unprotected application, even though the WAF would have blocked that same exploit in production — making the finding a false positive in practice. Treat WAF-bypassed findings as application-layer risks to remediate directly, and, where it matters, re-test through the WAF to confirm what it actually blocks rather than relying on it as your only line of defense.</p>
+<p>AWS Security Agent applies internal velocity controls to avoid overwhelming the target, but it does not expose a user-configurable request rate. If a test is causing problems, stop the run.</p>
+<h3 id="configuring-authenticated-testing">Configuring authenticated testing</h3>
+<p>Provide credentials for the different roles in your application so the agent can test privileged and role-specific functionality and detect privilege escalation (for example, a standard user reaching admin functions by manipulating API parameters):</p>
+<ul>
+<li><strong>Standard user</strong> credentials for customer-facing functionality.</li>
+<li><strong>Privileged/administrative</strong> credentials for admin functions.</li>
+<li><strong>Service account</strong> credentials for API-to-API authentication.</li>
+</ul>
+<p>AWS Security Agent uses large language model (LLM)-based sign-in to navigate authentication flows including OAuth, SAML, Okta, JWT, and multi-factor authentication (MFA/2FA). Sign-in success improves significantly when you provide clear, sequential sign-in guidance with success criteria, for example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>1. Navigate to app.example.com/auth/login
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>2. Enter the username in the "Email or Username" field
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>3. Enter the password in the "Password" field
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>4. Choose "Sign In"
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>5. Success looks like: the dashboard at app.example.com/home is displayed
+</code></pre></div>
+<p>Enter these instructions in the <strong>Agent login prompt</strong> field of the credential configuration. For MFA, AWS Security Agent supports a time-based one-time password (TOTP) seed entered alongside the credential. For sensitive credentials, reference them from AWS Secrets Manager or a Lambda credential vendor rather than typing them inline (see <a href="#storing-test-credentials">Storing test credentials</a>). Whichever method you use, combine specific sign-in guidance with the corresponding accessible URLs (see above) so the agent can both reach and complete the login flow — a login that redirects to an unlisted identity-provider domain is the most common reason authenticated tests stall before they start.</p>
+<h3 id="selecting-risk-types">Selecting risk types</h3>
+<p>AWS Security Agent lets you include or exclude specific risk categories so you can focus a run or avoid categories that do not apply. Supported risk types include Arbitrary File Upload, Code Injection, Command Injection, Cross-Site Scripting (XSS), Insecure Direct Object Reference (IDOR), JSON Web Token vulnerabilities, Local File Inclusion, Path Traversal, Privilege Escalation, Server-Side Request Forgery (SSRF), Server-Side Template Injection (SSTI), SQL Injection, and XML External Entity (XXE) processing. Findings can also arise as novel discoveries when the agent follows leads that combine these categories.</p>
+<p>Start broad to establish a baseline, then use category selection to target specific concerns (for example, after adding a new payment endpoint) or to re-run focused tests during remediation.</p>
+<h2 id="operationalizing-findings">Operationalizing findings</h2>
+<h3 id="reviewing-validated-findings">Reviewing validated findings</h3>
+<p>Each finding is validated through attempted exploitation and includes a CVSS score, an application-specific severity rating, detailed reproduction steps, and impact analysis that explains the business risk. Prioritize using the application-specific severity and the impact analysis, not the CVSS score alone, because the agent chains lower-severity findings into critical exploit paths that isolated scores can understate. Review the agent's reasoning, payloads, and verification steps to understand and confirm each finding.</p>
+<h3 id="working-with-non-deterministic-results">Working with non-deterministic results</h3>
+<p>Because AWS Security Agent is powered by AI agents, runs are non-deterministic: testing the same unchanged application twice can surface different findings. This is expected behavior, not a defect, and it shapes how you should use the tool:</p>
+<ul>
+<li><strong>Run more than once.</strong> No single run is exhaustive. Run multiple tests and aggregate the findings rather than treating one run as a complete assessment.</li>
+<li><strong>Don't diff runs directly.</strong> Treat each run's findings individually and cumulatively, and prioritize by business impact rather than by comparing one run against another.</li>
+<li><strong>Validate before you remediate.</strong> Each finding includes verification scripts. Execute them in your test environment to confirm the vulnerability is real and exploitable in your context, and apply professional security judgment to severity.</li>
+<li><strong>Feed context forward.</strong> Providing source code, documentation, and prior findings as context improves both depth and run-to-run consistency.</li>
+</ul>
+<h3 id="providing-feedback-to-improve-accuracy">Providing feedback to improve accuracy</h3>
+<p>AWS Security Agent refines its results based on your input. Mark false positives, add context to findings, and confirm exploits so future runs are more relevant and produce less noise. Treat feedback as an ongoing practice rather than a one-time step: the more consistently your team calibrates findings, the more the agent's output reflects your application's real risk profile and your team's severity conventions.</p>
+<h3 id="remediating-and-retesting">Remediating and retesting</h3>
+<p>AWS Security Agent completes the security lifecycle rather than ending at a report:</p>
+<ol>
+<li>Run the penetration test and identify confirmed vulnerabilities.</li>
+<li>Review findings and prioritize critical issues.</li>
+<li>Trigger remediation to generate pull requests with code fixes.</li>
+<li>Have developers review and merge the fixes.</li>
+<li>Retest to confirm the vulnerabilities are resolved.</li>
+<li>Deploy with confidence.</li>
+</ol>
+<p>Keep a human in the loop: review generated pull requests as you would any code change before merging, and use retesting to verify the fix rather than assuming the vulnerability is closed.</p>
+<p>For a faster and lower-cost confirmation after a fix, use <strong>finding revalidation</strong> to re-test one or more specific findings without running a full penetration test. AWS Security Agent re-authenticates, re-runs only the validation steps for the selected findings, and reports each as <em>Active</em> (still exploitable) or <em>Resolved</em> (could not be reproduced), keeping a full history per finding. Run a complete penetration test when you have made broad changes. See <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/revalidate-findings.html">Revalidate penetration test findings</a>.</p>
+<h3 id="exporting-reports">Exporting reports</h3>
+<p>Export findings as PDF reports for executive summaries, compliance documentation, developer handoffs, and audit trails. Reports include detailed findings with CVSS scores and remediation guidance, which supports internal reviews and regulatory assessments.</p>
+<h3 id="integrating-with-cicd-and-existing-tooling">Integrating with CI/CD and existing tooling</h3>
+<p>AWS Security Agent provides full API and SDK support so you can embed penetration testing into your workflows rather than treating it as a separate manual step. The penetration test operations are available through the AWS SDKs and CLI (the <code>securityagent</code> API — for example, to start and stop pentest jobs and retrieve findings), so you can trigger a test automatically after each deployment to your test environment, integrate results into your existing security tooling, and gate releases on the outcome. Run the test after the new code is deployed to the environment under test, not before.</p>
+<h2 id="testing-safely-and-responsibly">Testing safely and responsibly</h2>
+<p>Penetration testing exercises live functionality, so build these safeguards into your process:</p>
+<ul>
+<li><strong>Get authorization.</strong> Confirm you are authorized to test every system that could be affected, and comply with the <a href="https://aws.amazon.com/aup/">AWS Acceptable Use Policy</a>. AWS Security Agent monitors for attempts to reach URLs outside the target and accessible URLs; if abuse such as unauthorized third-party testing is detected, ongoing tests in the account are terminated.</li>
+<li><strong>Prefer pre-production.</strong> Run against an environment that closely mirrors production to keep unexpected business logic interactions away from real customers and data.</li>
+<li><strong>Configure out-of-scope paths</strong> to exclude destructive operations, even though the agent is designed to use minimal-impact payloads (for example, extracting a SQL version rather than dropping a table) and has guardrails against excessive load and denial-of-service behavior.</li>
+<li><strong>Use dedicated, least-privilege test credentials</strong> and rotate or revoke them after testing.</li>
+</ul>
+<h2 id="security-and-data-protection-considerations">Security and data protection considerations</h2>
+<ul>
+<li><strong>Role-based access control.</strong> Manage who can create, manage, and view tests and reviews through AWS IAM Identity Center.</li>
+<li><strong>Customer managed keys (CMK).</strong> Use your own AWS KMS keys to encrypt your security data where CMK support is available, to meet compliance requirements for regulated industries.</li>
+<li><strong>Data handling.</strong> Artifacts you upload for context are stored in the Region where the request originated; input prompts and output results may be processed in another Region within your geography via cross-Region inference, and all data is transmitted encrypted across the AWS network. Review <a href="https://docs.aws.amazon.com/securityagent/latest/userguide/security-guidance.html">Data protection in AWS Security Agent</a> and provide only the context necessary for testing.</li>
+<li><strong>Tagging and quotas.</strong> Apply tags to agent spaces and applications to organize testing, filter results, and allocate costs. Monitor service quotas (concurrent tests, applications under test, and API requests) and request increases before you scale up broadly.</li>
+</ul>
+<h2 id="cost-considerations">Cost considerations</h2>
+<p>AWS Security Agent penetration testing is priced at $50 per task-hour, metered per second. A task-hour represents the time the agent is actively testing your application. Based on current metrics, an average application test takes roughly 24 task-hours, or about $1,200 for a comprehensive penetration test and remediation, though actual cost varies with application complexity, number of endpoints, authentication mechanisms, code base size, and testing depth.</p>
+<p>To manage cost:</p>
+<ul>
+<li><strong>Set a maximum task-hour limit (budget cap).</strong> Task-hours are the unit AWS Security Agent bills for, so a maximum acts as a budget cap on what a single run can cost. When a run reaches the limit, the agent stops and preserves every finding discovered so far, so you stay within budget while still getting the results found during the test period. The minimum limit is 20 task-hours, and because billing is based on the hours a run actually uses, a higher limit does not increase cost unless the test needs the extra time.</li>
+<li><strong>Scope runs with risk-type selection and out-of-scope paths</strong> so time is spent where it matters.</li>
+<li><strong>Revalidate individual findings instead of re-running a full test.</strong> After a fix, use <a href="#remediating-and-retesting">finding revalidation</a> to re-test only the specific findings you care about. It re-runs just the validation steps rather than a complete penetration test, so it consumes far fewer task-hours and keeps the cost of confirming fixes to a minimum.</li>
+<li><strong>Use tags</strong> to allocate and track spend by team, environment, or application.</li>
+<li><strong>Take advantage of the free trial.</strong> New customers can explore AWS Security Agent with a two-month free trial.</li>
+</ul>
+<p>The sample figures above are illustrative and not guaranteed. Confirm current pricing and free-trial terms on the <a href="https://aws.amazon.com/security-agent/pricing/">AWS Security Agent pricing page</a>.</p>
+<h2 id="resources">Resources</h2>
+<h3 id="product-and-documentation">Product and documentation</h3>
+<ul>
+<li><a href="https://aws.amazon.com/security-agent/">AWS Security Agent product page</a></li>
+<li><a href="https://aws.amazon.com/security-agent/features/">AWS Security Agent features</a></li>
+<li><a href="https://aws.amazon.com/security-agent/getting-started/">Getting started with AWS Security Agent</a></li>
+<li><a href="https://docs.aws.amazon.com/securityagent/latest/userguide/">AWS Security Agent User Guide</a></li>
+<li><a href="https://docs.aws.amazon.com/securityagent/latest/userguide/setup-security-agent.html">Set up AWS Security Agent</a></li>
+<li><a href="https://docs.aws.amazon.com/securityagent/latest/userguide/enable-penetration-test.html">Enable penetration test</a></li>
+<li><a href="https://docs.aws.amazon.com/securityagent/latest/userguide/quickstart.html">Quickstart: Run a penetration test</a></li>
+<li><a href="https://docs.aws.amazon.com/securityagent/latest/userguide/perform-penetration-test.html">Create a penetration test</a></li>
+<li><a href="https://docs.aws.amazon.com/securityagent/latest/userguide/security-best-practices.html">Security best practices for AWS Security Agent</a></li>
+<li><a href="https://docs.aws.amazon.com/securityagent/latest/userguide/revalidate-findings.html">Revalidate penetration test findings</a></li>
+<li><a href="https://docs.aws.amazon.com/securityagent/latest/userguide/security-guidance.html">Security considerations for AWS Security Agent</a></li>
+</ul>
+<h3 id="blogs">Blogs</h3>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/security/aws-security-agent-on-demand-penetration-testing-now-generally-available/">AWS Security Agent on-demand penetration testing now generally available</a></li>
+<li><a href="https://aws.amazon.com/blogs/aws/new-aws-security-agent-secures-applications-proactively-from-design-to-deployment-preview/">New AWS Security Agent secures applications proactively from design to deployment</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/inside-aws-security-agent-a-multi-agent-architecture-for-automated-penetration-testing/">Inside AWS Security Agent: A multi-agent architecture for automated penetration testing</a></li>
+<li><a href="https://aws.amazon.com/blogs/security/introducing-aws-continuum-security-at-machine-speed/">Introducing AWS Continuum: Security at machine speed</a></li>
+</ul>
+<h3 id="tools">Tools</h3>
+<ul>
+<li><a href="https://github.com/aws-samples/sample-security-agent-recorder">AWS Security Agent Recorder browser extension</a> — captures the domains your app contacts and fills them into the target, accessible, and out-of-scope URL fields</li>
+</ul>
+<h3 id="related">Related</h3>
+<ul>
+<li><a href="https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html">Amazon Inspector</a></li>
+<li><a href="https://owasp.org/www-project-top-ten/">OWASP Top 10</a></li>
+<li><a href="https://aws.amazon.com/aup/">AWS Acceptable Use Policy</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
