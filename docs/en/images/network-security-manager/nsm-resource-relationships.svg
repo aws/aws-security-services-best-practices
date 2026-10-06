@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" width="960" height="470" font-family="'Amazon Ember', 'Helvetica Neue', Arial, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">Relationships between NSM resources</title>
+  <desc id="desc">An NSM policy contains NSM rules and NSM templates, evaluated in order. A scope selects where the control applies. An NSM deployment connects one or more NSM policies to exactly one scope.</desc>
+  <defs>
+    <marker id="arrow-policy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#C4511F"/></marker>
+    <marker id="arrow-scope" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1A6FB0"/></marker>
+  </defs>
+  <rect x="0" y="0" width="960" height="470" rx="12" fill="#FFFFFF"/>
+
+  <!-- NSM policy (a second policy behind shows "one or more") -->
+  <rect x="34" y="30" width="420" height="400" rx="14" fill="#FBEDE6" stroke="#C4511F" stroke-opacity="0.45" stroke-width="2"/>
+  <rect x="20" y="44" width="420" height="400" rx="14" fill="#FFF8F4" stroke="#C4511F" stroke-width="2.5"/>
+  <text x="40" y="78" font-size="22" font-weight="700" fill="#C4511F">NSM policy</text>
+  <text x="40" y="100" font-size="13" fill="#545B64">What the control is · one priority for the NSM policy</text>
+
+  <g font-size="14">
+    <rect x="40" y="118" width="380" height="44" rx="8" fill="#FFFFFF" stroke="#E5B9A3"/>
+    <circle cx="62" cy="140" r="11" fill="#C4511F"/><text x="62" y="145" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+    <text x="84" y="145" font-weight="700" fill="#C4511F">NSM rule</text><text x="200" y="145" fill="#16191F">FW configuration</text>
+
+    <rect x="40" y="172" width="380" height="44" rx="8" fill="#FFFFFF" stroke="#E5B9A3"/>
+    <circle cx="62" cy="194" r="11" fill="#C4511F"/><text x="62" y="199" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
+    <text x="84" y="199" font-weight="700" fill="#C4511F">NSM rule</text><text x="200" y="199" fill="#16191F">FW inspection A</text>
+
+    <rect x="40" y="226" width="380" height="114" rx="8" fill="#F6F1FB" stroke="#7B4FB0"/>
+    <circle cx="62" cy="248" r="11" fill="#7B4FB0"/><text x="62" y="253" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">3</text>
+    <text x="84" y="253" font-weight="700" fill="#7B4FB0">NSM template</text><text x="200" y="253" fill="#16191F">Baseline managed rule groups</text>
+    <rect x="84" y="266" width="320" height="30" rx="6" fill="#FFFFFF" stroke="#C9B3E3"/>
+    <text x="98" y="286" font-size="13" font-weight="700" fill="#C4511F">NSM rule</text><text x="200" y="286" font-size="13" fill="#16191F">Managed rule group A</text>
+    <rect x="84" y="302" width="320" height="30" rx="6" fill="#FFFFFF" stroke="#C9B3E3"/>
+    <text x="98" y="322" font-size="13" font-weight="700" fill="#C4511F">NSM rule</text><text x="200" y="322" font-size="13" fill="#16191F">Managed rule group B</text>
+
+    <rect x="40" y="350" width="380" height="44" rx="8" fill="#FFFFFF" stroke="#E5B9A3"/>
+    <circle cx="62" cy="372" r="11" fill="#C4511F"/><text x="62" y="377" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">4</text>
+    <text x="84" y="377" font-weight="700" fill="#C4511F">NSM rule</text><text x="200" y="377" fill="#16191F">FW inspection B</text>
+  </g>
+  <text x="40" y="424" font-size="12" fill="#545B64">NSM rules and NSM templates are evaluated in the order listed.</text>
+
+  <!-- Scope -->
+  <rect x="520" y="44" width="420" height="150" rx="14" fill="#F2F8FD" stroke="#1A6FB0" stroke-width="2.5"/>
+  <text x="540" y="78" font-size="22" font-weight="700" fill="#1A6FB0">Scope</text>
+  <text x="540" y="100" font-size="13" fill="#545B64">Where the control applies</text>
+  <g font-size="12" fill="#16191F" text-anchor="middle">
+    <rect x="540" y="116" width="124" height="30" rx="6" fill="#FFFFFF" stroke="#A9CBE6"/><text x="602" y="135">Accounts</text>
+    <rect x="672" y="116" width="124" height="30" rx="6" fill="#FFFFFF" stroke="#A9CBE6"/><text x="734" y="135">OUs</text>
+    <rect x="804" y="116" width="124" height="30" rx="6" fill="#FFFFFF" stroke="#A9CBE6"/><text x="866" y="135">Resource types</text>
+    <rect x="540" y="154" width="124" height="30" rx="6" fill="#FFFFFF" stroke="#A9CBE6"/><text x="602" y="173">Tags</text>
+    <rect x="672" y="154" width="124" height="30" rx="6" fill="#FFFFFF" stroke="#A9CBE6"/><text x="734" y="173">ARNs</text>
+    <rect x="804" y="154" width="124" height="30" rx="6" fill="#FFFFFF" stroke="#A9CBE6"/><text x="866" y="173">Resource properties</text>
+  </g>
+
+  <!-- NSM deployment -->
+  <rect x="520" y="270" width="420" height="174" rx="14" fill="#F1F9F4" stroke="#1D8102" stroke-width="2.5"/>
+  <text x="540" y="304" font-size="22" font-weight="700" fill="#1D8102">NSM deployment</text>
+  <text x="540" y="326" font-size="13" fill="#545B64">Puts NSM policies into effect</text>
+  <rect x="540" y="340" width="380" height="42" rx="8" fill="#FFFFFF" stroke="#9FD08F"/>
+  <g font-size="15">
+    <text x="560" y="367" font-weight="700" fill="#C4511F">NSM policies</text>
+    <text x="664" y="367" fill="#545B64">(1 or more)</text>
+    <text x="752" y="367" fill="#545B64">+</text>
+    <text x="772" y="367" font-weight="700" fill="#1A6FB0">Scope</text>
+    <text x="824" y="367" fill="#545B64">(exactly 1)</text>
+  </g>
+  <text x="540" y="410" font-size="13" fill="#16191F">NSM applies the NSM policies to the firewall of</text>
+  <text x="540" y="428" font-size="13" fill="#16191F">every protected AWS resource in the scope.</text>
+
+  <!-- Connectors -->
+  <line x1="456" y1="300" x2="514" y2="300" stroke="#C4511F" stroke-width="2.5" marker-end="url(#arrow-policy)"/>
+  <text x="487" y="290" font-size="12" fill="#C4511F" text-anchor="middle">1 or more</text>
+  <line x1="730" y1="194" x2="730" y2="264" stroke="#1A6FB0" stroke-width="2.5" marker-end="url(#arrow-scope)"/>
+  <text x="740" y="234" font-size="12" fill="#1A6FB0">exactly 1</text>
+</svg>

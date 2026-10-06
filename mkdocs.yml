@@ -75,9 +75,33 @@ nav:
       - Additional references: guides/network-firewall/additional-references/docs/index.md
       - Quick reference: guides/network-firewall/quick-reference/docs/index.md
   - Amazon Route 53 Resolver DNS Firewall Best Practices: guides/dns-firewall/index.md
+  - AWS Network Security Manager Best Practices:
+      - Home: guides/network-security-manager/index.md
+      - Prerequisites and Fundamentals: guides/network-security-manager/prerequisites/docs/index.md
+      - Rules: guides/network-security-manager/rules/docs/index.md
+      - Templates: guides/network-security-manager/templates/docs/index.md
+      - Policies:
+          - Overview: guides/network-security-manager/policies/docs/index.md
+          - Policy Priority: guides/network-security-manager/policy-priority/docs/index.md
+      - Scopes: guides/network-security-manager/scopes/docs/index.md
+      - Deployments: guides/network-security-manager/deployments/docs/index.md
+      - NSM by Firewall Type:
+          - Overview: guides/network-security-manager/firewall-types/docs/index.md
+          - AWS WAF:
+              - Overview: guides/network-security-manager/firewall-types/aws-waf/docs/index.md
+              - Recommended Design: guides/network-security-manager/firewall-types/aws-waf/recommended-design/docs/index.md
+              - Rule Examples: guides/network-security-manager/firewall-types/aws-waf/rule-examples/docs/index.md
+              - Label-Based Exceptions: guides/network-security-manager/firewall-types/aws-waf/label-based-exceptions/docs/index.md
+          - AWS Shield Advanced: guides/network-security-manager/firewall-types/shield-advanced/docs/index.md
+          - AWS Network Firewall:
+              - Overview: guides/network-security-manager/firewall-types/network-firewall/docs/index.md
+              - Recommended Design: guides/network-security-manager/firewall-types/network-firewall/recommended-design/docs/index.md
+              - Rule Examples: guides/network-security-manager/firewall-types/network-firewall/rule-examples/docs/index.md
+      - Troubleshooting Synchronization: guides/network-security-manager/troubleshooting-synchronization/docs/index.md
   - Contributors: contributors.md
 markdown_extensions:
     - admonition
+    - md_in_html
     - pymdownx.details
     - pymdownx.superfences
     - pymdownx.highlight:
@@ -89,6 +113,12 @@ markdown_extensions:
         slugify: !!python/object/apply:pymdownx.slugs.slugify
           kwds:
             case: lower
+
+extra_css:
+    - stylesheets/expandable-table.css
+
+extra_javascript:
+    - javascripts/expandable-table.js
 
 plugins:
     - i18n:

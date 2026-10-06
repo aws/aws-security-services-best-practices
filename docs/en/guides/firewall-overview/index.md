@@ -32,6 +32,7 @@ Dive deeper into individual service best practices:
 - [AWS WAF Best Practices](../waf/index.md)
 - [AWS Network Firewall Best Practices](../network-firewall/index.md)
 - [Amazon Route 53 Resolver DNS Firewall Best Practices](../dns-firewall/index.md)
+- [AWS Network Security Manager Best Practices](../network-security-manager/index.md)
 
 For security-specific networking guidance:
 
