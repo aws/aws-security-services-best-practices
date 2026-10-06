@@ -1,0 +1,832 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws.github.io/aws-security-services-best-practices/ja/guides/network-security-manager/firewall-types/aws-waf/recommended-design/docs/">
+      
+      
+      
+      
+        
+          <link rel="alternate" href="../../../../../../../guides/network-security-manager/firewall-types/aws-waf/recommended-design/docs/" hreflang="en">
+        
+          <link rel="alternate" href="../../../../../../../ko/guides/network-security-manager/firewall-types/aws-waf/recommended-design/docs/" hreflang="ko">
+        
+          <link rel="alternate" href="./" hreflang="ja">
+        
+      
+      
+      <link rel="icon" href="../../../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Index - AWS Security Services Best Practices</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../../stylesheets/expandable-table.css">
+    
+    <script>__md_scope=new URL("../../../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+<script>
+  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+    'cwr',
+    'de3746ff-7a70-4809-9b1e-3a49496628c6',
+    '1.0.0',
+    'us-east-1',
+    'https://client.rum.us-east-1.amazonaws.com/1.15.0/cwr.js',
+    {
+      sessionSampleRate: 1,
+      guestRoleArn: "arn:aws:iam::655298983051:role/RUM-Monitor-us-east-1-655298983051-6113407803071-Unauth",
+      identityPoolId: "us-east-1:1d4fcb9f-2a3b-478f-b13a-a7019ac15d61",
+      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com",
+      telemetries: ["performance","errors","http"],
+      allowCookies: false,
+      enableXRay: false
+    }
+  );
+</script>
+
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#aws-waf-recommended-design" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../../../../../" title="AWS Security Services Best Practices" class="md-header__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWS Security Services Best Practices
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Index
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../../../../guides/network-security-manager/firewall-types/aws-waf/recommended-design/docs/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../../../../../ko/guides/network-security-manager/firewall-types/aws-waf/recommended-design/docs/" hreflang="ko" class="md-select__link">
+              한국어
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../../../" title="AWS Security Services Best Practices" class="md-nav__button md-logo" aria-label="AWS Security Services Best Practices" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWS Security Services Best Practices
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws/aws-security-services-best-practices" title="リポジトリへ" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws/aws-security-services-best-practices
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../network-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AWS Network Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../dns-firewall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Amazon Route 53 Resolver DNS Firewall ベストプラクティス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+<!--
+AUTHORING NOTES (applies to every NSM page)
+- Always qualify "rule" as "WAF rule" or "NSM rule". Never use "rule" on its own.
+- Avoid the word "policy" unless it refers to an NSM policy, and then write "NSM policy". Qualify other policies, such as "Firewall Manager policy".
+- Each firewall type's "Recommended Design" page uses the same table columns (Priority, Importance, NSM policy, Scopes, Business need, NSM rules), Importance values, write-up fields (Contains, Why it's its own NSM policy, Scope, Most common owner), and scopes from the shared Common scopes list.
+- Copy this entire comment block to the top of any new NSM page.
+-->
+
+<h1 id="aws-waf-recommended-design">AWS WAF Recommended Design</h1>
+<!-- TODO: recommended priority ranges -->
+
+<p>For the priority principles that apply to every firewall type, see <a href="../../../../policy-priority/docs/">Policy Priority</a>. The scopes in this table come from the <a href="../../../../scopes/docs/#scope-examples">Scope examples</a>.</p>
+<p>The following table shows our general recommendation for the AWS WAF NSM policies of any organization, listed in the recommended order, with the business need that each NSM policy meets and the NSM rules that it contains. The order of the NSM traffic inspection rules follows the <a href="../../../../../waf/recommended-waf-rule-order/docs/">Recommended WAF Rule Order</a> in the AWS WAF Best Practices guide. NSM policies that contain only NSM firewall configuration rules or NSM policy settings, such as <strong>WAF Mandatory things</strong>, <strong>Shield Advanced</strong>, and <strong>WAF default things</strong>, don't affect WAF rule order. Their priority decides only which NSM policy wins when two NSM policies set the same property.</p>
+<p>These priorities are an example, not hard requirements. What matters is the relative order of the NSM policies, not the numbers themselves. The numbers matter only in that they leave adequate spacing to add NSM policies over time, including room for thousands of applications that each have their own exceptions. These placements work for most organizations, so adjust them to fit your organization.</p>
+<p>The <strong>Importance</strong> column uses the following values:</p>
+<ul>
+<li><strong>Recommended</strong> – We recommend this NSM policy for every organization.</li>
+<li><strong>Consider</strong> – Evaluate this NSM policy and make sure that it's applicable for you.</li>
+<li><strong>Use case</strong> – Add this NSM policy when your applications have the use case that it addresses.</li>
+<li><strong>Optional</strong> – Not a best practice, but if you choose to use it, this is where it belongs.</li>
+</ul>
+<div class="expandable-table">
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Importance</th>
+<th>NSM policy</th>
+<th>Scopes</th>
+<th>Business need</th>
+<th>NSM rules and their purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>Recommended</td>
+<td><a href="#policy-anti-ddos"><strong>Anti-DDoS</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a></td>
+<td>Every public-facing application needs application layer DDoS detection and mitigation that sees all traffic before any other WAF rule can end evaluation.</td>
+<td><strong>AWSManagedRulesAntiDDoSRuleSet.</strong> Adds the <a href="../../../../../waf/aws-managed-rules/docs/#anti-ddos">Anti-DDoS</a> AMR rule group.</td>
+</tr>
+<tr>
+<td>10*</td>
+<td>Consider</td>
+<td><a href="#policy-shield-advanced"><strong>Shield Advanced</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a></td>
+<td>Public-facing applications need enhanced DDoS protection, cost protection, and access to the Shield Response Team (SRT).</td>
+<td>No NSM rules. A setting on the NSM policy turns on AWS Shield Advanced protection for each in-scope resource.</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Recommended</td>
+<td><a href="#policy-waf-mandatory-things"><strong>WAF Mandatory things</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a></td>
+<td>Every public-facing application must meet the same baseline, no matter which team owns it.</td>
+<td><strong>WAF logging NSM rule.</strong> Sends request logs from every public-facing application to one place for investigations and audits.</td>
+</tr>
+<tr>
+<td>30</td>
+<td>Optional</td>
+<td><a href="#policy-ip-allow-list"><strong>IP allow list</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a><br><a href="../../../../scopes/docs/#application"><strong>Application</strong></a></td>
+<td>A small number of trusted IP addresses must never be blocked, except by the Anti-DDoS AMR. Use sparingly or not at all.</td>
+<td><strong>IP allow list NSM rule.</strong> Allows requests from an IP set of trusted addresses.</td>
+</tr>
+<tr>
+<td>40</td>
+<td>Consider</td>
+<td><a href="#policy-threat-intelligence-block-lists"><strong>Threat intelligence/block lists</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a></td>
+<td>Threat analysts need to act on new threat intelligence across every public-facing application within minutes.</td>
+<td><strong>Threat intelligence NSM rules.</strong> Block requests that match threat intelligence, such as IP block lists, JA3 or JA4 fingerprints, or anything else that a WAF rule can match, and stay current as the threat analysts update them.</td>
+</tr>
+<tr>
+<td>50</td>
+<td>Recommended</td>
+<td><a href="#policy-ip-reputation"><strong>IP reputation</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a></td>
+<td>Requests from known malicious or anonymized sources, such as VPNs and hosting providers, need to be dropped before content inspection.</td>
+<td><strong>AWSManagedRulesAmazonIpReputationList.</strong> Adds the <a href="../../../../../waf/aws-managed-rules/docs/#amazon-ip-reputation-list">Amazon IP reputation list</a> AMR rule group.<br><br><strong>AWSManagedRulesAnonymousIpList.</strong> Adds the <a href="../../../../../waf/aws-managed-rules/docs/#anonymous-ip-list">anonymous IP list</a> AMR rule group.</td>
+</tr>
+<tr>
+<td>60</td>
+<td>Consider</td>
+<td><a href="#policy-geo-blocking"><strong>Geo blocking</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a><br><a href="../../../../scopes/docs/#application"><strong>Application</strong></a></td>
+<td>Requests from countries that have no legitimate reason to access your applications need to be blocked before any content inspection.</td>
+<td><strong>Geo blocking NSM rule.</strong> Blocks requests from a list of blocked countries, or from every country that isn't on an allowed list.</td>
+</tr>
+<tr>
+<td>70</td>
+<td>Recommended</td>
+<td><a href="#policy-rate-limits-blanket"><strong>Rate limits (blanket)</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a></td>
+<td>Every public-facing application needs a high-bar rate limit that stops request floods before they reach more expensive WAF rules.</td>
+<td><strong>Blanket rate-based NSM rule.</strong> Blocks clients, usually by IP address, that exceed a high request rate across all requests.</td>
+</tr>
+<tr>
+<td>100</td>
+<td>Recommended</td>
+<td><a href="#policy-amrs-in-count"><strong>AMRs-in-Count</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a></td>
+<td>Every public-facing application needs the same baseline AWS Managed Rules, with matching requests labeled so that later NSM policies decide whether to block them.</td>
+<td><strong>AWSManagedRulesCommonRuleSet.</strong> Adds the <a href="../../../../../waf/aws-managed-rules/docs/#core-rule-set-crs">Core Rule Set (CRS)</a> with every WAF rule in count mode.<br><br><strong>AWSManagedRulesKnownBadInputsRuleSet.</strong> Adds the <a href="../../../../../waf/aws-managed-rules/docs/#known-bad-inputs">Known Bad Inputs</a> rule group with every WAF rule in count mode.<br><br>These are examples. Add any other baseline AMR rule group that every public-facing application needs. For every baseline AMR rule group, see <a href="https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-baseline.html">Baseline rule groups</a>.</td>
+</tr>
+<tr>
+<td>101–199</td>
+<td>Use case</td>
+<td><a href="#policy-use-case-amrs-in-count"><strong>Use-case AMRs in count</strong></a></td>
+<td><a href="../../../../scopes/docs/#technology-apps"><strong>Technology apps</strong></a></td>
+<td>Only applications that use a technology, such as WordPress or a SQL database, need the protections in the matching use-case AMR rule group.</td>
+<td><strong>One NSM policy for each use-case AMR rule group</strong>, such as <strong>WordPress-AMRs-in-Count</strong>. Adds the use-case AMR rule group with every WAF rule in count mode, scoped to the applications that use that technology. For every use-case AMR rule group, see <a href="https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-use-case.html">Use-case specific rule groups</a>.</td>
+</tr>
+<tr>
+<td>200–9499</td>
+<td>Use case</td>
+<td><a href="#policy-application-exceptions"><strong>Application exceptions</strong></a><br><br><strong>AMR exceptions</strong>, such as <strong>app1.example.com exceptions</strong><br><br><strong>Application-specific protections</strong></td>
+<td><a href="../../../../scopes/docs/#application"><strong>Application</strong></a></td>
+<td><strong>AMR exceptions:</strong> App1 has a feature that conflicts with a WAF rule in an AMR rule group, and the team needs that feature to keep working.<br><br><strong>Application-specific protections:</strong> Application teams need protections specific to their applications, evaluated after the AMRs and before the central team's block NSM policies.</td>
+<td><strong>App1-AMR-exception.</strong> Lets requests to App1's custom feature through, without weakening protections for any other application.<br><br><strong>Application-specific NSM rules.</strong> Protections that only one application needs.</td>
+</tr>
+<tr>
+<td>9500</td>
+<td>Recommended</td>
+<td><a href="#policy-amr-block-with-exceptions"><strong>AMR block with exceptions</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a></td>
+<td>The baseline AMRs need to be enforced on every application by default, rather than left to each team.</td>
+<td><strong>One block NSM rule for each AMR label</strong>, such as <strong>Block-CRS-CrossSiteScripting_Body-unless-excepted.</strong> Stops requests that carry that AMR label, unless an application team has an approved exception for it.</td>
+</tr>
+<tr>
+<td>9501–9599</td>
+<td>Use case</td>
+<td><a href="#policy-use-case-amr-blocks-with-exceptions"><strong>Use-case AMR blocks with exceptions</strong></a></td>
+<td><a href="../../../../scopes/docs/#technology-apps"><strong>Technology apps</strong></a></td>
+<td>Each use-case AMR rule group needs to be enforced on every application it applies to by default.</td>
+<td><strong>One NSM policy for each use-case AMR rule group</strong>, such as <strong>WordPress block with exceptions</strong>. Stops the requests that the use-case AMR rule group labeled, unless an application team has an approved exception.</td>
+</tr>
+<tr>
+<td>9600</td>
+<td>Optional</td>
+<td><a href="#policy-partner-managed-rules"><strong>Partner managed rules</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a><br><a href="../../../../scopes/docs/#application"><strong>Application</strong></a></td>
+<td>Some applications need protections from AWS Marketplace partner rule groups.</td>
+<td><strong>Partner rule group NSM rules.</strong> Add partner managed rule groups after the free WAF rules, so that requests that were already blocked don't add per-request cost.</td>
+</tr>
+<tr>
+<td>9700</td>
+<td>Consider</td>
+<td><a href="#policy-bot-control"><strong>Bot Control</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a><br><a href="../../../../scopes/docs/#application"><strong>Application</strong></a></td>
+<td>Applications need to detect and manage bot traffic.</td>
+<td><strong>AWSManagedRulesBotControlRuleSet.</strong> Adds Bot Control with a scope-down statement. Runs near the end because it has per-request charges.</td>
+</tr>
+<tr>
+<td>9800</td>
+<td>Use case</td>
+<td><a href="#policy-fraud-control"><strong>Fraud Control</strong></a></td>
+<td><a href="../../../../scopes/docs/#application"><strong>Application</strong></a></td>
+<td>Login and account creation pages need protection against account takeover and fraudulent sign-ups.</td>
+<td><strong>AWSManagedRulesATPRuleSet</strong> and <strong>AWSManagedRulesACFPRuleSet.</strong> Add Account Takeover Prevention and Account Creation Fraud Prevention, scoped down to each application's login and sign-up pages. Runs last because it has the highest per-request charges.</td>
+</tr>
+<tr>
+<td>10,000</td>
+<td>Recommended</td>
+<td><a href="#policy-waf-default-things"><strong>WAF default things</strong></a></td>
+<td><a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a></td>
+<td>Every web ACL needs a default action and a visibility configuration, with a fallback that any more specific NSM policy can override.</td>
+<td><strong>Default action NSM rule.</strong> Sets the web ACL default action, so that requests that no WAF rule blocks continue to the application.<br><br><strong>Visibility configuration NSM rule.</strong> Turns on Amazon CloudWatch metrics and sampled requests for the web ACL, which AWS WAF requires.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>* <strong>Shield Advanced</strong> is a different firewall type than AWS WAF. NSM tracks priority separately for each firewall type, so the <strong>Shield Advanced</strong> NSM policy can share priority 10 with <strong>Anti-DDoS</strong> without competing with it.</p>
+<p>The following describes what each NSM policy in the table contains, why it's its own NSM policy, and the scope we recommend for it.</p>
+<p><a id="policy-anti-ddos"></a>
+<strong>10 – Anti-DDoS</strong></p>
+<ul>
+<li><strong>Contains:</strong> The <a href="../../rule-examples/docs/#anti-ddos">Anti-DDoS</a> AMR rule group.</li>
+<li><strong>Why it's its own NSM policy:</strong> It must run before every other NSM traffic inspection rule, so that it sees all traffic before any other WAF rule can end evaluation, including the IP allow list. Priorities 1–9 stay free, so that you can still add exceptions before it.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a>.</li>
+<li><strong>Most common owner:</strong> Cloud architect or central operator.</li>
+</ul>
+<p><a id="policy-shield-advanced"></a>
+<strong>10* – Shield Advanced</strong></p>
+<ul>
+<li><strong>Contains:</strong> No NSM rules. Shield Advanced protection is a setting on the NSM policy itself.</li>
+<li><strong>What it provides:</strong> Shield Advanced provides enhanced layer 3 and layer 4 DDoS protection, including for non-HTTP and Regional endpoints. It also includes layer 7 protections, such as the Anti-DDoS AMR, under a different cost model, and adds features such as Shield Response Team (SRT) engagement and cost protection.</li>
+<li><strong>Why it's its own NSM policy:</strong> It configures Shield Advanced rather than AWS WAF, and you might choose to protect a different set of resources than the WAF baseline. It doesn't affect WAF rule order.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a>.</li>
+<li><strong>Most common owner:</strong> Cloud architect or central operator.</li>
+</ul>
+<p><a id="policy-waf-mandatory-things"></a>
+<strong>20 – WAF Mandatory things</strong></p>
+<ul>
+<li><strong>Contains:</strong> NSM firewall configuration rules for settings that security mandates on every public-facing web ACL, such as <a href="../../rule-examples/docs/#waf-logging">WAF logging</a> to a central bucket. It doesn't contain settings that depend on application context, such as the default action or token domains. Those belong in <strong>WAF default things</strong> or in application NSM policies.</li>
+<li><strong>Why it's its own NSM policy:</strong> These settings rarely need exceptions, and any exception would be a truly unique one-off. Its low priority number means that it wins when another NSM policy sets the same property. It contains only NSM firewall configuration rules, so it doesn't affect WAF rule order.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a>.</li>
+<li><strong>Most common owner:</strong> Cloud architect or central operator.</li>
+</ul>
+<p><a id="policy-ip-allow-list"></a>
+<strong>30 – IP allow list</strong></p>
+<ul>
+<li><strong>Contains:</strong> An <a href="../../rule-examples/docs/#ip-allow-list">IP allow list</a> NSM rule, with an IP set of trusted addresses and an allow action. Use sparingly or not at all, because allowed requests skip every WAF rule after it.</li>
+<li><strong>Why it's its own NSM policy:</strong> It must run after Anti-DDoS and before every blocking NSM policy, and allow lists often differ by application.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a> for organization-wide trusted addresses, or <a href="../../../../scopes/docs/#application"><strong>Application</strong></a> for addresses that only one application trusts.</li>
+<li><strong>Most common owner:</strong> App team requested.</li>
+</ul>
+<p><a id="policy-threat-intelligence-block-lists"></a>
+<strong>40 – Threat intelligence/block lists</strong></p>
+<ul>
+<li><strong>Contains:</strong> NSM rules that block requests that match threat intelligence, such as an <a href="../../rule-examples/docs/#ip-block-list">IP block list</a> NSM rule with IPv4 and IPv6 IP sets. Threat intelligence doesn't need to be IP-based. It can include JA3 or JA4 fingerprints, or anything else that a WAF rule can match.</li>
+<li><strong>Why it's its own NSM policy:</strong> The threat analysts own and update it on their own schedule, and changes to their threat intelligence reach every in-scope resource without changing anyone else's NSM policies.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a>.</li>
+<li><strong>Most common owner:</strong> Threat analysts.</li>
+</ul>
+<p><a id="policy-ip-reputation"></a>
+<strong>50 – IP reputation</strong></p>
+<ul>
+<li><strong>Contains:</strong> The <a href="../../rule-examples/docs/#amazon-ip-reputation-list">Amazon IP reputation list</a> and <a href="../../rule-examples/docs/#anonymous-ip-list">anonymous IP list</a> AMR rule groups.</li>
+<li><strong>Why it's its own NSM policy:</strong> These WAF rules are inexpensive to evaluate and remove known-bad and anonymized traffic before content inspection, so they run right after threat intelligence, before the geo and rate checks and the baseline AMRs.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a>.</li>
+<li><strong>Most common owner:</strong> Cloud architect or central operator.</li>
+</ul>
+<p><a id="policy-geo-blocking"></a>
+<strong>60 – Geo blocking</strong></p>
+<ul>
+<li><strong>Contains:</strong> A <a href="../../rule-examples/docs/#geo-blocking">geo blocking</a> NSM rule that blocks a list of countries, or every country that isn't on an allowed list.</li>
+<li><strong>Why it's its own NSM policy:</strong> Allowed and blocked countries often differ by application, so geo blocking often needs a different scope than the central baseline.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a> for countries that the whole organization blocks, or <a href="../../../../scopes/docs/#application"><strong>Application</strong></a> for application-specific restrictions.</li>
+<li><strong>Most common owner:</strong> Cloud architect or central operator.</li>
+</ul>
+<p><a id="policy-rate-limits-blanket"></a>
+<strong>70 – Rate limits (blanket)</strong></p>
+<ul>
+<li><strong>Contains:</strong> A <a href="../../rule-examples/docs/#blanket-rate-limit">blanket rate limit</a> NSM rule with a high-bar rate-based WAF rule, usually by client IP address, across all requests.</li>
+<li><strong>Why it's its own NSM policy:</strong> It stops request floods before they reach more expensive WAF rules, and its threshold applies to every public-facing application.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a>.</li>
+<li><strong>Most common owner:</strong> Cloud architect or central operator.</li>
+</ul>
+<p><a id="policy-amrs-in-count"></a>
+<strong>100 – AMRs-in-Count</strong></p>
+<ul>
+<li><strong>Contains:</strong> The baseline AMR rule groups that every public-facing application needs, with every WAF rule in count mode, such as the <a href="../../rule-examples/docs/#core-rule-set">Core Rule Set</a> and <a href="../../rule-examples/docs/#known-bad-inputs">Known Bad Inputs</a>. For every baseline AMR rule group, see <a href="https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-baseline.html">Baseline rule groups</a>.</li>
+<li><strong>Why it's its own NSM policy:</strong> Count mode labels matching requests without blocking them, so application exception NSM policies can act on those labels before <strong>AMR block with exceptions</strong> enforces them.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a>.</li>
+<li><strong>Most common owner:</strong> Cloud architect or central operator.</li>
+</ul>
+<p><a id="policy-use-case-amrs-in-count"></a>
+<strong>101–199 – Use-case AMRs in count</strong></p>
+<ul>
+<li><strong>Contains:</strong> One NSM policy for each <a href="../../rule-examples/docs/#use-case-amrs">use-case AMR</a> rule group that your applications need, such as WordPress or SQL database. Each has every WAF rule in count mode. For every use-case AMR rule group, see <a href="https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-use-case.html">Use-case specific rule groups</a>.</li>
+<li><strong>Why each is its own NSM policy:</strong> Each use-case AMR rule group applies only to applications that use that technology, so each needs its own scope.</li>
+<li><strong>Scope:</strong> The <a href="../../../../scopes/docs/#technology-apps"><strong>Technology apps</strong></a> scope for that technology.</li>
+<li><strong>Most common owner:</strong> Cloud architect or central operator.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Exceptions to NSM policies below priority 200</p>
+<p>Apart from the AMRs in count, the NSM policies above this point aren't normally in the purview of application teams to request exceptions to. Keep exceptions to these NSM policies to true one-offs. If application teams regularly need exceptions to one of these NSM policies, consider moving that NSM policy closer to or above priority 200, so that you can grant exceptions with the <a href="../../label-based-exceptions/docs/">label-based exceptions</a> pattern that follows.</p>
+</div>
+<p><a id="policy-application-exceptions"></a>
+<strong>200–9499 – Application exceptions</strong></p>
+<p>One NSM policy for each application, owned by that application's team, that grants the application exceptions to the baseline AMRs. The same NSM policy can also contain protections that only that application needs. The range leaves room for thousands of applications.</p>
+<ul>
+<li><strong>AMR exceptions</strong>, such as <strong>app1.example.com exceptions</strong><ul>
+<li><strong>Contains:</strong> <a href="../../rule-examples/docs/#application-exceptions">Application exceptions</a> for App1, such as a WAF rule that adds an exception label to requests for one URI path.</li>
+<li><strong>Why it's its own NSM policy:</strong> The App1 team owns it, and it must reach only App1's web ACLs. It runs after the AMRs in count and before the block NSM policies, because a WAF rule can read only the labels that earlier WAF rules added.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#application"><strong>Application</strong></a>, for App1 only.</li>
+<li><strong>Most common owner:</strong> App team requested.</li>
+</ul>
+</li>
+<li><strong>Application-specific protections</strong><ul>
+<li><strong>Contains:</strong> <a href="../../rule-examples/docs/#application-specific-protections">Application-specific protections</a> for each application, such as <a href="../../rule-examples/docs/#scoped-rate-limits">scoped rate limits</a> for a login page or an expensive API.</li>
+<li><strong>Why each is its own NSM policy:</strong> Each application team owns its own NSM policy, so protections for one application don't affect any other application.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#application"><strong>Application</strong></a>, one for each application.</li>
+<li><strong>Most common owner:</strong> App team requested.</li>
+</ul>
+</li>
+</ul>
+<p><a id="policy-amr-block-with-exceptions"></a>
+<strong>9500 – AMR block with exceptions</strong></p>
+<ul>
+<li><strong>Contains:</strong> <a href="../../rule-examples/docs/#amr-block-with-exceptions">AMR block with exceptions</a> NSM rules, one for each unique label that the baseline AMRs add. Each blocks requests that carry its AMR label, unless the request also carries the matching exception label.</li>
+<li><strong>Why it's its own NSM policy:</strong> It must run after every exception NSM policy, so that it can read their exception labels.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a>, the same scope as <strong>AMRs-in-Count</strong>.</li>
+<li><strong>Most common owner:</strong> Cloud architect or central operator.</li>
+</ul>
+<p><a id="policy-use-case-amr-blocks-with-exceptions"></a>
+<strong>9501–9599 – Use-case AMR blocks with exceptions</strong></p>
+<ul>
+<li><strong>Contains:</strong> One NSM policy for each use-case AMR rule group, with <a href="../../rule-examples/docs/#amr-block-with-exceptions">AMR block with exceptions</a> NSM rules that block requests that the AMR rule group labeled, unless the request also carries an exception label.</li>
+<li><strong>Why each is its own NSM policy:</strong> Each block NSM policy must reach the same resources as the use-case AMR NSM policy that it enforces.</li>
+<li><strong>Scope:</strong> The same <a href="../../../../scopes/docs/#technology-apps"><strong>Technology apps</strong></a> scope as the matching use-case AMR NSM policy.</li>
+<li><strong>Most common owner:</strong> Cloud architect or central operator.</li>
+</ul>
+<p><a id="policy-partner-managed-rules"></a>
+<strong>9600 – Partner managed rules</strong></p>
+<ul>
+<li><strong>Contains:</strong> <a href="../../rule-examples/docs/#partner-managed-rule-groups">Partner managed rule groups</a> from AWS Marketplace.</li>
+<li><strong>Why it's its own NSM policy:</strong> Partner rule groups have per-request costs, so they run after the free WAF rules, and requests that were already blocked don't add cost.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a> or <a href="../../../../scopes/docs/#application"><strong>Application</strong></a>, depending on which applications need the partner protections.</li>
+<li><strong>Most common owner:</strong> App team requested.</li>
+</ul>
+<p><a id="policy-bot-control"></a>
+<strong>9700 – Bot Control</strong></p>
+<ul>
+<li><strong>Contains:</strong> The <a href="../../rule-examples/docs/#bot-control">Bot Control</a> AMR rule group with a scope-down statement.</li>
+<li><strong>Why it's its own NSM policy:</strong> Bot Control has per-request charges, so it runs near the end, after every other filter.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a> or <a href="../../../../scopes/docs/#application"><strong>Application</strong></a>, depending on which applications need bot management.</li>
+<li><strong>Most common owner:</strong> App team requested.</li>
+</ul>
+<p><a id="policy-fraud-control"></a>
+<strong>9800 – Fraud Control</strong></p>
+<ul>
+<li><strong>Contains:</strong> The <a href="../../rule-examples/docs/#account-takeover-prevention">Account Takeover Prevention</a> (ATP) and <a href="../../rule-examples/docs/#account-creation-fraud-prevention">Account Creation Fraud Prevention</a> (ACFP) AMR rule groups, scoped down to each application's login and sign-up pages.</li>
+<li><strong>Why it's its own NSM policy:</strong> Fraud Control has the highest per-request charges, so it runs last, and each application has its own login and sign-up pages.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#application"><strong>Application</strong></a>.</li>
+<li><strong>Most common owner:</strong> App team requested.</li>
+</ul>
+<p><a id="policy-waf-default-things"></a>
+<strong>10,000 – WAF default things</strong></p>
+<ul>
+<li><strong>Contains:</strong> NSM firewall configuration rules for settings that have application considerations, such as the web ACL <a href="../../rule-examples/docs/#default-action">default action</a>, <a href="../../rule-examples/docs/#token-domains">token domains</a>, and <a href="../../rule-examples/docs/#visibility-configuration">visibility configuration</a>.</li>
+<li><strong>Why it's its own NSM policy:</strong> Its high priority number makes it a fallback that any more specific NSM policy can override. It doesn't affect WAF rule order.</li>
+<li><strong>Scope:</strong> <a href="../../../../scopes/docs/#all-public-facing-resources"><strong>All Public Facing Resources</strong></a>.</li>
+<li><strong>Most common owner:</strong> Cloud architect or central operator.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; Amazon 2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../../../..", "features": ["tabs", "content.code.copy", "announce.dismiss", "header.autohide"], "search": "../../../../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../../../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../../../../../javascripts/expandable-table.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,30 @@
+.expandable-table__button,
+.expandable-table__close {
+  font-size: 0.7rem;
+  padding: 0.3em 1em;
+  margin-bottom: 0.5em;
+  cursor: pointer;
+}
+
+.expandable-table__dialog {
+  width: 96vw;
+  max-width: 96vw;
+  height: 92vh;
+  max-height: 92vh;
+  padding: 1rem;
+  border: none;
+  border-radius: 0.2rem;
+  background-color: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+}
+
+.expandable-table__dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.expandable-table__content table:not([class]) {
+  display: table;
+  width: 100%;
+  max-width: none;
+  font-size: 0.75rem;
+}
