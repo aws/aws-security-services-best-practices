@@ -56,7 +56,7 @@ Each scope matches exactly what its conditions describe, and an NSM deployment a
 
 **Promote changes from non-production to production**
 
-A change to a deployed NSM policy goes live as soon as you save it, and reaches every NSM deployment that references the NSM policy's latest version, with no separate promotion step. Use separate NSM deployments for non-production and production, and point the production NSM deployment at a versioned snapshot of the NSM policy before you change it. Then test the change in non-production, create a new snapshot of the NSM policy, and point the production NSM deployment at it. Pin the NSM rules and NSM templates in that NSM policy to versioned snapshots too, as described in [Versioning and Drafts](../../prerequisites/docs/index.md#versioning-and-drafts). For more information, see [Versioning and Drafts](../../prerequisites/docs/index.md#versioning-and-drafts).
+A saved change to a deployed NSM policy takes effect right away in every NSM deployment that references its latest version. Use separate NSM deployments for non-production and production, keep production on a versioned snapshot of the NSM policy, and promote the snapshot that you tested. For more information, see [Versioning and Drafts](../../prerequisites/docs/index.md#versioning-and-drafts).
 
 **Decide who needs to see synchronization status**
 

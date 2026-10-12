@@ -45,7 +45,7 @@ How you stage a change, and how you make it live, depends on whether an Active v
 | Active | Create a draft from it, and the Active version stays live | Edit and save it, which updates the Active version in place, and the change reaches every NSM resource that references its latest version |
 | Draft on top of an Active version | Save the draft, and the Active version underneath stays live | Publish the draft, which makes it the Active version, and the change reaches every NSM resource that references its latest version |
 
-In the API, setting `isPublished` to `false` saves a draft, and setting it to `true` makes the change live. `isPublished` is required on every update call, so an update to an Active resource that you don't save as a draft goes live right away. When you create a resource, `isPublished` defaults to `true`, so a create call creates an Active resource unless you ask for a draft. The `hasPublishedVersion` field on get and list responses tells you whether a Draft resource has a live Active version underneath it.
+In the API, setting `isPublished` to `false` saves a draft, and setting it to `true` makes the change live. `isPublished` is required on every update call, so an update to an Active resource that you don't save as a draft goes live right away. When you create a resource, `isPublished` defaults to `true`, so a create call creates an Active resource unless you ask for a draft.
 
 ### Versions
 
