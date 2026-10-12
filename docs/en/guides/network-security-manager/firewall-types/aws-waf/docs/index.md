@@ -12,7 +12,9 @@ AUTHORING NOTES (applies to every NSM page)
 
 This section rebuilds the recommendations from the [AWS WAF Best Practices](../../../../waf/index.md) guide in NSM, including the [AWS Managed Rules](../../../../waf/aws-managed-rules/docs/index.md) and the [Recommended WAF Rule Order](../../../../waf/recommended-waf-rule-order/docs/index.md). We recommend this build as a best practice for managing AWS WAF with NSM.
 
-The exact code for this build is in the [accompanying GitHub repository](https://PLACEHOLDER-github-repo). This section reviews each part of the build and explains what it outputs and why it's included.
+This section reviews each part of the build and explains what it outputs and why it's included.
+
+<!-- TODO: link the accompanying GitHub repository that contains the exact code for this build -->
 
 <!-- TODO -->
 
