@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1010 510" width="1010" height="510" font-family="'Amazon Ember', 'Helvetica Neue', Arial, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">How rule sections and NSM policy priority set the web ACL evaluation order</title>
+  <desc id="desc">Five NSM policies, A through E, sorted by priority and each assigned to pre-process or post-process rule groups, map into a web ACL. Pre-process rule groups run first, then local web ACL rules, then post-process rule groups. Within each section, priority sets the order. NSM policy B at priority 50 runs after NSM policy D at priority 200 because it is in post-process rule groups.</desc>
+  <defs>
+    <marker id="a-pre" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1A6FB0"/></marker>
+    <marker id="a-post" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7B4FB0"/></marker>
+    <linearGradient id="flow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A6FB0"/><stop offset="0.5" stop-color="#879196"/><stop offset="1" stop-color="#7B4FB0"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1010" height="510" rx="12" fill="#FFFFFF"/>
+
+  <!-- NSM policies -->
+  <rect x="20" y="40" width="380" height="350" rx="14" fill="#FFF8F4" stroke="#C4511F" stroke-width="2.5"/>
+  <text x="40" y="74" font-size="22" font-weight="700" fill="#C4511F">NSM policies</text>
+  <text x="40" y="96" font-size="13" fill="#545B64">Sorted by priority, with an example section for each</text>
+  <g font-size="14">
+    <rect x="40" y="110" width="340" height="44" rx="8" fill="#FFFFFF" stroke="#E5B9A3"/>
+    <rect x="52" y="120" width="52" height="24" rx="6" fill="#C4511F"/><text x="78" y="137" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">10</text>
+    <text x="116" y="137" fill="#16191F">NSM policy A</text>
+    <rect x="312" y="121" width="56" height="22" rx="11" fill="#E3F0FA" stroke="#1A6FB0"/><text x="340" y="137" font-size="11" font-weight="700" fill="#1A6FB0" text-anchor="middle">PRE</text>
+
+    <rect x="40" y="164" width="340" height="44" rx="8" fill="#FFFFFF" stroke="#E5B9A3"/>
+    <rect x="52" y="174" width="52" height="24" rx="6" fill="#C4511F"/><text x="78" y="191" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">50</text>
+    <text x="116" y="191" fill="#16191F">NSM policy B</text>
+    <rect x="312" y="175" width="56" height="22" rx="11" fill="#F1EAF8" stroke="#7B4FB0"/><text x="340" y="191" font-size="11" font-weight="700" fill="#7B4FB0" text-anchor="middle">POST</text>
+
+    <rect x="40" y="218" width="340" height="44" rx="8" fill="#FFFFFF" stroke="#E5B9A3"/>
+    <rect x="52" y="228" width="52" height="24" rx="6" fill="#C4511F"/><text x="78" y="245" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">100</text>
+    <text x="116" y="245" fill="#16191F">NSM policy C</text>
+    <rect x="312" y="229" width="56" height="22" rx="11" fill="#E3F0FA" stroke="#1A6FB0"/><text x="340" y="245" font-size="11" font-weight="700" fill="#1A6FB0" text-anchor="middle">PRE</text>
+
+    <rect x="40" y="272" width="340" height="44" rx="8" fill="#FFFFFF" stroke="#E5B9A3"/>
+    <rect x="52" y="282" width="52" height="24" rx="6" fill="#C4511F"/><text x="78" y="299" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">200</text>
+    <text x="116" y="299" fill="#16191F">NSM policy D</text>
+    <rect x="312" y="283" width="56" height="22" rx="11" fill="#E3F0FA" stroke="#1A6FB0"/><text x="340" y="299" font-size="11" font-weight="700" fill="#1A6FB0" text-anchor="middle">PRE</text>
+
+    <rect x="40" y="326" width="340" height="44" rx="8" fill="#FFFFFF" stroke="#E5B9A3"/>
+    <rect x="52" y="336" width="52" height="24" rx="6" fill="#C4511F"/><text x="78" y="353" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">9500</text>
+    <text x="116" y="353" fill="#16191F">NSM policy E</text>
+    <rect x="312" y="337" width="56" height="22" rx="11" fill="#F1EAF8" stroke="#7B4FB0"/><text x="340" y="353" font-size="11" font-weight="700" fill="#7B4FB0" text-anchor="middle">POST</text>
+  </g>
+
+  <!-- Web ACL -->
+  <rect x="540" y="40" width="400" height="430" rx="14" fill="#FAFAFA" stroke="#16191F" stroke-width="2"/>
+  <text x="560" y="74" font-size="22" font-weight="700" fill="#16191F">Web ACL</text>
+  <text x="560" y="96" font-size="13" fill="#545B64">Effective evaluation order, top to bottom</text>
+
+  <rect x="556" y="108" width="368" height="148" rx="10" fill="#F2F8FD" stroke="#1A6FB0" stroke-width="1.5"/>
+  <text x="570" y="128" font-size="13" font-weight="700" fill="#1A6FB0">Pre-process rule groups</text>
+  <text x="910" y="128" font-size="11" fill="#1A6FB0" text-anchor="end">NSM · can't be overridden</text>
+  <g font-size="14" fill="#16191F">
+    <rect x="570" y="138" width="340" height="30" rx="6" fill="#FFFFFF" stroke="#A9CBE6"/><text x="584" y="158">NSM policy A (10)</text>
+    <rect x="570" y="176" width="340" height="30" rx="6" fill="#FFFFFF" stroke="#A9CBE6"/><text x="584" y="196">NSM policy C (100)</text>
+    <rect x="570" y="214" width="340" height="30" rx="6" fill="#FFFFFF" stroke="#A9CBE6"/><text x="584" y="234">NSM policy D (200)</text>
+  </g>
+
+  <rect x="556" y="266" width="368" height="72" rx="10" fill="#F4F4F4" stroke="#879196" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="570" y="286" font-size="13" font-weight="700" fill="#545B64">Local web ACL rules</text>
+  <text x="910" y="286" font-size="11" fill="#545B64" text-anchor="end">Account operator</text>
+  <rect x="570" y="296" width="340" height="30" rx="6" fill="#FFFFFF" stroke="#C6CBCE"/><text x="584" y="316" font-size="14" fill="#545B64">Rules that the account operator manages</text>
+
+  <rect x="556" y="348" width="368" height="110" rx="10" fill="#F6F1FB" stroke="#7B4FB0" stroke-width="1.5"/>
+  <text x="570" y="368" font-size="13" font-weight="700" fill="#7B4FB0">Post-process rule groups</text>
+  <text x="910" y="368" font-size="11" fill="#7B4FB0" text-anchor="end">NSM · runs after local rules</text>
+  <g font-size="14" fill="#16191F">
+    <rect x="570" y="378" width="340" height="30" rx="6" fill="#FFFFFF" stroke="#C9B3E3"/><text x="584" y="398">NSM policy B (50)</text>
+    <rect x="570" y="416" width="340" height="30" rx="6" fill="#FFFFFF" stroke="#C9B3E3"/><text x="584" y="436">NSM policy E (9500)</text>
+  </g>
+
+  <!-- Evaluation direction -->
+  <rect x="967" y="110" width="6" height="338" rx="3" fill="url(#flow)"/>
+  <path d="M958,444 L970,464 L982,444 Z" fill="#7B4FB0"/>
+  <text x="994" y="280" font-size="13" font-weight="700" fill="#16191F" text-anchor="middle" transform="rotate(90 994 280)">Evaluation direction</text>
+
+  <!-- Connectors: policy row (right edge x=380) to web ACL slot (left edge x=570) -->
+  <g fill="none" stroke-width="2">
+    <path d="M380,132 C470,132 480,153 566,153" stroke="#1A6FB0" marker-end="url(#a-pre)"/>
+    <path d="M380,186 C470,186 470,393 566,393" stroke="#7B4FB0" stroke-dasharray="6 4" marker-end="url(#a-post)"/>
+    <path d="M380,240 C470,240 480,191 566,191" stroke="#1A6FB0" marker-end="url(#a-pre)"/>
+    <path d="M380,294 C470,294 480,229 566,229" stroke="#1A6FB0" marker-end="url(#a-pre)"/>
+    <path d="M380,348 C470,348 480,431 566,431" stroke="#7B4FB0" stroke-dasharray="6 4" marker-end="url(#a-post)"/>
+  </g>
+
+  <text x="20" y="420" font-size="13" fill="#16191F">The section is decided first, then priority within the section.</text>
+  <text x="20" y="440" font-size="13" fill="#16191F">NSM policy B (50) runs after NSM policy D (200),</text>
+  <text x="20" y="458" font-size="13" fill="#16191F">because it's in post-process rule groups.</text>
+</svg>
