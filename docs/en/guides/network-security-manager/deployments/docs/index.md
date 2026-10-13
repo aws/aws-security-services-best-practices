@@ -10,7 +10,7 @@ AUTHORING NOTES (applies to every NSM page)
 
 ## Overview
 
-An NSM deployment puts NSM policies into effect. It connects one or more NSM policies to exactly one scope, and creating it is the step that rolls out those NSM policies. NSM then evaluates every resource in the scope, and each resource receives every deployed NSM policy whose scope includes it. Where a required firewall is missing, NSM creates it, and where one already exists, NSM synchronizes it with your NSM policies. NSM does the same for resources that teams create later.
+An NSM deployment puts NSM policies into effect. It connects one or two NSM policies to exactly one scope, and publishing it is the step that rolls out those NSM policies. Creating an NSM deployment publishes it unless you save it as a draft. NSM then evaluates every resource in the scope, and each resource receives every deployed NSM policy whose scope includes it. Where a required firewall is missing, NSM creates it, and where one already exists, NSM synchronizes it with your NSM policies. NSM does the same for resources that teams create later.
 
 A deployment decides where NSM policies apply, not how they combine. Priority belongs to each NSM policy, so NSM orders NSM rules and resolves conflicts in the same way no matter which NSM deployments the NSM policies are in. For how priority works, see [Policy Priority](../../policy-priority/docs/index.md). For how deployments relate to the other NSM resources, see [Relationships between NSM resources](../../prerequisites/docs/index.md#relationships-between-nsm-resources).
 
@@ -18,7 +18,7 @@ A deployment decides where NSM policies apply, not how they combine. Priority be
 
 **Put NSM policies that share a scope and an owner in one NSM deployment**
 
-An NSM deployment can connect more than one NSM policy, but only one scope. When NSM policies apply to the same scope and the same team owns them, put them in one NSM deployment. For example, a central team's **AMR deployment** can connect two NSM policies to [**All Public Facing Resources**](../../scopes/docs/index.md#all-public-facing-resources):
+An NSM deployment can connect up to two NSM policies, and exactly one scope. When NSM policies apply to the same scope and the same team owns them, put them in one NSM deployment. For example, a central team's **AMR deployment** can connect two NSM policies to [**All Public Facing Resources**](../../scopes/docs/index.md#all-public-facing-resources):
 
 * [**AMRs-in-Count**](../../firewall-types/aws-waf/recommended-design/docs/index.md#policy-amrs-in-count) at priority 100, which labels requests that match the AMRs without blocking them.
 * [**AMR block with exceptions**](../../firewall-types/aws-waf/recommended-design/docs/index.md#policy-amr-block-with-exceptions) at priority 9500, which blocks those labeled requests unless an application has an exception.
@@ -27,7 +27,7 @@ These two NSM policies belong together, because the block NSM policy enforces th
 
 **Group NSM policies into NSM deployments by what logically belongs together**
 
-You don't need to split NSM deployments by priority, or by what the NSM policies contain, such as NSM rules for the AWS WAF pre-process or post-process rule groups, or NSM firewall configuration rules. NSM policies can share an NSM deployment whenever it logically makes sense for them to be deployed together. Each NSM policy's priority, not the NSM deployment that it's in, places its NSM rules in the firewall's rule order. In the previous example, **AMRs-in-Count** at 100 still runs before the application exceptions, and **AMR block with exceptions** at 9500 still runs after them, even though both NSM policies are in one NSM deployment.
+You don't need to split NSM deployments by priority, or by what the NSM policies contain, such as NSM rules for the AWS WAF pre-process or post-process rule groups, or NSM firewall configuration rules. NSM policies can share an NSM deployment whenever it logically makes sense for them to be deployed together, up to the limit of two NSM policies for each NSM deployment. Each NSM policy's priority, not the NSM deployment that it's in, places its NSM rules in the firewall's rule order. In the previous example, **AMRs-in-Count** at 100 still runs before the application exceptions, and **AMR block with exceptions** at 9500 still runs after them, even though both NSM policies are in one NSM deployment.
 
 **Combine firewall types in one NSM deployment**
 
@@ -56,7 +56,7 @@ Each scope matches exactly what its conditions describe, and an NSM deployment a
 
 **Promote changes from non-production to production**
 
-Changes to a deployed NSM policy take effect right away. Use separate NSM deployments for non-production and production, test a new version in non-production, and then promote the same version to production. For more information, see [Versioning and Drafts](../../prerequisites/docs/index.md#versioning-and-drafts).
+A saved change to a deployed NSM policy takes effect right away in every NSM deployment that references its latest version. Use separate NSM deployments for non-production and production, keep production on a versioned snapshot of the NSM policy, and promote the snapshot that you tested. For more information, see [Versioning and Drafts](../../prerequisites/docs/index.md#versioning-and-drafts).
 
 **Decide who needs to see synchronization status**
 
@@ -68,11 +68,12 @@ Name each NSM deployment for the NSM policies and scope that it connects, such a
 
 ## Deployment example
 
-The following example is a request body for the NSM `CreateDeployment` API. It connects the **AMRs-in-Count** and **AMR block with exceptions** NSM policies to the **All Public Facing Resources - CloudFront** scope. Account IDs and ARNs are placeholders.
+The following example is a request body for the NSM `CreateDeployment` API. It connects the **AMRs-in-Count** and **AMR block with exceptions** NSM policies to the **All Public Facing Resources - CloudFront** scope. Account IDs and ARNs are placeholders. `isPublished` defaults to `true`, which publishes the NSM deployment and rolls it out. Set it to `false` to save the NSM deployment as a draft instead. This example references the latest version of each NSM policy. To pin a versioned snapshot instead, append its version number to the NSM policy ARN, for example `arn:aws:network-security-manager:us-east-1:111111111111:policy:amrs-in-count-EXAMPLE:1`.
 
 ```json
 {
   "deploymentName": "AMR deployment",
+  "isPublished": true,
   "deploymentConfiguration": {
     "enableCrossAccountVisibility": false
   },
