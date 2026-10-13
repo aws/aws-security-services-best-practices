@@ -485,6 +485,1119 @@ If you prefer to manage this in code rather than the console, it helps to unders
     }
     ```
 
+#### Deploying across an organization in production
+
+The single template above is a quick start. For a production organization, deploy in three ordered steps across two accounts. Designating a delegated administrator creates a Security Hub CSPM hub and a GuardDuty detector in that account, so create those resources in the delegated administrator account first and your templates own them.
+
+| Step | Account | Terraform | CloudFormation |
+| --- | --- | --- | --- |
+| 1. Enable Security Hub, GuardDuty, and CSPM | Delegated administrator | `1-delegated-admin-services` | `1-delegated-admin-services.yaml` |
+| 2. Designate the administrator | Management | `2-management-account` | `2-management-account.yaml` plus two CLI commands |
+| 3. Apply organization-wide configuration | Delegated administrator | `3-delegated-admin-organization` | `3-delegated-admin-organization.yaml`, `3b-guardduty-members.yaml` in every Region, plus CLI commands |
+
+The Security Hub console shows GuardDuty and CSPM as one-time deployments that have no API and do not cover accounts that join later. These examples use organization policies and central configuration instead, which cover existing and new accounts.
+
+| Service | Delegated administrator | Enabled for member accounts by |
+| --- | --- | --- |
+| Security Hub and CSPM | Security Hub organization administrator API (one delegation covers both) | `SECURITYHUB_POLICY` (Security Hub); central configuration policy on the root (CSPM) |
+| Amazon Inspector | Inspector delegated administrator API (registering through AWS Organizations alone is not enough) | `INSPECTOR_POLICY` |
+| Amazon GuardDuty | GuardDuty organization administrator API (per Region) | Existing accounts added as members; organization auto-enable `NEW` for accounts that join later |
+
+Some settings have no resource yet and are CLI commands:
+
+| Setting | Terraform | CloudFormation |
+| --- | --- | --- |
+| GuardDuty organization auto-enable (`NEW`) | Native | CLI |
+| GuardDuty delegated administrator | Native | CLI |
+| Inspector delegated administrator | Native | CLI |
+| Inspector ECR last-in-use window | CLI | CLI |
+| GuardDuty organization policy (`GUARDDUTY_POLICY`) | Not yet supported | Not yet supported |
+
+##### Prerequisites
+
+Run once as the management account.
+
+1. An organization with all features enabled.
+2. Trusted access for each service:
+
+    ```
+    aws organizations enable-aws-service-access --service-principal securityhub.amazonaws.com
+    aws organizations enable-aws-service-access --service-principal guardduty.amazonaws.com
+    aws organizations enable-aws-service-access --service-principal malware-protection.guardduty.amazonaws.com
+    aws organizations enable-aws-service-access --service-principal inspector2.amazonaws.com
+    ```
+
+3. The Security Hub and Inspector policy types on the root (no Terraform or CloudFormation resource):
+
+    ```
+    ROOT=$(aws organizations list-roots --query 'Roots[0].Id' --output text)
+    aws organizations enable-policy-type --root-id $ROOT --policy-type SECURITYHUB_POLICY
+    aws organizations enable-policy-type --root-id $ROOT --policy-type INSPECTOR_POLICY
+    ```
+
+4. AWS Config recording in every account and Region where CSPM controls should run.
+5. Terraform 1.6 or later with the AWS provider 6.x, or the AWS CLI for CloudFormation.
+
+!!! warning "An organization has one resource policy"
+    Step 2 creates the Organizations delegation policy. If one already exists, merge the statements instead of replacing it.
+
+##### Terraform
+
+??? example "Terraform step 1: enable services (delegated administrator account)"
+
+    **main.tf**
+
+    ```terraform
+    locals {
+      linked_regions = setsubtract(var.regions, [var.home_region])
+
+      guardduty_features = toset([
+        "S3_DATA_EVENTS",
+        "EKS_AUDIT_LOGS",
+        "EBS_MALWARE_PROTECTION",
+        "RDS_LOGIN_EVENTS",
+        "LAMBDA_NETWORK_LOGS",
+      ])
+
+      guardduty_feature_regions = {
+        for pair in setproduct(var.regions, local.guardduty_features) :
+        "${pair[0]}/${pair[1]}" => { region = pair[0], name = pair[1] }
+      }
+    }
+
+    # -----------------------------------------------------------------------------
+    # Security Hub
+    # -----------------------------------------------------------------------------
+    resource "aws_securityhub_account_v2" "this" {
+      for_each = var.regions
+      region   = each.key
+    }
+
+    resource "aws_securityhub_aggregator_v2" "this" {
+      count  = length(local.linked_regions) > 0 ? 1 : 0
+      region = var.home_region
+
+      region_linking_mode = "SPECIFIED_REGIONS"
+      linked_regions      = sort(tolist(local.linked_regions))
+
+      depends_on = [aws_securityhub_account_v2.this]
+    }
+
+    # -----------------------------------------------------------------------------
+    # GuardDuty
+    # -----------------------------------------------------------------------------
+    resource "aws_guardduty_detector" "this" {
+      for_each = var.regions
+      region   = each.key
+
+      enable                       = true
+      finding_publishing_frequency = "FIFTEEN_MINUTES"
+    }
+
+    resource "aws_guardduty_detector_feature" "this" {
+      for_each = local.guardduty_feature_regions
+      region   = each.value.region
+
+      detector_id = aws_guardduty_detector.this[each.value.region].id
+      name        = each.value.name
+      status      = "ENABLED"
+    }
+
+    resource "aws_guardduty_detector_feature" "runtime_monitoring" {
+      for_each = var.regions
+      region   = each.key
+
+      detector_id = aws_guardduty_detector.this[each.key].id
+      name        = "RUNTIME_MONITORING"
+      status      = "DISABLED"
+
+      additional_configuration {
+        name   = "EKS_ADDON_MANAGEMENT"
+        status = "DISABLED"
+      }
+      additional_configuration {
+        name   = "ECS_FARGATE_AGENT_MANAGEMENT"
+        status = "DISABLED"
+      }
+      additional_configuration {
+        name   = "EC2_AGENT_MANAGEMENT"
+        status = "DISABLED"
+      }
+    }
+
+    # -----------------------------------------------------------------------------
+    # Security Hub CSPM
+    # -----------------------------------------------------------------------------
+    resource "aws_securityhub_account" "cspm" {
+      for_each = var.regions
+      region   = each.key
+
+      enable_default_standards = false
+      auto_enable_controls     = true
+    }
+
+    resource "aws_securityhub_finding_aggregator" "cspm" {
+      region = var.home_region
+
+      linking_mode = "ALL_REGIONS"
+
+      depends_on = [aws_securityhub_account.cspm]
+    }
+    ```
+
+    **variables.tf**
+
+    ```terraform
+    variable "home_region" {
+      description = "Home (aggregation) Region for Security Hub and Security Hub CSPM."
+      type        = string
+      default     = "us-east-1"
+    }
+
+    variable "regions" {
+      description = "Regions in which to enable Security Hub, GuardDuty, and Security Hub CSPM in this account. Must include home_region."
+      type        = set(string)
+      default     = ["us-east-1"]
+
+      validation {
+        condition     = contains(var.regions, var.home_region)
+        error_message = "regions must include home_region."
+      }
+    }
+    ```
+
+    **versions.tf**
+
+    ```terraform
+    terraform {
+      required_version = ">= 1.6"
+
+      required_providers {
+        aws = {
+          source  = "hashicorp/aws"
+          version = ">= 6.0"
+        }
+      }
+    }
+
+    # Run this configuration with credentials for the delegated administrator account.
+    provider "aws" {
+      region = var.home_region
+    }
+    ```
+
+
+??? example "Terraform step 2: designate the administrator (management account)"
+
+    **main.tf**
+
+    ```terraform
+    data "aws_organizations_organization" "this" {}
+
+    locals {
+      org_id     = data.aws_organizations_organization.this.id
+      mgmt_id    = data.aws_organizations_organization.this.master_account_id
+      org_prefix = "arn:aws:organizations::${local.mgmt_id}"
+      admin_arn  = "arn:aws:iam::${var.delegated_admin_account_id}:root"
+
+      # Organization entities the delegated administrator can target with policies.
+      entity_arns = [
+        "${local.org_prefix}:root/${local.org_id}/*",
+        "${local.org_prefix}:ou/${local.org_id}/*",
+        "${local.org_prefix}:account/${local.org_id}/*",
+      ]
+
+      # Policy types the delegated administrator can manage.
+      policy_arns = [
+        "${local.org_prefix}:policy/${local.org_id}/securityhub_policy/*",
+        "${local.org_prefix}:policy/${local.org_id}/inspector_policy/*",
+      ]
+    }
+
+    # -----------------------------------------------------------------------------
+    # Security Hub and Security Hub CSPM: one delegated administrator covers both.
+    # GuardDuty and Inspector each have their own delegated administrator API.
+    # Each is called once per Region.
+    # -----------------------------------------------------------------------------
+    resource "aws_securityhub_organization_admin_account" "security_hub" {
+      for_each = var.regions
+      region   = each.key
+
+      admin_account_id = var.delegated_admin_account_id
+    }
+
+    resource "aws_guardduty_organization_admin_account" "this" {
+      for_each = var.regions
+      region   = each.key
+
+      admin_account_id = var.delegated_admin_account_id
+    }
+
+    # Amazon Inspector allows one delegated administrator change at a time, so this waits for the
+    # other delegations. For more than one Region, also apply with -parallelism=1.
+    resource "aws_inspector2_delegated_admin_account" "this" {
+      for_each = var.regions
+      region   = each.key
+
+      account_id = var.delegated_admin_account_id
+
+      depends_on = [
+        aws_securityhub_organization_admin_account.security_hub,
+        aws_guardduty_organization_admin_account.this,
+      ]
+    }
+
+    # -----------------------------------------------------------------------------
+    # Delegation policy: lets the delegated administrator create and attach the
+    # Security Hub and Inspector organization policies. An organization has only one
+    # resource policy, so merge these statements into an existing policy if you have one.
+    # -----------------------------------------------------------------------------
+    resource "aws_organizations_resource_policy" "delegation" {
+      content = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+          {
+            Sid       = "SecurityServicesDelegatingOrgReadActions"
+            Effect    = "Allow"
+            Principal = { AWS = local.admin_arn }
+            Action    = "organizations:ListRoots"
+            Resource  = "*"
+          },
+          {
+            Sid       = "SecurityServicesDelegatingNecessaryOrgManagementActions"
+            Effect    = "Allow"
+            Principal = { AWS = local.admin_arn }
+            Action = [
+              "organizations:DescribeOrganization",
+              "organizations:DescribeOrganizationalUnit",
+              "organizations:DescribeAccount",
+              "organizations:ListRoots",
+              "organizations:ListOrganizationalUnitsForParent",
+              "organizations:ListParents",
+              "organizations:ListChildren",
+              "organizations:ListAccounts",
+              "organizations:ListAccountsForParent",
+              "organizations:ListTagsForResource",
+              "organizations:ListDelegatedAdministrators",
+              "organizations:ListHandshakesForAccount",
+            ]
+            Resource = concat(
+              local.entity_arns,
+              ["${local.org_prefix}:organization/${local.org_id}"],
+              local.policy_arns,
+            )
+          },
+          {
+            Sid       = "SecurityServicesDelegatingPolicyDescribeActions"
+            Effect    = "Allow"
+            Principal = { AWS = local.admin_arn }
+            Action = [
+              "organizations:DescribePolicy",
+              "organizations:DescribeEffectivePolicy",
+              "organizations:ListPolicies",
+              "organizations:ListPoliciesForTarget",
+              "organizations:ListTargetsForPolicy",
+            ]
+            Resource = concat(local.entity_arns, local.policy_arns)
+          },
+          {
+            Sid       = "SecurityServicesDelegatingPolicyMutationActions"
+            Effect    = "Allow"
+            Principal = { AWS = local.admin_arn }
+            Action = [
+              "organizations:CreatePolicy",
+              "organizations:UpdatePolicy",
+              "organizations:DeletePolicy",
+              "organizations:AttachPolicy",
+              "organizations:DetachPolicy",
+              "organizations:EnablePolicyType",
+              "organizations:DisablePolicyType",
+            ]
+            Resource = concat(local.entity_arns, local.policy_arns)
+          },
+          {
+            Sid       = "SecurityServicesDelegatingPolicyTagActions"
+            Effect    = "Allow"
+            Principal = { AWS = local.admin_arn }
+            Action = [
+              "organizations:TagResource",
+              "organizations:UntagResource",
+            ]
+            Resource = local.policy_arns
+          },
+        ]
+      })
+
+      depends_on = [aws_securityhub_organization_admin_account.security_hub]
+    }
+    ```
+
+    **outputs.tf**
+
+    ```terraform
+    output "delegated_admin_account_id" {
+      description = "Delegated administrator account for Security Hub, Security Hub CSPM, GuardDuty, and Inspector."
+      value       = var.delegated_admin_account_id
+    }
+
+    output "organization_root_id" {
+      description = "Organization root ID. The delegated administrator attaches policies to this root."
+      value       = data.aws_organizations_organization.this.roots[0].id
+    }
+    ```
+
+    **variables.tf**
+
+    ```terraform
+    variable "delegated_admin_account_id" {
+      description = "ID of the account that becomes the delegated administrator for Security Hub, GuardDuty, and Inspector (for example, your security account)."
+      type        = string
+
+      validation {
+        condition     = can(regex("^[0-9]{12}$", var.delegated_admin_account_id))
+        error_message = "delegated_admin_account_id must be a 12-digit AWS account ID."
+      }
+    }
+
+    variable "home_region" {
+      description = "Region used to call the regional delegation APIs. GuardDuty and Inspector delegation applies per Region, so list every Region you use in regions."
+      type        = string
+      default     = "us-east-1"
+    }
+
+    variable "regions" {
+      description = "Regions in which GuardDuty and Inspector delegated administration is enabled. Must match the Regions you configure in 1-delegated-admin-services and 3-delegated-admin-organization."
+      type        = set(string)
+      default     = ["us-east-1"]
+    }
+    ```
+
+    **versions.tf**
+
+    ```terraform
+    terraform {
+      required_version = ">= 1.6"
+
+      required_providers {
+        aws = {
+          source  = "hashicorp/aws"
+          version = ">= 6.0"
+        }
+      }
+    }
+
+    # Run this configuration with credentials for the organization management account.
+    provider "aws" {
+      region = var.home_region
+    }
+    ```
+
+
+??? example "Terraform step 3: organization-wide configuration (delegated administrator account)"
+
+    **main.tf**
+
+    ```terraform
+    data "aws_partition" "current" {}
+    data "aws_organizations_organization" "this" {}
+    data "aws_caller_identity" "current" {}
+
+    locals {
+      guardduty_features = toset([
+        "S3_DATA_EVENTS",
+        "EKS_AUDIT_LOGS",
+        "EBS_MALWARE_PROTECTION",
+        "RDS_LOGIN_EVENTS",
+        "LAMBDA_NETWORK_LOGS",
+      ])
+
+      guardduty_feature_regions = {
+        for pair in setproduct(var.regions, local.guardduty_features) :
+        "${pair[0]}/${pair[1]}" => { region = pair[0], name = pair[1] }
+      }
+
+      # Every active account except the delegated administrator itself.
+      member_accounts = {
+        for a in data.aws_organizations_organization.this.accounts :
+        a.id => a.email if a.status == "ACTIVE" && a.id != data.aws_caller_identity.current.account_id
+      }
+
+      guardduty_members = {
+        for pair in setproduct(var.regions, keys(local.member_accounts)) :
+        "${pair[0]}/${pair[1]}" => {
+          region     = pair[0]
+          account_id = pair[1]
+          email      = local.member_accounts[pair[1]]
+        }
+      }
+
+      root_id        = data.aws_organizations_organization.this.roots[0].id
+      standards_arns = [for s in var.cspm_standards : "arn:${data.aws_partition.current.partition}:securityhub:${var.home_region}::${s}"]
+    }
+
+    # -----------------------------------------------------------------------------
+    # Security Hub: an organization policy enables it in every account.
+    # -----------------------------------------------------------------------------
+    resource "aws_organizations_policy" "security_hub" {
+      name        = "security-hub-enablement"
+      description = "Enable Security Hub in the listed Regions for all accounts."
+      type        = "SECURITYHUB_POLICY"
+
+      content = jsonencode({
+        securityhub = {
+          enable_in_regions  = { "@@assign" = sort(tolist(var.regions)) }
+          disable_in_regions = { "@@assign" = [] }
+        }
+      })
+    }
+
+    resource "aws_organizations_policy_attachment" "security_hub" {
+      policy_id = aws_organizations_policy.security_hub.id
+      target_id = local.root_id
+    }
+
+    # -----------------------------------------------------------------------------
+    # Inspector: an organization policy enables the scan types in every account.
+    # -----------------------------------------------------------------------------
+    resource "aws_organizations_policy" "inspector" {
+      name        = "inspector-enablement"
+      description = "Enable Amazon Inspector scan types in the listed Regions for all accounts."
+      type        = "INSPECTOR_POLICY"
+
+      content = jsonencode({
+        inspector = {
+          enablement = {
+            ec2_scanning = {
+              enable_in_regions  = { "@@assign" = sort(tolist(var.regions)) }
+              disable_in_regions = { "@@assign" = [] }
+            }
+            ecr_scanning = {
+              enable_in_regions  = { "@@assign" = sort(tolist(var.regions)) }
+              disable_in_regions = { "@@assign" = [] }
+            }
+            lambda_standard_scanning = {
+              enable_in_regions  = { "@@assign" = sort(tolist(var.regions)) }
+              disable_in_regions = { "@@assign" = [] }
+              lambda_code_scanning = {
+                enable_in_regions  = { "@@assign" = sort(tolist(var.regions)) }
+                disable_in_regions = { "@@assign" = [] }
+              }
+            }
+          }
+        }
+      })
+    }
+
+    resource "aws_organizations_policy_attachment" "inspector" {
+      policy_id = aws_organizations_policy.inspector.id
+      target_id = local.root_id
+    }
+
+    # -----------------------------------------------------------------------------
+    # GuardDuty: add the existing accounts as members, and set the organization
+    # configuration so new accounts join automatically with the same features.
+    # The detector was created in 1-delegated-admin-services.
+    # -----------------------------------------------------------------------------
+    data "aws_guardduty_detector" "this" {
+      for_each = var.regions
+      region   = each.key
+    }
+
+    # Existing accounts are added as members. GuardDuty does not enroll them from the
+    # organization setting, and refuses to remove members while that setting is ALL, so
+    # the setting is NEW: it enrolls accounts that join the organization later.
+    resource "aws_guardduty_member" "this" {
+      for_each = local.guardduty_members
+      region   = each.value.region
+
+      detector_id = data.aws_guardduty_detector.this[each.value.region].id
+      account_id  = each.value.account_id
+      email       = each.value.email
+      invite      = false
+
+      # GuardDuty does not return the email or the invite flag for organization members,
+      # which would otherwise force every member to be replaced on the next plan.
+      lifecycle {
+        ignore_changes = [email, invite]
+      }
+    }
+
+    resource "aws_guardduty_organization_configuration" "this" {
+      for_each = var.regions
+      region   = each.key
+
+      detector_id                      = data.aws_guardduty_detector.this[each.key].id
+      auto_enable_organization_members = "NEW"
+
+      depends_on = [aws_guardduty_member.this]
+    }
+
+    resource "aws_guardduty_organization_configuration_feature" "this" {
+      for_each = local.guardduty_feature_regions
+      region   = each.value.region
+
+      detector_id = data.aws_guardduty_detector.this[each.value.region].id
+      name        = each.value.name
+      auto_enable = "NEW"
+
+      depends_on = [aws_guardduty_organization_configuration.this]
+    }
+
+    # -----------------------------------------------------------------------------
+    # Security Hub CSPM: use central configuration to apply the
+    # standards to every account and Region (existing and new).
+    # -----------------------------------------------------------------------------
+    resource "aws_securityhub_organization_configuration" "cspm" {
+      region = var.home_region
+
+      auto_enable           = false
+      auto_enable_standards = "NONE"
+
+      organization_configuration {
+        configuration_type = "CENTRAL"
+      }
+    }
+
+    resource "aws_securityhub_configuration_policy" "cspm" {
+      region = var.home_region
+      name   = "cspm-baseline"
+
+      configuration_policy {
+        service_enabled       = true
+        enabled_standard_arns = local.standards_arns
+
+        security_controls_configuration {
+          disabled_control_identifiers = []
+        }
+      }
+
+      depends_on = [aws_securityhub_organization_configuration.cspm]
+    }
+
+    # A configuration policy can't be deleted until its association finishes
+    # detaching, which is asynchronous. This pause runs between removing the
+    # association and deleting the policy during terraform destroy.
+    resource "time_sleep" "cspm_association_detach" {
+      destroy_duration = "60s"
+
+      depends_on = [aws_securityhub_configuration_policy.cspm]
+    }
+
+    resource "aws_securityhub_configuration_policy_association" "cspm" {
+      region = var.home_region
+
+      policy_id  = aws_securityhub_configuration_policy.cspm.id
+      target_id  = local.root_id
+      depends_on = [time_sleep.cspm_association_detach]
+    }
+    ```
+
+    **outputs.tf**
+
+    ```terraform
+    output "organization_root_id" {
+      description = "Root the Security Hub, Inspector, and CSPM policies are attached to."
+      value       = local.root_id
+    }
+    ```
+
+    **variables.tf**
+
+    ```terraform
+    variable "home_region" {
+      description = "Home (aggregation) Region. Security Hub central configuration and the organization policies are managed from this Region."
+      type        = string
+      default     = "us-east-1"
+    }
+
+    variable "regions" {
+      description = "Regions in which the organization policies enable Security Hub and Inspector, and GuardDuty auto-enables members. Must include home_region and match the Regions in 1-delegated-admin-services."
+      type        = set(string)
+      default     = ["us-east-1"]
+
+      validation {
+        condition     = contains(var.regions, var.home_region)
+        error_message = "regions must include home_region."
+      }
+    }
+
+    variable "cspm_standards" {
+      description = "Security Hub CSPM standards to enable through the central configuration policy."
+      type        = list(string)
+      default = [
+        "standards/aws-foundational-security-best-practices/v/1.0.0",
+      ]
+    }
+    ```
+
+    **versions.tf**
+
+    ```terraform
+    terraform {
+      required_version = ">= 1.6"
+
+      required_providers {
+        aws = {
+          source  = "hashicorp/aws"
+          version = ">= 6.0"
+        }
+        time = {
+          source  = "hashicorp/time"
+          version = ">= 0.12"
+        }
+      }
+    }
+
+    # Run this configuration with credentials for the delegated administrator account.
+    provider "aws" {
+      region = var.home_region
+    }
+    ```
+
+
+Run each step with that account's credentials:
+
+```
+cd terraform/1-delegated-admin-services
+terraform init && terraform apply
+
+cd ../2-management-account
+terraform init && terraform apply -parallelism=1 -var delegated_admin_account_id=<security-account-id>
+
+cd ../3-delegated-admin-organization
+terraform init && terraform apply
+```
+
+For more than one Region, set `regions` and `home_region` identically in all three steps. Use `-parallelism=1` on step 2, for apply and destroy, because Amazon Inspector rejects two delegated administrator changes at the same time.
+
+##### CloudFormation
+
+??? example "CloudFormation step 1: enable services"
+
+    **1-delegated-admin-services.yaml**
+
+    ```yaml
+    AWSTemplateFormatVersion: "2010-09-09"
+    Description: >-
+      Step 1 (delegated administrator account). Enables Security Hub, GuardDuty, and Security Hub
+      CSPM in the account that will become the delegated administrator.
+      Deploy this before designating the account in step 2.
+
+    Parameters:
+      HomeRegion:
+        Type: String
+        Description: Home (aggregation) Region. Cross-Region aggregators are created only in this Region's stack.
+        Default: us-east-1
+      LinkedRegions:
+        Type: CommaDelimitedList
+        Description: Regions whose Security Hub findings aggregate into this Region. Leave empty for a single Region.
+        Default: ""
+
+    Conditions:
+      IsHomeRegion: !Equals [!Ref AWS::Region, !Ref HomeRegion]
+      HasLinkedRegions: !And
+        - !Condition IsHomeRegion
+        - !Not [!Equals [!Join ["", !Ref LinkedRegions], ""]]
+
+    Resources:
+      # Security Hub
+      SecurityHub:
+        Type: AWS::SecurityHub::HubV2
+
+      SecurityHubAggregator:
+        Type: AWS::SecurityHub::AggregatorV2
+        Condition: HasLinkedRegions
+        DependsOn: SecurityHub
+        Properties:
+          RegionLinkingMode: SPECIFIED_REGIONS
+          LinkedRegions: !Ref LinkedRegions
+
+      # GuardDuty
+      GuardDuty:
+        Type: AWS::GuardDuty::Detector
+        Properties:
+          Enable: true
+          FindingPublishingFrequency: FIFTEEN_MINUTES
+          Features:
+            - Name: S3_DATA_EVENTS
+              Status: ENABLED
+            - Name: EKS_AUDIT_LOGS
+              Status: ENABLED
+            - Name: EBS_MALWARE_PROTECTION
+              Status: ENABLED
+            - Name: RDS_LOGIN_EVENTS
+              Status: ENABLED
+            - Name: LAMBDA_NETWORK_LOGS
+              Status: ENABLED
+            - Name: RUNTIME_MONITORING
+              Status: DISABLED
+              AdditionalConfiguration:
+                - Name: EKS_ADDON_MANAGEMENT
+                  Status: DISABLED
+                - Name: ECS_FARGATE_AGENT_MANAGEMENT
+                  Status: DISABLED
+                - Name: EC2_AGENT_MANAGEMENT
+                  Status: DISABLED
+
+      # Security Hub CSPM
+      Cspm:
+        Type: AWS::SecurityHub::Hub
+        Properties:
+          EnableDefaultStandards: false
+          AutoEnableControls: true
+
+      CspmFindingAggregator:
+        Type: AWS::SecurityHub::FindingAggregator
+        Condition: IsHomeRegion
+        DependsOn: Cspm
+        Properties:
+          RegionLinkingMode: ALL_REGIONS
+
+    Outputs:
+      GuardDutyDetectorId:
+        Description: GuardDuty detector ID in this Region.
+        Value: !Ref GuardDuty
+    ```
+
+
+??? example "CloudFormation step 2: designate the administrator"
+
+    **2-management-account.yaml**
+
+    ```yaml
+    AWSTemplateFormatVersion: "2010-09-09"
+    Description: >-
+      Step 2 (organization management account). Designates a delegated administrator
+      for Security Hub and Security Hub CSPM, and lets that account manage the
+      Security Hub and Inspector organization policies. GuardDuty and Inspector
+      delegation have no CloudFormation resource; see the README for those commands.
+
+    Parameters:
+      DelegatedAdminAccountId:
+        Type: String
+        Description: Account that becomes the delegated administrator (for example, your security account).
+        AllowedPattern: "^[0-9]{12}$"
+      OrganizationId:
+        Type: String
+        Description: ID of the organization, for example o-a1b2c3d4e5.
+        AllowedPattern: "^o-[a-z0-9]{10,32}$"
+      ManageGlobalResources:
+        Type: String
+        Description: >-
+          The organization resource policy applies to the whole organization. Set to
+          true in one Region's stack and false in the others.
+        AllowedValues: ["true", "false"]
+        Default: "true"
+
+    Conditions:
+      ManageGlobal: !Equals [!Ref ManageGlobalResources, "true"]
+
+    Resources:
+      # One delegated administrator covers Security Hub and Security Hub CSPM.
+      SecurityHubDelegatedAdmin:
+        Type: AWS::SecurityHub::DelegatedAdmin
+        Properties:
+          AdminAccountId: !Ref DelegatedAdminAccountId
+
+      # Lets the delegated administrator create and attach the Security Hub and
+      # Inspector organization policies. An organization has only one resource
+      # policy, so merge these statements into an existing policy if you have one.
+      DelegationPolicy:
+        Type: AWS::Organizations::ResourcePolicy
+        Condition: ManageGlobal
+        DependsOn: SecurityHubDelegatedAdmin
+        Properties:
+          Content:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: SecurityServicesDelegatingOrgReadActions
+                Effect: Allow
+                Principal:
+                  AWS: !Sub arn:${AWS::Partition}:iam::${DelegatedAdminAccountId}:root
+                Action: organizations:ListRoots
+                Resource: "*"
+              - Sid: SecurityServicesDelegatingNecessaryOrgManagementActions
+                Effect: Allow
+                Principal:
+                  AWS: !Sub arn:${AWS::Partition}:iam::${DelegatedAdminAccountId}:root
+                Action:
+                  - organizations:DescribeOrganization
+                  - organizations:DescribeOrganizationalUnit
+                  - organizations:DescribeAccount
+                  - organizations:ListRoots
+                  - organizations:ListOrganizationalUnitsForParent
+                  - organizations:ListParents
+                  - organizations:ListChildren
+                  - organizations:ListAccounts
+                  - organizations:ListAccountsForParent
+                  - organizations:ListTagsForResource
+                  - organizations:ListDelegatedAdministrators
+                  - organizations:ListHandshakesForAccount
+                Resource:
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:root/${OrganizationId}/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:organization/${OrganizationId}
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:ou/${OrganizationId}/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:account/${OrganizationId}/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:policy/${OrganizationId}/securityhub_policy/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:policy/${OrganizationId}/inspector_policy/*
+              - Sid: SecurityServicesDelegatingPolicyDescribeActions
+                Effect: Allow
+                Principal:
+                  AWS: !Sub arn:${AWS::Partition}:iam::${DelegatedAdminAccountId}:root
+                Action:
+                  - organizations:DescribePolicy
+                  - organizations:DescribeEffectivePolicy
+                  - organizations:ListPolicies
+                  - organizations:ListPoliciesForTarget
+                  - organizations:ListTargetsForPolicy
+                Resource:
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:root/${OrganizationId}/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:ou/${OrganizationId}/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:account/${OrganizationId}/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:policy/${OrganizationId}/securityhub_policy/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:policy/${OrganizationId}/inspector_policy/*
+              - Sid: SecurityServicesDelegatingPolicyMutationActions
+                Effect: Allow
+                Principal:
+                  AWS: !Sub arn:${AWS::Partition}:iam::${DelegatedAdminAccountId}:root
+                Action:
+                  - organizations:CreatePolicy
+                  - organizations:UpdatePolicy
+                  - organizations:DeletePolicy
+                  - organizations:AttachPolicy
+                  - organizations:DetachPolicy
+                  - organizations:EnablePolicyType
+                  - organizations:DisablePolicyType
+                Resource:
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:root/${OrganizationId}/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:ou/${OrganizationId}/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:account/${OrganizationId}/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:policy/${OrganizationId}/securityhub_policy/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:policy/${OrganizationId}/inspector_policy/*
+              - Sid: SecurityServicesDelegatingPolicyTagActions
+                Effect: Allow
+                Principal:
+                  AWS: !Sub arn:${AWS::Partition}:iam::${DelegatedAdminAccountId}:root
+                Action:
+                  - organizations:TagResource
+                  - organizations:UntagResource
+                Resource:
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:policy/${OrganizationId}/securityhub_policy/*
+                  - !Sub arn:${AWS::Partition}:organizations::${AWS::AccountId}:policy/${OrganizationId}/inspector_policy/*
+    ```
+
+
+??? example "CloudFormation step 3: organization-wide configuration"
+
+    **3-delegated-admin-organization.yaml**
+
+    ```yaml
+    AWSTemplateFormatVersion: "2010-09-09"
+    Description: >-
+      Step 3 (delegated administrator account). Applies the organization-wide
+      Security Hub, Amazon Inspector, and Security Hub CSPM configuration. GuardDuty
+      auto-enable has no CloudFormation resource; see the README.
+
+    Parameters:
+      RootId:
+        Type: String
+        Description: Organization root ID that the organization policies attach to, for example r-ab12.
+        AllowedPattern: "^r-[0-9a-z]{4,32}$"
+      EnabledRegions:
+        Type: CommaDelimitedList
+        Description: Regions where the Security Hub and Inspector organization policies enable the service. Include the Region of this stack.
+        Default: us-east-1
+
+    Resources:
+      # Security Hub: an organization policy enables it in every account.
+      SecurityHubPolicy:
+        Type: AWS::Organizations::Policy
+        Properties:
+          Name: security-hub-enablement
+          Description: Enable Security Hub in the listed Regions for all accounts.
+          Type: SECURITYHUB_POLICY
+          TargetIds:
+            - !Ref RootId
+          Content:
+            securityhub:
+              enable_in_regions:
+                "@@assign": !Ref EnabledRegions
+              disable_in_regions:
+                "@@assign": []
+
+      # ---------------------------------------------------------------------------
+      # Inspector: an organization policy enables the scan types in every account.
+      # ---------------------------------------------------------------------------
+      InspectorPolicy:
+        Type: AWS::Organizations::Policy
+        Properties:
+          Name: inspector-enablement
+          Description: Enable Amazon Inspector scan types in the listed Regions for all accounts.
+          Type: INSPECTOR_POLICY
+          TargetIds:
+            - !Ref RootId
+          Content:
+            inspector:
+              enablement:
+                ec2_scanning:
+                  enable_in_regions:
+                    "@@assign": !Ref EnabledRegions
+                  disable_in_regions:
+                    "@@assign": []
+                ecr_scanning:
+                  enable_in_regions:
+                    "@@assign": !Ref EnabledRegions
+                  disable_in_regions:
+                    "@@assign": []
+                lambda_standard_scanning:
+                  enable_in_regions:
+                    "@@assign": !Ref EnabledRegions
+                  disable_in_regions:
+                    "@@assign": []
+                  lambda_code_scanning:
+                    enable_in_regions:
+                      "@@assign": !Ref EnabledRegions
+                    disable_in_regions:
+                      "@@assign": []
+
+      # ---------------------------------------------------------------------------
+      # Security Hub CSPM: enable CSPM, then use central configuration to apply the
+      # standards to every account (existing and new).
+      # ---------------------------------------------------------------------------
+      CspmOrganizationConfiguration:
+        Type: AWS::SecurityHub::OrganizationConfiguration
+        Properties:
+          AutoEnable: false
+          AutoEnableStandards: NONE
+          ConfigurationType: CENTRAL
+
+      CspmConfigurationPolicy:
+        Type: AWS::SecurityHub::ConfigurationPolicy
+        DependsOn: CspmOrganizationConfiguration
+        Properties:
+          Name: cspm-baseline
+          ConfigurationPolicy:
+            SecurityHub:
+              ServiceEnabled: true
+              EnabledStandardIdentifiers:
+                - !Sub arn:${AWS::Partition}:securityhub:${AWS::Region}::standards/aws-foundational-security-best-practices/v/1.0.0
+              SecurityControlsConfiguration:
+                DisabledSecurityControlIdentifiers: []
+
+      CspmPolicyAssociation:
+        Type: AWS::SecurityHub::PolicyAssociation
+        Properties:
+          ConfigurationPolicyId: !GetAtt CspmConfigurationPolicy.Id
+          TargetId: !Ref RootId
+          TargetType: ROOT
+    ```
+
+
+??? example "CloudFormation step 3b: GuardDuty members (every Region)"
+
+    **3b-guardduty-members.yaml**
+
+    ```yaml
+    AWSTemplateFormatVersion: "2010-09-09"
+    Transform: AWS::LanguageExtensions
+    Description: >-
+      Step 3b (delegated administrator account, deploy in every Region). Adds the existing organization
+      accounts as GuardDuty members. GuardDuty does not enroll existing accounts from the organization
+      setting; see the README for the setting that covers accounts that join later.
+
+    Parameters:
+      GuardDutyDetectorId:
+        Type: String
+        Description: GuardDuty detector ID in this Region, from the step 1 stack output.
+      MemberAccountIds:
+        Type: CommaDelimitedList
+        Description: IDs of every account in the organization except the delegated administrator account.
+      MemberEmail:
+        Type: String
+        Description: >-
+          GuardDuty requires an email address but does not use it for organization members, so any
+          valid address works.
+        Default: guardduty-members@example.com
+
+    Resources:
+      Fn::ForEach::Members:
+        - AccountId
+        - !Ref MemberAccountIds
+        - "Member&{AccountId}":
+            Type: AWS::GuardDuty::Member
+            Properties:
+              DetectorId: !Ref GuardDutyDetectorId
+              MemberId: !Ref AccountId
+              Email: !Ref MemberEmail
+              Status: Created
+              DisableEmailNotification: true
+    ```
+
+
+```
+# Step 1, delegated administrator credentials
+aws cloudformation deploy --stack-name sh-1-services \
+  --template-file 1-delegated-admin-services.yaml
+
+# Step 2, management account credentials
+aws cloudformation deploy --stack-name sh-2-mgmt \
+  --template-file 2-management-account.yaml \
+  --parameter-overrides DelegatedAdminAccountId=<security-account-id> OrganizationId=<o-xxxxxxxxxx>
+aws guardduty enable-organization-admin-account --admin-account-id <security-account-id>
+aws inspector2 enable-delegated-admin-account --delegated-admin-account-id <security-account-id>
+
+# Step 3, delegated administrator credentials
+aws cloudformation deploy --stack-name sh-3-org \
+  --template-file 3-delegated-admin-organization.yaml \
+  --parameter-overrides RootId=<r-xxxx> EnabledRegions=us-east-1
+
+# Step 3b, delegated administrator credentials, in every Region
+aws cloudformation deploy --stack-name sh-3b-members \
+  --template-file 3b-guardduty-members.yaml \
+  --parameter-overrides GuardDutyDetectorId=<detector-id> MemberAccountIds=<id1>,<id2>,<id3>
+```
+
+Stacks are regional. For more than one Region, deploy step 1 in every non-home Region first and then in the home Region with `LinkedRegions`. Deploy step 2 in every Region (`ManageGlobalResources=false` outside the first) and run the GuardDuty and Inspector commands one Region at a time. Deploy step 3 once, in the home Region, and pass `EnabledRegions` in a parameters file.
+
+##### Step 3 CLI commands (delegated administrator account)
+
+**GuardDuty organization auto-enable (CloudFormation only).** Run in every Region. `NEW` enrolls accounts that join later. It is `NEW` and not `ALL` on purpose: GuardDuty does not enroll existing accounts from this setting, and while it is `ALL` GuardDuty refuses to remove members, which blocks destroy.
+
+```
+DETECTOR=$(aws guardduty list-detectors --region <region> --query 'DetectorIds[0]' --output text)
+aws guardduty update-organization-configuration --region <region> --detector-id $DETECTOR \
+  --auto-enable-organization-members NEW --features \
+  '[{"Name":"S3_DATA_EVENTS","AutoEnable":"NEW"},{"Name":"EKS_AUDIT_LOGS","AutoEnable":"NEW"},{"Name":"EBS_MALWARE_PROTECTION","AutoEnable":"NEW"},{"Name":"RDS_LOGIN_EVENTS","AutoEnable":"NEW"},{"Name":"LAMBDA_NETWORK_LOGS","AutoEnable":"NEW"}]'
+```
+
+**Inspector ECR re-scan by last-in-use date (optional).** Run in each Region after Inspector is enabled in the delegated administrator account.
+
+```
+aws inspector2 update-configuration --region <region> \
+  --ecr-configuration rescanDuration=LIFETIME,pullDateRescanDuration=DAYS_7,pullDateRescanMode=LAST_IN_USE_AT
+```
+
+##### Verify
+
+```
+aws organizations describe-effective-policy --policy-type SECURITYHUB_POLICY --target-id <account-id>
+aws organizations describe-effective-policy --policy-type INSPECTOR_POLICY --target-id <account-id>
+aws guardduty describe-organization-configuration --detector-id <id>
+aws securityhub list-configuration-policy-associations
+aws guardduty list-members --detector-id <id> --only-associated=false
+```
+
+Security Hub and Inspector policies and GuardDuty members take effect within a few minutes. CSPM associations stay `PENDING` for a few minutes before `SUCCESS`.
+
+##### Destroy
+
+Reverse the order: step 3 (3b first on CloudFormation), then 2, then 1.
+
+- Removing organization policies stops enablement for new accounts but does not disable the services in accounts already enabled.
+- Terraform deletes GuardDuty members without disassociating them first, so `terraform destroy` fails with "still associated". Run `aws guardduty disassociate-members` in each Region first.
+- Destroying step 2 removes the CSPM administrator but leaves the Security Hub V2 administrator registered. Remove it with `aws securityhub disable-organization-admin-account --feature SecurityHubV2`.
+- If deleting CloudFormation step 3 fails with a 409 on the CSPM configuration policy, wait a minute and delete the stack again.
+
 ### Essential Capabilities
 
 Security Hub Essential capabilities provide comprehensive security coverage through resource-based pricing. Essential capabilities include vulnerability management through Amazon Inspector scanning, security posture management through Security Hub CSPM checks, GuardDuty EC2 Malware Scanning, risk and exposure analytics, and security response management. When configuring essential capabilities, consider which resource types are most critical to your security posture.

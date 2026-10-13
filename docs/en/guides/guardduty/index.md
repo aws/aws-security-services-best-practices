@@ -142,6 +142,43 @@ The accounts table displays all of the accounts that are added either Via Organi
 6. Choose Confirm to add the accounts as members. This action also enables GuardDuty for all of the selected accounts. The Status for the accounts will change to Enabled.
 7. (Recommended) Repeat these steps in each AWS Region. This ensures that the delegated administrator can manage findings and other configurations for member accounts in all the Regions where you have GuardDuty enabled.
 
+#### Deploying across an organization with infrastructure as code
+
+You can automate the console steps above with Terraform or CloudFormation. The full ordered deployment for GuardDuty, AWS Security Hub, and Amazon Inspector, with example code, is in [Deploying across an organization in production](../security-hub/index.md#deploying-across-an-organization-in-production) in the Security Hub guide.
+
+For GuardDuty specifically, Terraform manages the delegated administrator, organization configuration, and members natively. CloudFormation has no resource for the organization administrator or organization configuration, so those steps use the AWS CLI, a custom resource, or StackSets. Check the current Terraform AWS provider and CloudFormation resource references before you start, because support may have been added since this guide was written.
+
+#### Managing GuardDuty with organization policies
+
+GuardDuty organization policies let the delegated administrator define enablement for GuardDuty and its protection plans once and attach it to the organization root, an organizational unit (OU), or an account. Unlike per-Region auto-enable settings, a policy is created and attached through AWS Organizations.
+
+Terraform and CloudFormation do not yet accept the `GUARDDUTY_POLICY` policy type, so the steps below use the console or the AWS CLI. If you use the Terraform or CloudFormation path above for everything else, treat these as a manual step.
+
+1. **Prerequisites.** Trusted access for GuardDuty is enabled, and a GuardDuty delegated administrator is designated.
+2. **Update the Organizations delegation policy (management account).** A delegated administrator cannot create or attach GuardDuty policies until the management account's Organizations resource policy grants it permission. Until then, the GuardDuty console in the delegated administrator account shows: *"Your delegated administrator cannot configure GuardDuty policies."* The GuardDuty Settings page in the management account shows the policy to apply. The statements it provides grant the administrator account these actions, scoped to your organization with an `aws:PrincipalOrgID` condition:
+
+    | Statement | Actions |
+    | --- | --- |
+    | Organization read | `organizations:ListRoots` |
+    | Organization management | `DescribeOrganization`, `ListDelegatedAdministrators`, `ListAWSServiceAccessForOrganization`, `ListOrganizationalUnitsForParent`, `ListAccountsForParent`, `ListAccounts` |
+    | Policy describe | `DescribePolicy`, `ListPolicies`, `ListTargetsForPolicy`, `ListPoliciesForTarget`, `DescribeEffectivePolicy` |
+    | Policy mutation | `CreatePolicy`, `UpdatePolicy`, `DeletePolicy`, `AttachPolicy`, `DetachPolicy`, `EnablePolicyType`, `DisablePolicyType` |
+    | Policy tags | `TagResource`, `UntagResource`, `ListTagsForResource` |
+
+    Policy resources include `arn:aws:organizations::<management-account-id>:policy/<org-id>/guardduty_policy/*` plus the root, OU, and account ARNs of the organization.
+
+    !!! warning "An organization has one resource policy"
+        `put-resource-policy` and the Organizations console replace the whole policy. If Security Hub, Amazon Inspector, or other services already have delegation statements, merge the GuardDuty permissions into the existing policy instead of pasting the console's policy over it. Statements with the same `Sid` are shared across services: add the GuardDuty actions and resources to the existing statements rather than adding a second statement with the same `Sid`. Back up the current policy first with `aws organizations describe-resource-policy`.
+
+3. **Create and attach the policy (delegated administrator account).** In the GuardDuty console, choose organization policies, create a policy for the features you want enabled, and attach it to the root, an OU, or an account. The policy type is enabled on the root automatically when you create the first policy.
+4. **Verify.** From the delegated administrator account, `aws organizations list-targets-for-policy --policy-id <id>` shows where the policy is attached.
+
+!!! warning "Auto-enable behavior changes"
+    Enabling the `GUARDDUTY_POLICY` type stops the Regional auto-enable settings from applying, even before a policy is attached. Review your auto-enable configuration before you create your first policy.
+
+!!! note "Policies attached at the root affect every account"
+    A policy attached to the root enables the selected protection plans, such as Runtime Monitoring, for all member accounts, which can change your GuardDuty cost. Start with a test OU, check the effective policy with `aws organizations describe-effective-policy --policy-type GUARDDUTY_POLICY --target-id <account-id>`, then widen.
+
 #### Operating at organization scale
 
 If you build your own tooling against the GuardDuty API in a large organization, be deliberate about which API you call in per-account loops. A pattern we see cause problems is a nightly job that walks every account and calls a describe-style operation such as `GetMembers` once per account. In an organization with hundreds or thousands of accounts, that volume of calls runs into `TooManyRequestsException` throttling, and the job either fails partway or takes far longer than it should.
