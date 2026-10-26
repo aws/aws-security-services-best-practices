@@ -1,8 +1,8 @@
-# AWS Security Agent
+# AWS Security Agent (now part of AWS Continuum) 
 
 ## Introduction
 
-Welcome to the AWS Security Agent Best Practices Guide. The purpose of this guide is to provide prescriptive guidance for using AWS Security Agent on-demand penetration testing to discover and validate exploitable vulnerabilities in your web applications and APIs. This guide is designed to provide value whether you are running your first penetration test against a single application or scaling continuous, context-aware testing across your entire application portfolio.
+Welcome to the AWS Security Agent Best Practices Guide. The purpose of this guide is to provide prescriptive guidance for using AWS Security Agent (now part of AWS Continuum) on-demand penetration testing to discover and validate exploitable vulnerabilities in your web applications and APIs. This guide is designed to provide value whether you are running your first penetration test against a single application or scaling continuous, context-aware testing across your entire application portfolio.
 
 This guide focuses on the on-demand penetration testing capability of AWS Security Agent. AWS Security Agent also provides design security reviews, code security reviews, and threat modeling, which are referenced where relevant but are not the primary focus here.
 
