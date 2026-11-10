@@ -1,12 +1,13 @@
-# AWS Security Agent
+# AWS Security Agent (now Continuum for penetration testing)
+
+!!! info "AWS Security Agent is now Continuum for penetration testing"
+    AWS Security Agent is now **Continuum for penetration testing**, part of [AWS Continuum](https://aws.amazon.com/continuum/). AWS product pages and announcements use the new name. The console, the `securityagent` API and CLI, IAM policy names, and the [AWS Security Agent User Guide](https://docs.aws.amazon.com/securityagent/latest/userguide/) still use AWS Security Agent. This guide uses **AWS Security Agent** to match what you see in the console and documentation.
 
 ## Introduction
 
 Welcome to the AWS Security Agent Best Practices Guide. The purpose of this guide is to provide prescriptive guidance for using AWS Security Agent on-demand penetration testing to discover and validate exploitable vulnerabilities in your web applications and APIs. This guide is designed to provide value whether you are running your first penetration test against a single application or scaling continuous, context-aware testing across your entire application portfolio.
 
 This guide focuses on the on-demand penetration testing capability of AWS Security Agent. AWS Security Agent also provides design security reviews, code security reviews, and threat modeling, which are referenced where relevant but are not the primary focus here.
-
-> AWS Security Agent is now part of [AWS Continuum](https://aws.amazon.com/about-aws/whats-new/2026/06/aws-continuum/). Product and console naming may evolve as these capabilities converge. Always confirm current terminology against the [AWS Security Agent User Guide](https://docs.aws.amazon.com/securityagent/latest/userguide/).
 
 ## How to use this guide
 
