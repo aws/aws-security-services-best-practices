@@ -33,7 +33,15 @@ nav:
   - Amazon GuardDuty Best Practices: guides/guardduty/index.md
   - Amazon Inspector Best Practices: guides/inspector/index.md
   - Amazon Macie Best Practices: guides/macie/index.md
-  - AWS Security Agent (now Continuum for penetration testing) Best Practices: guides/security-agent/index.md
+  - AWS Continuum Best Practices:
+      - Overview: guides/continuum/index.md
+      - Code vulnerabilities:
+          - Overview: guides/continuum/code-vulnerabilities/index.md
+          - Prepare and connect source code: guides/continuum/code-vulnerabilities/setup.md
+          - Add AWS context: guides/continuum/code-vulnerabilities/aws-context.md
+          - Scan and remediate: guides/continuum/code-vulnerabilities/scans-and-remediation.md
+          - Operate and troubleshoot: guides/continuum/code-vulnerabilities/operations.md
+      - On-demand penetration testing: guides/security-agent/index.md
   - AWS Security Hub Best Practices: guides/security-hub/index.md
   - AWS Security Hub CSPM Best Practices: guides/security-hub-cspm/index.md
   - Amazon Security Lake Best Practices: guides/security-lake/index.md
