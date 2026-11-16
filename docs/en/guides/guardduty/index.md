@@ -9,33 +9,33 @@ Welcome to the Amazon GuardDuty Best Practices Guide. The purpose of this guide 
 This guide is geared towards security practitioners who are responsible for monitoring and remediation of threats and malicious activity within AWS accounts (and resources). The best practices are organized into three categories for easier consumption. Each category includes a set of corresponding best practices that begin with a brief overview, followed by detailed steps for implementing the guidance. The topics do not need to be read in a particular order:
 
 * [Deploying GuardDuty](#deploying-guardduty)
-    * [Single account deployment](#single-account-deployment)
-    * [Multi-account deployment](#multi-account-deployment)
-        * [Enablement of a delegated administrator](#enablement-of-a-delegated-administrator)
-        * [Configuring auto-enable preferences for organization](#configuring-auto-enable-preferences-for-organization)
-        * [Add accounts as members to your organization](#add-accounts-as-members-to-your-organization)
-    * [GuardDuty protection plans](#guardduty-protection-plans)
-        * [AI Protection](#ai-protection)
-        * [Malware Protection for Backup](#malware-protection-for-backup)
-        * [Enabling S3 malware protection](#s3-malware-protection)
-        * [Runtime Monitoring](#runtime-monitoring)
-            * [Enabling runtime monitoring for EC2](#runtime-monitoring-deployment-for-ec2)
-            * [Enabling runtime monitoring for ECS](#runtime-monitoring-deployment-for-ecs)
-            * [Enabling runtime monitoring for EKS](#runtime-monitoring-deployment-for-eks)
+  * [Single account deployment](#single-account-deployment)
+  * [Multi-account deployment](#multi-account-deployment)
+    * [Enablement of a delegated administrator](#enablement-of-a-delegated-administrator)
+    * [Configuring auto-enable preferences for organization](#configuring-auto-enable-preferences-for-organization)
+    * [Add accounts as members to your organization](#add-accounts-as-members-to-your-organization)
+  * [GuardDuty protection plans](#guardduty-protection-plans)
+    * [AI Protection](#ai-protection)
+    * [Malware Protection for Backup](#malware-protection-for-backup)
+    * [Enabling S3 malware protection](#s3-malware-protection)
+    * [Runtime Monitoring](#runtime-monitoring)
+      * [Enabling runtime monitoring for EC2](#runtime-monitoring-deployment-for-ec2)
+      * [Enabling runtime monitoring for ECS](#runtime-monitoring-deployment-for-ecs)
+      * [Enabling runtime monitoring for EKS](#runtime-monitoring-deployment-for-eks)
 * [Operationalizing GuardDuty findings](#operationalize-guardduty-findings)
-    * [Extended Threat Detection](#amazon-guardduty-extended-threat-detection)
-    * [GuardDuty Investigation](#guardduty-investigation)
-    * [Filtering findings](#filtering-findings)
-    * [Reducing potential noise](#reducing-potential-noise)
-    * [Custom trusted and threat entity lists](#custom-trusted-and-threat-entity-lists)
-    * [Automated notification for high priority findings](#automated-notification-for-high-priority-findings)
-    * [Automated remediation for common finding types](#automated-remediation-for-common-finding-types)
-    * [S3 Malware Protection automation workflow](#s3-malware-protection-automation-workflow)
+  * [Extended Threat Detection](#amazon-guardduty-extended-threat-detection)
+  * [GuardDuty Investigation](#guardduty-investigation)
+  * [Filtering findings](#filtering-findings)
+  * [Reducing potential noise](#reducing-potential-noise)
+  * [Custom trusted and threat entity lists](#custom-trusted-and-threat-entity-lists)
+  * [Automated notification for high priority findings](#automated-notification-for-high-priority-findings)
+  * [Automated remediation for common finding types](#automated-remediation-for-common-finding-types)
+  * [S3 Malware Protection automation workflow](#s3-malware-protection-automation-workflow)
 * [Cost optimization](#cost-optimization)
-    * [CloudTrail and/or S3 data event utilization is high](#cloudtrail-andor-s3-data-event-utilization-is-high)
-    * [VPC Flow Logs](#vpc-flow-logs)
-    * [DNS Query Logs](#dns-query-logs)
-    * [Other considerations](#other-considerations)
+  * [CloudTrail and/or S3 data event utilization is high](#cloudtrail-andor-s3-data-event-utilization-is-high)
+  * [VPC Flow Logs](#vpc-flow-logs)
+  * [DNS Query Logs](#dns-query-logs)
+  * [Other considerations](#other-considerations)
 * [Troubleshooting](#troubleshooting)
 * [Resources](#resources)
 
@@ -309,6 +309,7 @@ By following the steps outlined in this guide, you will learn how to leverage Gu
 When you want GuardDuty to monitor tasks that are part of a service, it requires a new service deployment after you enable Runtime Monitoring. If the last deployment for a specific ECS service was started before you enabled Runtime Monitoring, you can either restart the service, or update the service by using `forceNewDeployment`.
 
 For steps to update the service, see the following resources:
+
 * [Updating an Amazon ECS service using the console](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/update-service-console-v2.html) in the *Amazon Elastic Container Service Developer Guide*.
 * [UpdateService](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_UpdateService.html) in the *Amazon Elastic Container Service API Reference*.
 * [update-service](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ecs/update-service.html) in the *AWS CLI Command Reference*.
@@ -750,6 +751,7 @@ There are several issues that might cause the SSM agent to work improperly. You 
 
 ### Troubleshooting Shared VPCs Issues
 EC2 instances in your AWS account might run in subnets from a [shared VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html) owned by another AWS account. In this scenario the GuardDuty console might show an error message “VPC Endpoint Creation Failed” for EC2 instances listed in the Runtime Monitoring section.
+
 * Enable GuardDuty EC2 Runtime Monitoring in the AWS account that owns the shared VPC.
 * Ensure there is at least one EC2 instance running in the shared VPC and in the AWS account that owns the VPC.
 
