@@ -174,10 +174,19 @@ Here are some considerations when it comes to automation rules:
 
 ### Automated Security Response
 
-This AWS Solution is an add-on that works with AWS Security Hub and provides predefined response and remediation actions based on industry compliance standards and best practices for security threats. It helps Security Hub customers to resolve common security findings and to improve their security posture in AWS. For more details about it, please refer to [this document](https://aws.amazon.com/solutions/implementations/automated-security-response-on-aws/).
+This AWS Solution is an add-on that works with AWS Security Hub and provides predefined response and remediation actions based on industry compliance standards and best practices for security threats. It helps Security Hub customers to resolve common security findings and to improve their security posture in AWS. Beyond Security Hub CSPM control findings, it can also remediate selected findings from Amazon Inspector, Amazon GuardDuty, and Amazon Macie. You can run a remediation on demand from the solution's Web UI or a Security Hub CSPM custom action, or turn on automated remediation one control at a time. For more details about it, please refer to [this document](https://aws.amazon.com/solutions/implementations/automated-security-response-on-aws/).
 
 ![SH ASR](../../images/SH-ASR.png)
 *Figure 10: Automated Security Response Diagram*
+
+Here are some considerations when it comes to Automated Security Response:
+
+* Deploy the administrator stack once, in the Security Hub CSPM administrator account and aggregation Region. Deploy the member stacks to every account and Region where you want to remediate findings.
+* Test each remediation in a non-production account before you automate it, and turn on automated remediation one control at a time rather than for every control at once.
+* Use resource filters to limit automated remediation to specific accounts, organizational units, resource tags, or ARN patterns. Security Hub CSPM sometimes delivers a finding without resource tags, so use account, organizational unit, or ARN criteria when you need to reliably exclude resources.
+* The solution does not automatically remediate a finding whose workflow status is SUPPRESSED. An automation rule that suppresses findings also keeps the solution from acting on them.
+* After a remediation succeeds, the solution marks the finding RESOLVED. The compliance status updates in place when Security Hub CSPM re-evaluates the resource, which can take up to 24 hours for periodic controls.
+* Turn on rollback if you want to be able to reverse a remediation for supported controls.
 
 ### 3rd party Integrations
 
