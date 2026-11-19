@@ -61,7 +61,7 @@ You must import a Certificate Authority (CA) certificate into ACM. This CA's pri
 If these requirements are not met, you receive: *"CertificateAuthorityArn is invalid because it references a certificate authority that doesn't comply with RFC 5280 basic constraints."* Verify that your CA certificate includes both the Basic Constraints and Key Usage extensions with the required values.
 
 !!! danger "Common misconfiguration"
-    You cannot use a public CA (DigiCert, GoDaddy, etc.) for outbound TLS inspection. The SSL proxy needs the CA private key to dynamically sign certificates. Public CAs never provide CA private keys. You must generate your own private CA (OpenSSL, Microsoft AD CS, AWS Private CA, etc.), import the CA certificate and private key into ACM, and distribute the CA certificate to client trust stores.
+    You cannot use a public CA (DigiCert, GoDaddy, etc.) for outbound TLS inspection. The SSL proxy needs the CA private key to dynamically sign certificates. Public CAs never provide CA private keys. Certificates issued by AWS Private CA are also [not supported](https://docs.aws.amazon.com/network-firewall/latest/developerguide/tls-inspection-certificate-requirements.html) for outbound TLS inspection. You must generate your own private CA (for example, with OpenSSL or Microsoft AD CS), import the CA certificate and private key into ACM, and distribute the CA certificate to client trust stores.
 
 ### Installing the CA certificate on clients
 
@@ -70,6 +70,8 @@ For clients to trust the dynamically generated certificates, the CA certificate 
 * **Amazon Linux** - Copy to `/etc/pki/ca-trust/source/anchors/` and run `update-ca-trust`
 * **Ubuntu** - Copy to `/usr/local/share/ca-certificates/` and run `update-ca-certificates`
 * **Windows** - Import to the Trusted Root Certification Authorities store
+
+If you import a dedicated inspection intermediate CA (with its private key and parent chain) into ACM, distribute the parent root CA certificate to client trust stores instead of the intermediate. You can then rotate the intermediate without redistributing trust to clients.
 
 ### Certificate revocation checking
 
