@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 452" width="960" height="452" font-family="'Amazon Ember', 'Helvetica Neue', Arial, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">Example: AWS WAF NSM policies sorted by priority</title>
+  <desc id="desc">Seven AWS WAF NSM policies sorted by priority: WAF-Mandatory-Things at 10, AMRs-In-Count at 100, WordPress-AMR-In-Count at 101, App1-Application at 1000, AMR-Block-With-Exception at 8000, WordPress-Block-With-Exception at 9999, and WAF-Default-Things at 10000. The name, firewall type, and priority alone show what each NSM policy does and in what order.</desc>
+  <rect x="0" y="0" width="960" height="452" rx="12" fill="#FFFFFF"/>
+
+  <text x="24" y="40" font-size="22" font-weight="700" fill="#16191F">Example: AWS WAF NSM policies <tspan fill="#545B64" font-weight="400">(7)</tspan></text>
+
+  <!-- Table frame -->
+  <path d="M600,60 H930 a10,10 0 0 1 10,10 V422 a10,10 0 0 1 -10,10 H600 Z" fill="#F2F8FD"/>
+  <line x1="600" y1="60" x2="600" y2="432" stroke="#A9CBE6" stroke-dasharray="4 4"/>
+
+  <!-- Header -->
+  <g font-size="14" font-weight="700" fill="#16191F">
+    <text x="40" y="93">Name</text>
+    <text x="320" y="93">Firewall type</text>
+    <text x="470" y="93">Policy priority</text>
+    <path d="M582,92 L588,82 L594,92 Z" fill="#16191F"/>
+    <text x="620" y="93" fill="#1A6FB0">What you can tell without opening it</text>
+  </g>
+  <line x1="20" y1="110" x2="940" y2="110" stroke="#D1D5DB"/>
+
+  <!-- Rows -->
+  <g font-size="14">
+    <g fill="#0972D3">
+      <text x="40" y="138">WAF-Mandatory-Things</text>
+      <text x="40" y="184">AMRs-In-Count</text>
+      <text x="40" y="230">WordPress-AMR-In-Count</text>
+      <text x="40" y="276">App1-Application</text>
+      <text x="40" y="322">AMR-Block-With-Exception</text>
+      <text x="40" y="368">WordPress-Block-With-Exception</text>
+      <text x="40" y="414">WAF-Default-Things</text>
+    </g>
+    <g fill="#16191F">
+      <text x="320" y="138">AWS WAF</text>
+      <text x="320" y="184">AWS WAF</text>
+      <text x="320" y="230">AWS WAF</text>
+      <text x="320" y="276">AWS WAF</text>
+      <text x="320" y="322">AWS WAF</text>
+      <text x="320" y="368">AWS WAF</text>
+      <text x="320" y="414">AWS WAF</text>
+    </g>
+    <g fill="#16191F" font-weight="700">
+      <text x="470" y="138">10</text>
+      <text x="470" y="184">100</text>
+      <text x="470" y="230">101</text>
+      <text x="470" y="276">1000</text>
+      <text x="470" y="322">8000</text>
+      <text x="470" y="368">9999</text>
+      <text x="470" y="414">10000</text>
+    </g>
+    <g fill="#16191F" font-size="13">
+      <text x="620" y="138">Settings every web ACL must have, first</text>
+      <text x="620" y="184">Baseline AMRs label requests, no blocking</text>
+      <text x="620" y="230">Same, only for WordPress applications</text>
+      <text x="620" y="276">App1's own exceptions and protections</text>
+      <text x="620" y="322">Blocks AMR matches unless excepted</text>
+      <text x="620" y="368">Same, only for WordPress applications</text>
+      <text x="620" y="414">Fallback settings that others can override</text>
+    </g>
+  </g>
+  <g stroke="#E9EBED">
+    <line x1="20" y1="156" x2="940" y2="156"/>
+    <line x1="20" y1="202" x2="940" y2="202"/>
+    <line x1="20" y1="248" x2="940" y2="248"/>
+    <line x1="20" y1="294" x2="940" y2="294"/>
+    <line x1="20" y1="340" x2="940" y2="340"/>
+    <line x1="20" y1="386" x2="940" y2="386"/>
+  </g>
+  <rect x="20" y="60" width="920" height="372" rx="10" fill="none" stroke="#D1D5DB"/>
+</svg>
