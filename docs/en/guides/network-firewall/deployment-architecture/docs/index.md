@@ -55,6 +55,10 @@ You can also place the NAT gateway in the same inspection VPC as the firewall, c
 
 ![Network Firewall and NAT gateway in the same centralized inspection VPC](../../../../images/network-firewall/centralized-inspection-vpc-tgw-natgw.png)
 
+#### Choosing between Regional and zonal NAT gateways
+
+A [Regional NAT Gateway](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html) uses one return route table, which can require per-subnet routes to maintain [symmetric routing](https://docs.aws.amazon.com/network-firewall/latest/developerguide/asymmetric-routing.html) through Availability Zone-specific Network Firewall endpoints. At scale, this increases route-management overhead and route-table usage. Zonal NAT gateways use separate per-AZ route tables, allowing summarized routes and simpler symmetric routing.
+
 ### Centralizing with Cloud WAN and service insertion
 
 [AWS Cloud WAN](https://aws.amazon.com/cloud-wan/) can serve as the routing hub instead of Transit Gateway. In this model, Network Firewall is deployed into an inspection VPC and Cloud WAN's [service insertion](https://docs.aws.amazon.com/network-manager/latest/cloudwan/cloudwan-policy-service-insertion.html) feature directs traffic through the firewall.
