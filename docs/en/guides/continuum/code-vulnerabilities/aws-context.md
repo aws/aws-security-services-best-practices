@@ -8,6 +8,20 @@ Continuum can use [AWS workload context](https://docs.aws.amazon.com/continuum/l
 
 Collectors gather supported resource configuration and relationships. The documentation lists the [supported inventory](https://docs.aws.amazon.com/continuum/latest/userguide/cv-adding-context.html), including compute, networking, AWS Identity and Access Management (IAM), storage, and Kubernetes context. Use the current list when deciding which application resources to include.
 
+## Use one central environment and a collector in each workload account
+
+For an application or portfolio that spans accounts, create the integrations and environments once, in a central primary account. Enable a collector in each workload account and Region, and associate it with the central environment. Findings, issues, patches, and scan history then live in one place, while each workload account keeps control of its own inventory.
+
+Access stays under the collector owner's control. A member-account collector shares nothing until its [resource policy](#4-authorize-a-member-account-collector) grants the primary account's data access role. To revoke access, remove that statement from the collector's policy. Submitting a policy with an empty `Statement` array removes all cross-account grants.
+
+Plan around these limits:
+
+- An environment and its collectors must be in the **same Region**. If workloads run in several Regions, use one environment per Region.
+- A collector is created per account and Region, and the documented default is **one collector per account and Region**. An environment can have up to **100 associated collectors**. Check [current quotas](https://docs.aws.amazon.com/continuum/latest/userguide/quotas.html).
+- The environment uses a single data access role, so the role must allow every associated collector.
+
+Repeating the member-account steps for every account is the main cost of this pattern. Script them, using the commands below, and run the script once per account.
+
 ## 1. Place the resources in the correct account
 
 | Resource or action | Location |
@@ -152,6 +166,14 @@ Access entries require the cluster's authentication mode to be `API` or `API_AND
 
 For GitHub-backed applications, Continuum can collect [continuous integration and continuous delivery (CI/CD) context](https://docs.aws.amazon.com/continuum/latest/userguide/cv-adding-context.html#cv-adding-context-cicd) from workflows to help relate source to builds and deployments. Keep deployment definitions current and check the mappings shown in issue evidence.
 
+!!! tip "Best practice"
+
+    Read the likelihood and impact factors on an issue, not only its severity. Deployment context can lower a rating as well as raise it. In a test application with a template-injection flaw that could run attacker code, the issue rated High and not Critical, and its likelihood section recorded that the load balancer in front of the service was internal. The factors show whether a rating reflects your deployment or only the code.
+
+!!! note "Set expectations for the collector"
+
+    In our testing the collector added evidence to a few issues and moved few ratings. Treat it as additional evidence for reachability questions, and do not promise that it will re-rank a whole backlog.
+
 When assessing severity, compare the issue's resource and deployment context with the application you actually run. The service's reachability assessment reasons over configuration; treat it as a prioritization signal, not a formal network reachability proof.
 
 ## 7. Identify your crown jewels
@@ -160,6 +182,10 @@ Identify resources whose compromise would have serious business impact, such as 
 
 For example, use the resource tag `crown_jewel=true` to maintain this inventory for your own issue review. Apply it in the account that owns the resource, whether that is the primary account or a member account. Confirm the saved tag on the resource and remove it when the resource no longer meets your criteria.
 
-Follow the [AWS guidance on classification tags](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/data-security-and-risk-management.html), and keep [sensitive information out of tag keys and values](https://docs.aws.amazon.com/prescriptive-guidance/latest/tagging-best-practices/tagging-practices-to-avoid.html#incorrect-sensitive). A tag records your classification; check the issue evidence to establish which resource and attack path the analysis considered. The [`reachedCrownJewels` signal](scans-and-remediation.md#interpret-crown-jewel-signals) describes a validation result and does not serve as tag readback.
+Follow the [AWS guidance on classification tags](https://docs.aws.amazon.com/whitepapers/latest/tagging-best-practices/data-security-and-risk-management.html), and keep [sensitive information out of tag keys and values](https://docs.aws.amazon.com/prescriptive-guidance/latest/tagging-best-practices/tagging-practices-to-avoid.html#incorrect-sensitive). !!! tip "Best practice"
+
+    Tell Continuum what matters. For an Amazon S3 source, you can place plain-language documents under the knowledge documents path you set when creating the environment. A short document stating which data is most sensitive and which services matter most is inexpensive to write, and it is where your organization's judgment can enter a rating.
+
+A tag records your classification; check the issue evidence to establish which resource and attack path the analysis considered. The [`reachedCrownJewels` signal](scans-and-remediation.md#interpret-crown-jewel-signals) describes a validation result and does not serve as tag readback.
 
 Continue to [scanning and remediation](scans-and-remediation.md).

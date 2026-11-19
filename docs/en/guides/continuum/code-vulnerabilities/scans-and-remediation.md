@@ -30,9 +30,13 @@ Repeat `get-code-scan` to inspect the run's status. If it fails, use its failure
 
 Continuum currently does not support canceling a scan after it starts. **Manual only** prevents future scheduled scans; it does not cancel a running scan.
 
+!!! warning "Rescanning unchanged code adds issues"
+
+    In our testing, a second scan of the same code produced a second set of issues with new IDs and reworded titles, and none was marked as a duplicate. One missing-ownership flaw in a training application kept reappearing as separate issues across weekly scans, each with its own pull request. Scan when the code changes or on a schedule that matches how often you can triage. Triage by flaw and not by issue count, and decide how you will retire duplicate pull requests before you turn on a recurring schedule.
+
 ## 2. Follow issue processing
 
-Open the environment's **Scans**, **Findings**, and **Issues** views as the run progresses. A scan can reach `SUCCEEDED` while downstream issue or patch processing is still in progress.
+Open the environment's **Scans**, **Findings**, and **Issues** views as the run progresses. A scan can reach `SUCCEEDED` while downstream issue or patch processing is still in progress. In our runs a scan of a small application took about 25 minutes, and issues and patches kept arriving for another 20 minutes to an hour. Do not read an empty list right after a scan succeeds as a clean result.
 
 In **Issues**, search and counts apply to the issues currently loaded. Use **Load more**, clear filters, and refresh before concluding that no issue exists. See [viewing issues](https://docs.aws.amazon.com/continuum/latest/userguide/cv-viewing-issues.html).
 
@@ -111,10 +115,68 @@ Do not treat issue processing completion or patch delivery as confirmation that 
 
 ## Optional: submit findings from another source
 
-[`CreateCodeFinding`](https://docs.aws.amazon.com/continuum/latest/APIReference/API_CreateCodeFinding.html) accepts a code finding in the Open Cybersecurity Schema Framework (OCSF), a common format for security data, encoded as JavaScript Object Notation (JSON). The document can be up to 256 kilobytes (KB). Use the API's documented source and code-location requirements to connect the finding to code in the environment.
+[`CreateCodeFinding`](https://docs.aws.amazon.com/continuum/latest/APIReference/API_CreateCodeFinding.html) accepts a finding from another tool in the Open Cybersecurity Schema Framework (OCSF), a common format for security data, encoded as JavaScript Object Notation (JSON). Continuum validates the document when you submit it and rejects an invalid one with a `ValidationException`.
 
-A submitted finding remains pending until a successful build includes its source. If its repository is absent from the environment, the service can discard it. Check the source mapping and build result before expecting an issue from an import.
+### Accepted classes and required fields
 
-Import a small sample and inspect the resulting findings and issues before automating a larger feed. This API contract does not establish compatibility with every scanner's native export format.
+Continuum accepts two OCSF classes, up to 256 kilobytes (KB) per document:
+
+| Class | `class_uid` |
+|---|---|
+| Vulnerability Finding | `2002` |
+| Application Security Posture Finding | `2007` |
+
+Other classes, such as Detection Finding (`2004`), are rejected with `unsupported finding class_uid`. Besides the fields OCSF itself requires, Continuum requires:
+
+| Field | Requirement |
+|---|---|
+| `finding_info.uid` | A unique identifier for the finding. |
+| `vulnerabilities[0].affected_code[0].file` | The affected file, using `path` or `name`. With several repositories in the environment, the path must start with the repository name. |
+| `metadata.product.name` or `metadata.product.vendor_name` | The tool that produced the finding. |
+
+A document missing any of these is rejected. The following shows the shape. Replace each placeholder with your own value:
+
+```json
+{
+  "activity_id": 1,
+  "category_uid": 2,
+  "class_uid": 2002,
+  "type_uid": 200201,
+  "severity_id": 4,
+  "time": 1700000000000,
+  "metadata": {
+    "version": "1.9.0",
+    "product": { "name": "<TOOL-NAME>", "vendor_name": "<VENDOR-NAME>" }
+  },
+  "finding_info": {
+    "uid": "<UNIQUE-FINDING-ID>",
+    "title": "<SHORT-TITLE>",
+    "desc": "<DESCRIPTION-OF-THE-WEAKNESS>"
+  },
+  "vulnerabilities": [
+    {
+      "title": "<SHORT-TITLE>",
+      "cwe": { "uid": "<CWE-NUMBER>" },
+      "affected_code": [
+        {
+          "file": { "path": "<REPOSITORY>/<PATH-TO-FILE>", "name": "<FILE-NAME>", "type_id": 1 },
+          "start_line": 10,
+          "end_line": 10
+        }
+      ]
+    }
+  ]
+}
+```
+
+!!! tip "Best practice"
+
+    Use custom findings to check another tool's output, and keep that tool in place. In a test of about 250 findings from several scanners, findings that pointed at a real file and line were mostly confirmed, and many came back with a lower severity than the sender gave. Package vulnerabilities reported at line 1 of a manifest were nearly all discarded, while those pointing at the line that declares the package were nearly all confirmed, so map each package finding to its declaring line before you send it. Continuum added little detection beyond its own scan. The value was in checking and re-rating existing findings.
+
+### What happens after you submit
+
+A submitted finding stays `SUBMITTED` until a successful build includes its repository. If the next successful build does not include it, Continuum discards it with the reason `SOURCE_REPO_NOT_FOUND`. Check the file path against the repositories in the environment, and wait for a scan to finish before expecting an issue.
+
+Continuum validates the claim itself. A confirmed finding becomes an issue and can carry a different severity than the one you sent. A discarded finding keeps a reason you can read in the **Findings** view. Import a small sample first and compare the results with your tool's own before automating a larger feed. This contract does not establish compatibility with every scanner's native export format.
 
 Continue to [ongoing operations](operations.md).

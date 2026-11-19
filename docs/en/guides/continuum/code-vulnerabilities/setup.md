@@ -16,7 +16,11 @@ Before connecting source, identify:
 - The dependency hosts required during a clean build.
 - The AWS accounts and Regions where this source is deployed.
 
-Keep the first environment small enough to troubleshoot as one application. The documented default is **10 repositories per environment across all integrations**. Check [current quotas](https://docs.aws.amazon.com/continuum/latest/userguide/quotas.html) before selecting a larger application.
+!!! tip "Best practice"
+
+    Start with one application you know well, and keep the first environment small enough to troubleshoot as one application. A first scan of a large codebase can produce hundreds of issues and, for a repository source, hundreds of pull requests. In our testing, one scan of a well-known vulnerable training application produced about 150 issues and about 140 pull requests. Choose **Manual only** while you qualify the setup, and set an AWS Budgets alert before you expand. See [cost considerations](cost-considerations.md).
+
+The documented default is **10 repositories per environment across all integrations**. Check [current quotas](https://docs.aws.amazon.com/continuum/latest/userguide/quotas.html) before selecting a larger application.
 
 The command examples require a version of the AWS Command Line Interface (AWS CLI) that includes `aws continuum`. The collector policy example also uses Bash and `jq`. Replace every `<PLACEHOLDER>` with your own value.
 
@@ -27,6 +31,10 @@ Choose encryption settings before creating integrations and environments. Contin
 Use [Supported languages and source files](https://docs.aws.amazon.com/continuum/latest/userguide/cv-supported-languages.html) as the source of truth for eligible extensions and excluded folders. Check the actual extensions in each selected repository against that page; support for a language alone does not make every file type used by that language eligible.
 
 Extensions are case-sensitive. At least one supported file must exist outside excluded folders across the selected repositories.
+
+!!! warning "Continuum reads source, not compiled output"
+
+    In our testing, a ZIP archive containing only a compiled Go server, a C executable, and a Python bytecode file failed at the scan stage with "No source files in a supported language were found." The same programs as source produced findings for every flaw we had planted. If a team has only binaries, Continuum is not the right first tool. Use [Amazon Inspector](../../inspector/index.md) for binaries and for the full list of vulnerable packages. Continuum reports a vulnerable library when the flaw is reachable from application code, which is not a substitute for package scanning.
 
 Extension eligibility does not establish that the entire application builds or that every framework feature can be validated. In a repository with several projects, check the source and build inputs for each project you intend to assess.
 
@@ -68,6 +76,10 @@ Choose the integration that matches where the code is maintained.
 | GitLab | Use GitLab.com or a supported self-managed instance with a token that can access the selected private projects. | The token's scope, role, project visibility, expiry, and server reachability satisfy the requirements below. |
 | Amazon S3 | Upload source as a ZIP archive and grant Continuum access through a dedicated integration role. | The bucket, role, source prefix, and external identifier (ID) match the integration configuration. |
 
+!!! tip "Best practice"
+
+    Connect private repositories. For GitHub and GitLab sources, Continuum opens a pull request or merge request for each fix, and each one describes a vulnerability. On a public repository, that publishes the weakness before it is fixed.
+
 ### GitHub
 
 Follow [getting started through GitHub](https://docs.aws.amazon.com/continuum/latest/userguide/cv-getting-started.html#cv-getting-started-github). Installation and authorization are separate steps. Select the account or organization that owns the code during installation, then return to Continuum to authorize and create the integration.
@@ -98,9 +110,15 @@ If source objects use server-side encryption with AWS Key Management Service (AW
 
 ## 4. Prepare the build inputs
 
+!!! tip "Best practice"
+
+    Include deployment definitions in the scanned source, such as a deploy workflow or infrastructure-as-code. In our testing, adding a workflow that named the real services, and an infrastructure stack, made the evidence start to cite those services. Continuum relates a flaw to a running workload more easily when the code contains that link.
+
 Use a clean checkout to confirm the application's normal build command, toolchain versions, and dependency sources. Include the manifests and lockfiles that define that build. Check whether generated code, shared projects, or external build inputs are required.
 
 In the environment's **Advanced settings**, configure any additional dependency domains required by the build. The [network policy configuration](https://docs.aws.amazon.com/cli/latest/reference/continuum/update-environment.html) accepts up to 50 hostname entries. Enter hostnames without uniform resource locator (URL) schemes, paths, ports, or wildcards.
+
+For a higher level of runtime build validation, AWS Continuum product guidance is to add an `environment.json` file to the repository. The public documentation does not yet describe the file's location or format, so confirm both with your AWS account team before relying on it.
 
 Allowing a dependency host does not provide credentials for its registry. If a build depends on a private registry, verify how it can authenticate before relying on that build in Continuum. Do not put registry tokens or other secrets into source files to make a scan work.
 
@@ -114,7 +132,7 @@ Follow [creating an environment](https://docs.aws.amazon.com/continuum/latest/us
 2. Select the integration and repositories. For S3, set **Source code base path** to the uploaded prefix, such as `code/`. Use a prefix, not an `s3://` uniform resource identifier (URI) or a ZIP object name.
 3. For S3, if you uploaded optional context documents, set **Knowledge documents base path** to their prefix, such as `context/`. The path is configured here, when creating the environment.
 4. Choose a scan schedule. **Manual only** is useful while qualifying the initial setup.
-5. Review **Advanced settings**, including automatic patch settings and dependency domains, before creating the environment.
+5. Review **Advanced settings**, including automatic patch settings, dependency domains, and any focus mode or issue limit the console offers, before creating the environment. See [limit what Continuum works on](cost-considerations.md#limit-what-continuum-works-on).
 
 Creating an environment starts its first build and scan, **including when Manual only is selected**. That schedule controls subsequent automatic scans. Open the environment's **Scans** tab and follow the run. A successful scan can precede completion of issue and patch processing; refresh those views as processing continues.
 

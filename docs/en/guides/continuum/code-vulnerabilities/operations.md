@@ -8,6 +8,10 @@ title: Operate and troubleshoot
 
 Review the environment when repositories, build dependencies, deployment accounts, or access roles change. Check that its selected source and associated collectors still represent the application.
 
+!!! tip "Best practice"
+
+    Match the scan schedule to how often you can triage, not to the fastest option. Every scan of unchanged code can add issues you must review again. See [rescanning](scans-and-remediation.md#2-follow-issue-processing) and [cost considerations](cost-considerations.md).
+
 Start with **Manual only** while correcting setup problems, then choose a [recurring schedule](https://docs.aws.amazon.com/continuum/latest/userguide/cv-triggering-scan.html) appropriate to the application's change frequency. Check scan history before starting another manual run.
 
 Track integration credentials and permissions. For GitLab, follow the documented [token rotation and revocation procedures](https://docs.aws.amazon.com/continuum/latest/userguide/gitlab-integration-security.html). For Amazon Simple Storage Service (Amazon S3) and collectors, check access again after changes to identity permissions in AWS Identity and Access Management (IAM), encryption-key permissions in AWS Key Management Service (AWS KMS), bucket policies, or organization policies.

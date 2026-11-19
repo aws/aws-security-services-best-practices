@@ -41,6 +41,8 @@ nav:
           - Add AWS context: guides/continuum/code-vulnerabilities/aws-context.md
           - Scan and remediate: guides/continuum/code-vulnerabilities/scans-and-remediation.md
           - Operate and troubleshoot: guides/continuum/code-vulnerabilities/operations.md
+          - Cost considerations: guides/continuum/code-vulnerabilities/cost-considerations.md
+          - Quick reference: guides/continuum/code-vulnerabilities/quick-reference.md
       - On-demand penetration testing: guides/security-agent/index.md
   - AWS Security Hub Best Practices: guides/security-hub/index.md
   - AWS Security Hub CSPM Best Practices: guides/security-hub-cspm/index.md
