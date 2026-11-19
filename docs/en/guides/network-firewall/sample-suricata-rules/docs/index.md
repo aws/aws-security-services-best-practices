@@ -195,6 +195,8 @@ alert ip any any -> any any (msg:"$HOME_NET may not be set right! Set it at the 
 
 These rules explicitly allow traffic. In a default-deny posture, your domain allowlist is what permits your workloads to reach the internet destinations they need.
 
+The FQDN rules in this section match on the TLS SNI and the HTTP Host header, not on DNS resolution. Both values are set by the client and can be spoofed, so a workload can present an allowed domain while connecting to a different destination. Treat these rules as a way to restrict egress to the domains you expect, not as proof of where the traffic is actually going.
+
 ### Allow exact FQDNs
 
 ```
